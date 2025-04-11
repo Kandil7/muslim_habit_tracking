@@ -19,6 +19,8 @@ import '../../domain/entities/habit.dart';
 import '../bloc/habit_bloc.dart';
 import '../bloc/habit_event.dart';
 import '../bloc/habit_state.dart';
+import 'add_habit_page.dart';
+import 'habit_details_page.dart';
 
 /// The main home page of the application
 class HomePage extends StatefulWidget {
@@ -99,7 +101,12 @@ class HabitDashboardPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              // TODO: Navigate to add habit page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddHabitPage(),
+                ),
+              );
             },
           ),
         ],
@@ -119,7 +126,12 @@ class HabitDashboardPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to add habit page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddHabitPage(),
+            ),
+          );
         },
         child: const Icon(Icons.add),
       ),
@@ -184,7 +196,12 @@ class HabitDashboardPage extends StatelessWidget {
               },
             ),
             onTap: () {
-              // TODO: Navigate to habit details page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HabitDetailsPage(habit: habit),
+                ),
+              );
             },
           ),
         );
