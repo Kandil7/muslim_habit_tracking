@@ -11,7 +11,7 @@ class PrayerTime extends Equatable {
   final DateTime maghrib;
   final DateTime isha;
   final String calculationMethod;
-  
+
   const PrayerTime({
     required this.id,
     required this.date,
@@ -23,7 +23,7 @@ class PrayerTime extends Equatable {
     required this.isha,
     required this.calculationMethod,
   });
-  
+
   @override
   List<Object> get props => [
     id,
@@ -36,7 +36,7 @@ class PrayerTime extends Equatable {
     isha,
     calculationMethod,
   ];
-  
+
   /// Create a copy of this PrayerTime with the given fields replaced with the new values
   PrayerTime copyWith({
     String? id,
@@ -61,38 +61,39 @@ class PrayerTime extends Equatable {
       calculationMethod: calculationMethod ?? this.calculationMethod,
     );
   }
-  
+
   /// Get the next prayer time from the current time
   Map<String, DateTime> getNextPrayer(DateTime currentTime) {
-    final prayers = {
-      'Fajr': fajr,
-      'Sunrise': sunrise,
-      'Dhuhr': dhuhr,
-      'Asr': asr,
-      'Maghrib': maghrib,
-      'Isha': isha,
-    };
-    
-    String nextPrayerName = 'Fajr';
-    DateTime nextPrayerTime = fajr;
-    
-    // If all prayers have passed for today, return Fajr for tomorrow
+    // Create a sorted list of prayer times
+    final prayers = [
+      {'name': 'Fajr', 'time': fajr},
+      {'name': 'Sunrise', 'time': sunrise},
+      {'name': 'Dhuhr', 'time': dhuhr},
+      {'name': 'Asr', 'time': asr},
+      {'name': 'Maghrib', 'time': maghrib},
+      {'name': 'Isha', 'time': isha},
+    ];
+
+    // Sort prayers by time
+    prayers.sort((a, b) => (a['time'] as DateTime).compareTo(b['time'] as DateTime));
+
+    // If all prayers have passed for today, return the first prayer for tomorrow
     if (currentTime.isAfter(isha)) {
-      return {'Fajr': fajr.add(const Duration(days: 1))};
+      return {prayers.first['name'] as String: (prayers.first['time'] as DateTime).add(const Duration(days: 1))};
     }
-    
+
     // Find the next prayer
-    for (final entry in prayers.entries) {
-      if (currentTime.isBefore(entry.value)) {
-        nextPrayerName = entry.key;
-        nextPrayerTime = entry.value;
-        break;
+    for (final prayer in prayers) {
+      final prayerTime = prayer['time'] as DateTime;
+      if (currentTime.isBefore(prayerTime)) {
+        return {prayer['name'] as String: prayerTime};
       }
     }
-    
-    return {nextPrayerName: nextPrayerTime};
+
+    // Fallback to first prayer of next day if no next prayer found
+    return {prayers.first['name'] as String: (prayers.first['time'] as DateTime).add(const Duration(days: 1))};
   }
-  
+
   /// Get the current prayer time (the last prayer that has occurred)
   String getCurrentPrayer(DateTime currentTime) {
     if (currentTime.isBefore(fajr)) {
