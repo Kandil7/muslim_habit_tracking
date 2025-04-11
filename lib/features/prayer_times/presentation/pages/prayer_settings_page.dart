@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../bloc/prayer_time_bloc.dart';
@@ -25,23 +26,23 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
   double _longitude = 0.0;
   int _notificationTime = AppConstants.defaultNotificationTime;
   bool _notificationsEnabled = true;
-  
+
   @override
   void initState() {
     super.initState();
     _loadSettings();
   }
-  
+
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     setState(() {
       _latitude = prefs.getDouble('latitude') ?? 0.0;
       _longitude = prefs.getDouble('longitude') ?? 0.0;
       _notificationTime = prefs.getInt('notificationTime') ?? AppConstants.defaultNotificationTime;
       _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
     });
-    
+
     // Load calculation methods
     _calculationMethods = {
       'MWL': 'Muslim World League',
@@ -52,25 +53,33 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
       'Tehran': 'Institute of Geophysics, University of Tehran',
       'Jafari': 'Shia Ithna-Ashari, Leva Institute, Qum',
     };
-    
+
     setState(() {
       _isLoading = false;
     });
   }
-  
+
   Future<void> _saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     await prefs.setDouble('latitude', _latitude);
     await prefs.setDouble('longitude', _longitude);
     await prefs.setInt('notificationTime', _notificationTime);
     await prefs.setBool('notificationsEnabled', _notificationsEnabled);
-    
+
     // Update calculation method
     context.read<PrayerTimeBloc>().add(
       UpdateCalculationMethodEvent(method: _selectedCalculationMethod),
     );
-    
+
+    // Update prayer notifications if enabled
+    if (_notificationsEnabled) {
+      // Get current prayer times
+      context.read<PrayerTimeBloc>().add(
+        GetPrayerTimeByDateEvent(date: DateTime.now()),
+      );
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Settings saved successfully!'),
@@ -78,7 +87,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +104,13 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
               ),
             );
             Navigator.pop(context);
+          } else if (state is PrayerTimeLoaded && _notificationsEnabled) {
+            // Schedule prayer notifications
+            final notificationService = NotificationService();
+            notificationService.schedulePrayerTimeNotifications(
+              state.prayerTime,
+              _notificationTime,
+            );
           } else if (state is PrayerTimeError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -154,7 +170,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Location
                     _buildSectionHeader('Location'),
                     Card(
@@ -230,7 +246,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Notifications
                     _buildSectionHeader('Notifications'),
                     Card(
@@ -290,7 +306,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // Save button
                     SizedBox(
                       width: double.infinity,
@@ -306,7 +322,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
       ),
     );
   }
-  
+
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, bottom: 8),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/di/injection_container.dart' as di;
+import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
@@ -25,6 +26,11 @@ void main() async {
 
   // Initialize dependencies
   await di.init();
+
+  // Initialize notification service
+  final notificationService = NotificationService();
+  await notificationService.init();
+  await notificationService.requestPermissions();
 
   runApp(const SunnahTrackApp());
 }
