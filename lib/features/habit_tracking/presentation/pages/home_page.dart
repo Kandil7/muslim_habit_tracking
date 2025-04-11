@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/theme_provider.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../analytics/domain/entities/habit_stats.dart';
 import '../../../analytics/presentation/bloc/analytics_bloc.dart';
@@ -103,6 +105,17 @@ class HabitDashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('SunnahTrack'),
         actions: [
+          IconButton(
+            icon: Icon(
+              Provider.of<ThemeProvider>(context).isDarkMode
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            onPressed: () {
+              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+            },
+            tooltip: 'Toggle Theme',
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -1284,10 +1297,12 @@ class SettingsPage extends StatelessWidget {
           _buildSectionHeader('Appearance'),
           _buildSettingsCard(
             title: 'Theme',
-            subtitle: 'System default',
-            leading: const Icon(Icons.brightness_6),
+            subtitle: Provider.of<ThemeProvider>(context).isDarkMode ? 'Dark mode' : 'Light mode',
+            leading: Icon(
+              Provider.of<ThemeProvider>(context).isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            ),
             onTap: () {
-              // TODO: Show theme selection dialog
+              _showThemeSelectionDialog(context);
             },
           ),
           _buildSettingsCard(
@@ -1352,6 +1367,70 @@ class SettingsPage extends StatelessWidget {
           color: AppColors.primary,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    );
+  }
+
+  void _showThemeSelectionDialog(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Choose Theme'),
+        children: [
+          RadioListTile<ThemeMode>(
+            title: const Row(
+              children: [
+                Icon(Icons.light_mode),
+                SizedBox(width: 16),
+                Text('Light'),
+              ],
+            ),
+            value: ThemeMode.light,
+            groupValue: themeProvider.themeMode,
+            onChanged: (value) {
+              if (value != null) {
+                themeProvider.setThemeMode(value);
+                Navigator.pop(context);
+              }
+            },
+          ),
+          RadioListTile<ThemeMode>(
+            title: const Row(
+              children: [
+                Icon(Icons.dark_mode),
+                SizedBox(width: 16),
+                Text('Dark'),
+              ],
+            ),
+            value: ThemeMode.dark,
+            groupValue: themeProvider.themeMode,
+            onChanged: (value) {
+              if (value != null) {
+                themeProvider.setThemeMode(value);
+                Navigator.pop(context);
+              }
+            },
+          ),
+          RadioListTile<ThemeMode>(
+            title: const Row(
+              children: [
+                Icon(Icons.brightness_auto),
+                SizedBox(width: 16),
+                Text('System Default'),
+              ],
+            ),
+            value: ThemeMode.system,
+            groupValue: themeProvider.themeMode,
+            onChanged: (value) {
+              if (value != null) {
+                themeProvider.setThemeMode(value);
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ],
       ),
     );
   }
