@@ -60,13 +60,14 @@ dependencies:
   dartz: ^0.10.1
   get_it: ^7.6.7
   timezone: ^0.9.2
-  flutter_local_notifications: ^16.3.2
   shared_preferences: ^2.2.2
   logger: ^2.0.2+1
   uuid: ^4.3.3
-  file_picker: ^6.1.1
+#  file_picker: ^5.5.0
   permission_handler: ^11.2.0
   share_plus: ^7.2.1
+  crypto: ^3.0.3
+#  awesome_notifications: ^0.10.0
 
 dev_dependencies:
   flutter_test:
