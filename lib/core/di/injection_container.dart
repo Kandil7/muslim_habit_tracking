@@ -66,6 +66,7 @@ Future<void> _initExternalDependencies() async {
 
   // Register Hive boxes
   await Hive.openBox(AppConstants.habitsBoxName);
+  await Hive.openBox(AppConstants.habitLogsBoxName);
   await Hive.openBox(AppConstants.prayerTimesBoxName);
   await Hive.openBox(AppConstants.settingsBoxName);
   await Hive.openBox(AppConstants.duaDhikrBoxName);
@@ -99,7 +100,7 @@ Future<void> _initHabitTrackingFeature() async {
   sl.registerLazySingleton<HabitLocalDataSource>(
     () => HabitLocalDataSourceImpl(
       habitsBox: Hive.box(AppConstants.habitsBoxName),
-      habitLogsBox: Hive.box(AppConstants.habitsBoxName),
+      habitLogsBox: Hive.box(AppConstants.habitLogsBoxName),
       uuid: sl(),
     ),
   );
