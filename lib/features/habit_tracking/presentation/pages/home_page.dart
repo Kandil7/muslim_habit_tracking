@@ -7,6 +7,7 @@ import '../../../analytics/domain/entities/habit_stats.dart';
 import '../../../analytics/presentation/bloc/analytics_bloc.dart';
 import '../../../analytics/presentation/bloc/analytics_event.dart';
 import '../../../analytics/presentation/bloc/analytics_state.dart';
+import '../../../analytics/presentation/pages/habit_stats_detail_page.dart';
 import '../../../dua_dhikr/domain/entities/dua.dart';
 import '../../../dua_dhikr/domain/entities/dhikr.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
@@ -896,7 +897,16 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   Widget _buildHabitStatsCard(HabitStats stats) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HabitStatsDetailPage(habitStats: stats),
+            ),
+          );
+        },
+        child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
