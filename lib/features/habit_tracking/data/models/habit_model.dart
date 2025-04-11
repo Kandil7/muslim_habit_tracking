@@ -1,0 +1,107 @@
+import 'dart:convert';
+
+import '../../domain/entities/habit.dart';
+
+/// Model class for Habit entity
+class HabitModel extends Habit {
+  const HabitModel({
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.type,
+    required super.icon,
+    required super.color,
+    required super.goal,
+    required super.goalUnit,
+    required super.daysOfWeek,
+    required super.isActive,
+    required super.createdAt,
+    super.updatedAt,
+  });
+  
+  /// Create a HabitModel from a JSON map
+  factory HabitModel.fromJson(Map<String, dynamic> json) {
+    return HabitModel(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      type: json['type'],
+      icon: json['icon'],
+      color: json['color'],
+      goal: json['goal'],
+      goalUnit: json['goalUnit'],
+      daysOfWeek: List<String>.from(json['daysOfWeek']),
+      isActive: json['isActive'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+    );
+  }
+  
+  /// Convert this HabitModel to a JSON map
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'type': type,
+      'icon': icon,
+      'color': color,
+      'goal': goal,
+      'goalUnit': goalUnit,
+      'daysOfWeek': daysOfWeek,
+      'isActive': isActive,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
+  }
+  
+  /// Create a HabitModel from a Habit entity
+  factory HabitModel.fromEntity(Habit habit) {
+    return HabitModel(
+      id: habit.id,
+      name: habit.name,
+      description: habit.description,
+      type: habit.type,
+      icon: habit.icon,
+      color: habit.color,
+      goal: habit.goal,
+      goalUnit: habit.goalUnit,
+      daysOfWeek: habit.daysOfWeek,
+      isActive: habit.isActive,
+      createdAt: habit.createdAt,
+      updatedAt: habit.updatedAt,
+    );
+  }
+  
+  /// Create a copy of this HabitModel with the given fields replaced with the new values
+  @override
+  HabitModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? type,
+    String? icon,
+    String? color,
+    int? goal,
+    String? goalUnit,
+    List<String>? daysOfWeek,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return HabitModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
+      goal: goal ?? this.goal,
+      goalUnit: goalUnit ?? this.goalUnit,
+      daysOfWeek: daysOfWeek ?? this.daysOfWeek,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}
