@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../constants/app_constants.dart';
 import '../network/network_info.dart';
+import '../services/cache_manager.dart';
 import '../../features/habit_tracking/data/datasources/habit_local_data_source.dart';
 import '../../features/habit_tracking/data/repositories/habit_repository_impl.dart';
 import '../../features/habit_tracking/domain/repositories/habit_repository.dart';
@@ -87,6 +88,9 @@ Future<void> _initExternalDependencies() async {
 Future<void> _initCore() async {
   // NetworkInfo
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+
+  // Cache Manager
+  sl.registerLazySingleton(() => CacheManager());
 }
 
 /// Initialize habit tracking feature dependencies
@@ -153,6 +157,7 @@ Future<void> _initPrayerTimesFeature() async {
       localDataSource: sl(),
       networkInfo: sl(),
       sharedPreferences: sl(),
+      cacheManager: sl(),
     ),
   );
 
@@ -184,6 +189,7 @@ Future<void> _initDuaDhikrFeature() async {
   sl.registerLazySingleton<DuaDhikrRepository>(
     () => DuaDhikrRepositoryImpl(
       localDataSource: sl(),
+      cacheManager: sl(),
     ),
   );
 

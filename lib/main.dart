@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/di/injection_container.dart' as di;
+import 'core/services/cache_manager.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
@@ -36,6 +37,10 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.init();
   await notificationService.requestPermissions();
+
+  // Initialize cache manager
+  final cacheManager = CacheManager();
+  await cacheManager.init();
 
   // Initialize theme provider
   final themeProvider = ThemeProvider();

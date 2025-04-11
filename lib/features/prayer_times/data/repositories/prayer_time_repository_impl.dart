@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/services/cache_manager.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../../domain/repositories/prayer_time_repository.dart';
 import '../datasources/prayer_time_local_data_source.dart';
@@ -16,41 +17,58 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
   final PrayerTimeLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
   final SharedPreferences sharedPreferences;
-  
+  final CacheManager cacheManager;
+
   PrayerTimeRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
     required this.sharedPreferences,
+    required this.cacheManager,
   });
-  
+
   @override
   Future<Either<Failure, PrayerTime>> getPrayerTimeByDate(DateTime date) async {
     try {
-      // Try to get from local storage first
+      // Generate cache key
+      final cacheKey = 'prayer_time_${date.year}_${date.month}_${date.day}';
+
+      // Try to get from memory cache first
+      final cachedPrayerTime = await cacheManager.getFromCache<Map<String, dynamic>>(cacheKey);
+      if (cachedPrayerTime != null) {
+        return Right(PrayerTimeModel.fromJson(cachedPrayerTime));
+      }
+
+      // Try to get from local storage
       final localPrayerTime = await localDataSource.getPrayerTimeByDate(date);
-      
+
       if (localPrayerTime != null) {
+        // Save to memory cache for faster access next time
+        await cacheManager.saveToCache(cacheKey, (localPrayerTime as PrayerTimeModel).toJson());
         return Right(localPrayerTime);
       }
-      
+
       // If not available locally and online, fetch from API
       if (await networkInfo.isConnected) {
         try {
           final calculationMethod = await localDataSource.getCalculationMethod();
           final latitude = sharedPreferences.getDouble('latitude') ?? 0.0;
           final longitude = sharedPreferences.getDouble('longitude') ?? 0.0;
-          
+
           final remotePrayerTime = await remoteDataSource.getPrayerTimeByDate(
             date,
             latitude,
             longitude,
             calculationMethod,
           );
-          
+
           // Save to local storage
           await localDataSource.savePrayerTime(remotePrayerTime);
-          
+
+          // Save to memory cache
+          final cacheKey = 'prayer_time_${date.year}_${date.month}_${date.day}';
+          await cacheManager.saveToCache(cacheKey, (remotePrayerTime as PrayerTimeModel).toJson());
+
           return Right(remotePrayerTime);
         } on ServerException catch (e) {
           return Left(ServerFailure(message: e.message));
@@ -62,7 +80,7 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<PrayerTime>>> getPrayerTimesByDateRange(
     DateTime startDate,
@@ -74,19 +92,19 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
         startDate,
         endDate,
       );
-      
+
       // If we have all the dates in the range, return them
       if (localPrayerTimes.length == endDate.difference(startDate).inDays + 1) {
         return Right(localPrayerTimes);
       }
-      
+
       // If not all available locally and online, fetch from API
       if (await networkInfo.isConnected) {
         try {
           final calculationMethod = await localDataSource.getCalculationMethod();
           final latitude = sharedPreferences.getDouble('latitude') ?? 0.0;
           final longitude = sharedPreferences.getDouble('longitude') ?? 0.0;
-          
+
           final remotePrayerTimes = await remoteDataSource.getPrayerTimesByDateRange(
             startDate,
             endDate,
@@ -94,10 +112,10 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
             longitude,
             calculationMethod,
           );
-          
+
           // Save to local storage
           await localDataSource.savePrayerTimes(remotePrayerTimes);
-          
+
           return Right(remotePrayerTimes);
         } on ServerException catch (e) {
           return Left(ServerFailure(message: e.message));
@@ -110,7 +128,7 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, void>> updateCalculationMethod(String method) async {
     try {
@@ -120,7 +138,7 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, String>> getCalculationMethod() async {
     try {
@@ -130,7 +148,7 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, Map<String, String>>> getAvailableCalculationMethods() async {
     if (await networkInfo.isConnected) {

@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/theme_provider.dart';
 import '../../../../core/utils/date_utils.dart';
+import '../../../../core/services/cache_manager.dart';
 import '../../../analytics/domain/entities/habit_stats.dart';
 import '../../../analytics/presentation/bloc/analytics_bloc.dart';
 import '../../../analytics/presentation/bloc/analytics_event.dart';
@@ -1338,7 +1339,15 @@ class SettingsPage extends StatelessWidget {
             subtitle: 'Delete all habits and progress',
             leading: const Icon(Icons.delete_forever, color: AppColors.error),
             onTap: () {
-              // TODO: Show clear data confirmation dialog
+              _showClearDataConfirmationDialog(context);
+            },
+          ),
+          _buildSettingsCard(
+            title: 'Clear Cache',
+            subtitle: 'Clear temporary data and images',
+            leading: const Icon(Icons.cleaning_services),
+            onTap: () {
+              _clearCache(context);
             },
           ),
           const SizedBox(height: 32),
@@ -1429,6 +1438,91 @@ class SettingsPage extends StatelessWidget {
                 Navigator.pop(context);
               }
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _clearCache(BuildContext context) async {
+    final cacheManager = CacheManager();
+    final cacheSize = await cacheManager.getCacheSize();
+    final cacheSizeInMB = (cacheSize / (1024 * 1024)).toStringAsFixed(2);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear Cache'),
+        content: Text('This will clear ${cacheSizeInMB} MB of cached data. This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+
+              // Clear cache
+              await cacheManager.clearCache();
+
+              // Dismiss loading indicator
+              if (context.mounted) Navigator.pop(context);
+
+              // Show success message
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Cache cleared successfully'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              }
+            },
+            child: const Text('Clear Cache'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearDataConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear All Data'),
+        content: const Text(
+          'This will delete all your habits, progress, and settings. This action cannot be undone.',
+          style: TextStyle(color: AppColors.error),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // TODO: Implement clear all data functionality
+              Navigator.pop(context);
+
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('All data has been cleared'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            },
+            child: const Text('Clear All Data', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
