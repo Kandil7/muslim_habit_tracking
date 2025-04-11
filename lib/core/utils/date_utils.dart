@@ -6,6 +6,38 @@ class DateTimeUtils {
   static const List<String> daysOfWeek = [
     'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
   ];
+
+  /// Get today's date with time set to midnight
+  static DateTime get today {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  /// Get the start of the current week (Monday)
+  static DateTime get startOfWeek {
+    final now = DateTime.now();
+    final weekday = now.weekday;
+    return DateTime(now.year, now.month, now.day - weekday + 1);
+  }
+
+  /// Get the end of the current week (Sunday)
+  static DateTime get endOfWeek {
+    final now = DateTime.now();
+    final weekday = now.weekday;
+    return DateTime(now.year, now.month, now.day + (7 - weekday));
+  }
+
+  /// Get the start of the current month
+  static DateTime get startOfMonth {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, 1);
+  }
+
+  /// Get the end of the current month
+  static DateTime get endOfMonth {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month + 1, 0);
+  }
   /// Format a DateTime to a readable string (e.g., "Monday, January 1, 2023")
   static String formatDate(DateTime date) {
     return DateFormat.yMMMMd().format(date);
