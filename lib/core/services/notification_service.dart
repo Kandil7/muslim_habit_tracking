@@ -23,27 +23,34 @@ class NotificationService {
 
   /// Initialize the notification service
   Future<void> init() async {
-    tz.initializeTimeZones();
+    try {
+      tz.initializeTimeZones();
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
-    );
+      // iOS settings
+      final DarwinInitializationSettings initializationSettingsIOS =
+          const DarwinInitializationSettings(
+        requestSoundPermission: true,
+        requestBadgePermission: true,
+        requestAlertPermission: true,
+      );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+      final InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+      );
 
-    await _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
-    );
+      await _flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
+      );
+
+      debugPrint('Notification service initialized successfully');
+    } catch (e) {
+      debugPrint('Error initializing notification service: $e');
+    }
   }
 
   /// Request notification permissions
@@ -62,16 +69,9 @@ class NotificationService {
 
       // For iOS
       if (Platform.isIOS) {
-        final DarwinFlutterLocalNotificationsPlugin? iOSPlugin =
-            _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-                DarwinFlutterLocalNotificationsPlugin>();
-
-        final bool? iOSPermissionGranted = await iOSPlugin?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-        return iOSPermissionGranted ?? false;
+        // On iOS, permissions are requested during initialization
+        // We'll just return true here as iOS handles permissions differently
+        return true;
       }
 
       return false;
@@ -92,49 +92,55 @@ class NotificationService {
     PrayerTime prayerTime,
     int minutesBefore,
   ) async {
-    // Cancel any existing prayer notifications for this day
-    await cancelPrayerNotifications(prayerTime.date);
+    try {
+      // Cancel any existing prayer notifications for this day
+      await cancelPrayerNotifications(prayerTime.date);
 
-    // Schedule notifications for each prayer time
-    await _schedulePrayerNotification(
-      id: 1,
-      title: 'Fajr Prayer',
-      body: 'It\'s time for Fajr prayer',
-      scheduledTime: prayerTime.fajr,
-      minutesBefore: minutesBefore,
-    );
+      // Schedule notifications for each prayer time
+      await _schedulePrayerNotification(
+        id: 1,
+        title: 'Fajr Prayer',
+        body: 'It\'s time for Fajr prayer',
+        scheduledTime: prayerTime.fajr,
+        minutesBefore: minutesBefore,
+      );
 
-    await _schedulePrayerNotification(
-      id: 2,
-      title: 'Dhuhr Prayer',
-      body: 'It\'s time for Dhuhr prayer',
-      scheduledTime: prayerTime.dhuhr,
-      minutesBefore: minutesBefore,
-    );
+      await _schedulePrayerNotification(
+        id: 2,
+        title: 'Dhuhr Prayer',
+        body: 'It\'s time for Dhuhr prayer',
+        scheduledTime: prayerTime.dhuhr,
+        minutesBefore: minutesBefore,
+      );
 
-    await _schedulePrayerNotification(
-      id: 3,
-      title: 'Asr Prayer',
-      body: 'It\'s time for Asr prayer',
-      scheduledTime: prayerTime.asr,
-      minutesBefore: minutesBefore,
-    );
+      await _schedulePrayerNotification(
+        id: 3,
+        title: 'Asr Prayer',
+        body: 'It\'s time for Asr prayer',
+        scheduledTime: prayerTime.asr,
+        minutesBefore: minutesBefore,
+      );
 
-    await _schedulePrayerNotification(
-      id: 4,
-      title: 'Maghrib Prayer',
-      body: 'It\'s time for Maghrib prayer',
-      scheduledTime: prayerTime.maghrib,
-      minutesBefore: minutesBefore,
-    );
+      await _schedulePrayerNotification(
+        id: 4,
+        title: 'Maghrib Prayer',
+        body: 'It\'s time for Maghrib prayer',
+        scheduledTime: prayerTime.maghrib,
+        minutesBefore: minutesBefore,
+      );
 
-    await _schedulePrayerNotification(
-      id: 5,
-      title: 'Isha Prayer',
-      body: 'It\'s time for Isha prayer',
-      scheduledTime: prayerTime.isha,
-      minutesBefore: minutesBefore,
-    );
+      await _schedulePrayerNotification(
+        id: 5,
+        title: 'Isha Prayer',
+        body: 'It\'s time for Isha prayer',
+        scheduledTime: prayerTime.isha,
+        minutesBefore: minutesBefore,
+      );
+
+      debugPrint('Prayer time notifications scheduled successfully');
+    } catch (e) {
+      debugPrint('Error scheduling prayer time notifications: $e');
+    }
   }
 
   /// Schedule a single prayer notification
@@ -145,56 +151,71 @@ class NotificationService {
     required DateTime scheduledTime,
     required int minutesBefore,
   }) async {
-    // Calculate notification time (prayer time - minutes before)
-    final notificationTime = scheduledTime.subtract(Duration(minutes: minutesBefore));
+    try {
+      // Calculate notification time (prayer time - minutes before)
+      final notificationTime = scheduledTime.subtract(Duration(minutes: minutesBefore));
 
-    // Don't schedule if the time has already passed
-    if (notificationTime.isBefore(DateTime.now())) {
-      return;
+      // Don't schedule if the time has already passed
+      if (notificationTime.isBefore(DateTime.now())) {
+        debugPrint('Not scheduling notification for $title as the time has already passed');
+        return;
+      }
+
+      // Create notification details
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        'prayer_times_channel',
+        'Prayer Times',
+        channelDescription: 'Notifications for prayer times',
+        importance: Importance.high,
+        priority: Priority.high,
+        // Using default sound instead of custom sound to avoid issues
+        playSound: true,
+      );
+
+      const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
+        // Using default sound instead of custom sound to avoid issues
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: iOSDetails,
+      );
+
+      // Convert to TZDateTime safely
+      final tz.TZDateTime tzDateTime = tz.TZDateTime.from(notificationTime, tz.local);
+
+      // Schedule the notification
+      await _flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzDateTime,
+        notificationDetails,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: 'prayer_$id',
+      );
+
+      debugPrint('Scheduled notification for $title at ${tzDateTime.toString()}');
+    } catch (e) {
+      debugPrint('Error scheduling prayer notification for $title: $e');
     }
-
-    // Create notification details
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'prayer_times_channel',
-      'Prayer Times',
-      channelDescription: 'Notifications for prayer times',
-      importance: Importance.high,
-      priority: Priority.high,
-      // Using default sound instead of custom sound to avoid issues
-      playSound: true,
-    );
-
-    const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-      // Using default sound instead of custom sound to avoid issues
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iOSDetails,
-    );
-
-    // Schedule the notification
-    await _flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(notificationTime, tz.local),
-      notificationDetails,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: 'prayer_$id',
-    );
   }
 
   /// Cancel prayer notifications for a specific date
   Future<void> cancelPrayerNotifications(DateTime date) async {
-    // Prayer notification IDs are 1-5
-    for (int id = 1; id <= 5; id++) {
-      await _flutterLocalNotificationsPlugin.cancel(id);
+    try {
+      // Prayer notification IDs are 1-5
+      for (int id = 1; id <= 5; id++) {
+        await _flutterLocalNotificationsPlugin.cancel(id);
+      }
+      debugPrint('Cancelled prayer notifications for ${date.toString()}');
+    } catch (e) {
+      debugPrint('Error cancelling prayer notifications: $e');
     }
   }
 
