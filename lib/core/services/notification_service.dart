@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -9,69 +11,82 @@ import '../../features/prayer_times/domain/entities/prayer_time.dart';
 /// Service for handling local notifications
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
-  
+
   factory NotificationService() {
     return _instance;
   }
-  
+
   NotificationService._internal();
-  
+
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  
+
   /// Initialize the notification service
   Future<void> init() async {
     tz.initializeTimeZones();
-    
+
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
       requestAlertPermission: true,
     );
-    
+
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    
+
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
     );
   }
-  
+
   /// Request notification permissions
   Future<bool> requestPermissions() async {
-    final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    
-    final bool? androidPermissionGranted =
-        await androidPlugin?.requestPermission();
-    
-    final DarwinFlutterLocalNotificationsPlugin? iOSPlugin =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            DarwinFlutterLocalNotificationsPlugin>();
-    
-    final bool? iOSPermissionGranted = await iOSPlugin?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    
-    return androidPermissionGranted ?? iOSPermissionGranted ?? false;
+    try {
+      // For Android
+      if (Platform.isAndroid) {
+        final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
+            _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>();
+
+        final bool? androidPermissionGranted =
+            await androidPlugin?.requestPermission();
+        return androidPermissionGranted ?? false;
+      }
+
+      // For iOS
+      if (Platform.isIOS) {
+        final DarwinFlutterLocalNotificationsPlugin? iOSPlugin =
+            _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+                DarwinFlutterLocalNotificationsPlugin>();
+
+        final bool? iOSPermissionGranted = await iOSPlugin?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        return iOSPermissionGranted ?? false;
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint('Error requesting notification permissions: $e');
+      return false;
+    }
   }
-  
+
   /// Handle notification response
   void _onDidReceiveNotificationResponse(NotificationResponse response) {
     // Handle notification tap
     debugPrint('Notification response: ${response.payload}');
   }
-  
+
   /// Schedule prayer time notifications
   Future<void> schedulePrayerTimeNotifications(
     PrayerTime prayerTime,
@@ -79,7 +94,7 @@ class NotificationService {
   ) async {
     // Cancel any existing prayer notifications for this day
     await cancelPrayerNotifications(prayerTime.date);
-    
+
     // Schedule notifications for each prayer time
     await _schedulePrayerNotification(
       id: 1,
@@ -88,7 +103,7 @@ class NotificationService {
       scheduledTime: prayerTime.fajr,
       minutesBefore: minutesBefore,
     );
-    
+
     await _schedulePrayerNotification(
       id: 2,
       title: 'Dhuhr Prayer',
@@ -96,7 +111,7 @@ class NotificationService {
       scheduledTime: prayerTime.dhuhr,
       minutesBefore: minutesBefore,
     );
-    
+
     await _schedulePrayerNotification(
       id: 3,
       title: 'Asr Prayer',
@@ -104,7 +119,7 @@ class NotificationService {
       scheduledTime: prayerTime.asr,
       minutesBefore: minutesBefore,
     );
-    
+
     await _schedulePrayerNotification(
       id: 4,
       title: 'Maghrib Prayer',
@@ -112,7 +127,7 @@ class NotificationService {
       scheduledTime: prayerTime.maghrib,
       minutesBefore: minutesBefore,
     );
-    
+
     await _schedulePrayerNotification(
       id: 5,
       title: 'Isha Prayer',
@@ -121,7 +136,7 @@ class NotificationService {
       minutesBefore: minutesBefore,
     );
   }
-  
+
   /// Schedule a single prayer notification
   Future<void> _schedulePrayerNotification({
     required int id,
@@ -132,12 +147,12 @@ class NotificationService {
   }) async {
     // Calculate notification time (prayer time - minutes before)
     final notificationTime = scheduledTime.subtract(Duration(minutes: minutesBefore));
-    
+
     // Don't schedule if the time has already passed
     if (notificationTime.isBefore(DateTime.now())) {
       return;
     }
-    
+
     // Create notification details
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'prayer_times_channel',
@@ -145,22 +160,22 @@ class NotificationService {
       channelDescription: 'Notifications for prayer times',
       importance: Importance.high,
       priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound('adhan'),
+      // Using default sound instead of custom sound to avoid issues
       playSound: true,
     );
-    
+
     const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-      sound: 'adhan.aiff',
+      // Using default sound instead of custom sound to avoid issues
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
     );
-    
+
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iOSDetails,
     );
-    
+
     // Schedule the notification
     await _flutterLocalNotificationsPlugin.zonedSchedule(
       id,
@@ -174,7 +189,7 @@ class NotificationService {
       payload: 'prayer_$id',
     );
   }
-  
+
   /// Cancel prayer notifications for a specific date
   Future<void> cancelPrayerNotifications(DateTime date) async {
     // Prayer notification IDs are 1-5
@@ -182,7 +197,7 @@ class NotificationService {
       await _flutterLocalNotificationsPlugin.cancel(id);
     }
   }
-  
+
   /// Schedule a habit reminder notification
   Future<void> scheduleHabitReminder({
     required String habitId,
@@ -190,77 +205,91 @@ class NotificationService {
     required TimeOfDay reminderTime,
     required List<String> daysOfWeek,
   }) async {
-    // Cancel any existing reminders for this habit
-    await cancelHabitReminder(habitId);
-    
-    // Create a unique ID for this habit (using hash code)
-    final int notificationId = habitId.hashCode;
-    
-    // Create notification details
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'habit_reminders_channel',
-      'Habit Reminders',
-      channelDescription: 'Reminders for habits',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-    
-    const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-    
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iOSDetails,
-    );
-    
-    // Schedule notifications for each selected day of the week
-    final now = DateTime.now();
-    
-    for (int i = 0; i < 7; i++) {
-      final day = now.add(Duration(days: i));
-      final dayOfWeek = _getDayOfWeek(day);
-      
-      if (daysOfWeek.contains(dayOfWeek)) {
-        final scheduledDate = DateTime(
-          day.year,
-          day.month,
-          day.day,
+    try {
+      // Cancel any existing reminders for this habit
+      await cancelHabitReminder(habitId);
+
+      // Create a unique ID for this habit (using hash code)
+      final int notificationId = habitId.hashCode.abs(); // Use absolute value to avoid negative IDs
+
+      // Create notification details
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        'habit_reminders_channel',
+        'Habit Reminders',
+        channelDescription: 'Reminders for habits',
+        importance: Importance.high,
+        priority: Priority.high,
+      );
+
+      const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: iOSDetails,
+      );
+
+      // Get the weekday numbers for the selected days
+      final List<int> selectedWeekdays = daysOfWeek.map((day) => _getWeekdayNumber(day)).toList();
+
+      // Schedule notifications for each selected day of the week
+      for (final weekday in selectedWeekdays) {
+        // Calculate the next occurrence of this weekday
+        final now = DateTime.now();
+        final daysUntilNextOccurrence = (weekday - now.weekday) % 7;
+        final nextOccurrence = now.add(Duration(days: daysUntilNextOccurrence));
+
+        // Create the scheduled date with the reminder time
+        final scheduledDate = tz.TZDateTime(
+          tz.local,
+          nextOccurrence.year,
+          nextOccurrence.month,
+          nextOccurrence.day,
           reminderTime.hour,
           reminderTime.minute,
         );
-        
-        // Only schedule if the time hasn't passed yet
-        if (scheduledDate.isAfter(now)) {
-          await _flutterLocalNotificationsPlugin.zonedSchedule(
-            notificationId + i, // Use different IDs for each day
-            'Habit Reminder: $habitName',
-            'Don\'t forget to complete your habit today!',
-            tz.TZDateTime.from(scheduledDate, tz.local),
-            notificationDetails,
-            androidAllowWhileIdle: true,
-            uiLocalNotificationDateInterpretation:
-                UILocalNotificationDateInterpretation.absoluteTime,
-            matchDateTimeComponents: DateTimeComponents.time,
-            payload: 'habit_$habitId',
-          );
-        }
+
+        // If the time has already passed today, schedule for next week
+        final effectiveDate = scheduledDate.isBefore(tz.TZDateTime.now(tz.local))
+            ? scheduledDate.add(const Duration(days: 7))
+            : scheduledDate;
+
+        // Schedule the notification
+        await _flutterLocalNotificationsPlugin.zonedSchedule(
+          notificationId + weekday, // Use different IDs for each day
+          'Habit Reminder: $habitName',
+          'Don\'t forget to complete your habit today!',
+          effectiveDate,
+          notificationDetails,
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+          payload: 'habit_$habitId',
+        );
       }
+    } catch (e) {
+      debugPrint('Error scheduling habit reminder: $e');
     }
   }
-  
+
   /// Cancel habit reminder notifications
   Future<void> cancelHabitReminder(String habitId) async {
-    final int baseId = habitId.hashCode;
-    
-    // Cancel notifications for all days of the week
-    for (int i = 0; i < 7; i++) {
-      await _flutterLocalNotificationsPlugin.cancel(baseId + i);
+    try {
+      final int baseId = habitId.hashCode.abs(); // Use absolute value to avoid negative IDs
+
+      // Cancel notifications for all days of the week
+      for (int i = 0; i < 7; i++) {
+        await _flutterLocalNotificationsPlugin.cancel(baseId + i);
+      }
+    } catch (e) {
+      debugPrint('Error canceling habit reminder: $e');
     }
   }
-  
+
   /// Get day of week string from DateTime
   String _getDayOfWeek(DateTime date) {
     switch (date.weekday) {
@@ -282,7 +311,29 @@ class NotificationService {
         return '';
     }
   }
-  
+
+  /// Get weekday number from day name
+  int _getWeekdayNumber(String day) {
+    switch (day) {
+      case 'Monday':
+        return 1;
+      case 'Tuesday':
+        return 2;
+      case 'Wednesday':
+        return 3;
+      case 'Thursday':
+        return 4;
+      case 'Friday':
+        return 5;
+      case 'Saturday':
+        return 6;
+      case 'Sunday':
+        return 7;
+      default:
+        return 1; // Default to Monday
+    }
+  }
+
   /// Show an immediate notification
   Future<void> showNotification({
     required String title,
@@ -296,18 +347,18 @@ class NotificationService {
       importance: Importance.high,
       priority: Priority.high,
     );
-    
+
     const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
     );
-    
+
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iOSDetails,
     );
-    
+
     await _flutterLocalNotificationsPlugin.show(
       0, // Use ID 0 for immediate notifications
       title,
