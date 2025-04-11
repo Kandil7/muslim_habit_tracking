@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../domain/entities/habit.dart';
@@ -26,7 +27,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
   bool _isLoading = true;
   final TextEditingController _valueController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
@@ -34,18 +35,18 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
     _valueController.text = _habit.goal.toString();
     _loadLogs();
   }
-  
+
   @override
   void dispose() {
     _valueController.dispose();
     _notesController.dispose();
     super.dispose();
   }
-  
+
   void _loadLogs() {
     final now = DateTime.now();
     final startDate = now.subtract(const Duration(days: 30));
-    
+
     context.read<HabitBloc>().add(
       GetHabitLogsByDateRangeEvent(
         habitId: _habit.id,
@@ -54,13 +55,20 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_habit.name),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              _showReminderDialog();
+            },
+            tooltip: 'Set Reminder',
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
@@ -112,7 +120,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
           if (_isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -132,10 +140,10 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ),
     );
   }
-  
+
   Widget _buildHabitHeader() {
     final Color habitColor = Color(int.parse('0xFF${_habit.color.substring(1)}'));
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -192,7 +200,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ),
     );
   }
-  
+
   Widget _buildInfoItem(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,12 +217,12 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ],
     );
   }
-  
+
   Widget _buildProgressSection() {
     final today = DateTimeUtils.today;
     final bool completedToday = _logs.any((log) => DateTimeUtils.isSameDay(log.date, today));
     final int currentStreak = _calculateCurrentStreak();
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -254,7 +262,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ),
     );
   }
-  
+
   Widget _buildProgressItem(String label, String value, IconData icon, Color color) {
     return Column(
       children: [
@@ -276,11 +284,11 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ],
     );
   }
-  
+
   Widget _buildTrackingSection() {
     final today = DateTimeUtils.today;
     final bool completedToday = _logs.any((log) => DateTimeUtils.isSameDay(log.date, today));
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -357,7 +365,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ),
     );
   }
-  
+
   Widget _buildHistorySection() {
     if (_logs.isEmpty) {
       return Card(
@@ -388,10 +396,10 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
         ),
       );
     }
-    
+
     // Sort logs by date (newest first)
     _logs.sort((a, b) => b.date.compareTo(a.date));
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -436,10 +444,10 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       ),
     );
   }
-  
+
   void _trackProgress() {
     final value = int.tryParse(_valueController.text) ?? _habit.goal;
-    
+
     final habitLog = HabitLog(
       id: const Uuid().v4(),
       habitId: _habit.id,
@@ -448,33 +456,33 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
       notes: _notesController.text,
       createdAt: DateTime.now(),
     );
-    
+
     context.read<HabitBloc>().add(CreateHabitLogEvent(habitLog: habitLog));
-    
+
     // Clear the notes field
     _notesController.clear();
   }
-  
+
   int _calculateCurrentStreak() {
     if (_logs.isEmpty) {
       return 0;
     }
-    
+
     // Sort logs by date (newest first)
     _logs.sort((a, b) => b.date.compareTo(a.date));
-    
+
     int streak = 0;
     DateTime currentDate = DateTime.now();
-    
+
     // Check if there's a log for today
     if (_logs.any((log) => DateTimeUtils.isSameDay(log.date, currentDate))) {
       streak = 1;
-      
+
       // Check consecutive days
       for (int i = 1; i < 365; i++) {
         final previousDate = currentDate.subtract(Duration(days: i));
         final hasLogForPreviousDate = _logs.any((log) => DateTimeUtils.isSameDay(log.date, previousDate));
-        
+
         if (hasLogForPreviousDate) {
           streak++;
         } else {
@@ -482,10 +490,10 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
         }
       }
     }
-    
+
     return streak;
   }
-  
+
   void _showDeleteConfirmation() {
     showDialog(
       context: context,
@@ -506,6 +514,92 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
             child: const Text('Delete', style: TextStyle(color: AppColors.error)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showReminderDialog() {
+    TimeOfDay selectedTime = TimeOfDay.now();
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Set Reminder'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Set a daily reminder for "${_habit.name}"',
+                  style: AppTextStyles.bodyMedium,
+                ),
+                const SizedBox(height: 20),
+                InkWell(
+                  onTap: () async {
+                    final TimeOfDay? picked = await showTimePicker(
+                      context: context,
+                      initialTime: selectedTime,
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        selectedTime = picked;
+                      });
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Reminder Time',
+                          style: AppTextStyles.bodyMedium,
+                        ),
+                        Text(
+                          '${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Schedule the reminder
+                  final notificationService = NotificationService();
+                  notificationService.scheduleHabitReminder(
+                    habitId: _habit.id,
+                    habitName: _habit.name,
+                    reminderTime: selectedTime,
+                    daysOfWeek: _habit.daysOfWeek,
+                  );
+
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Reminder set successfully!'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                },
+                child: const Text('Set Reminder'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

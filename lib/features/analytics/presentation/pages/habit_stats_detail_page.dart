@@ -559,7 +559,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
             x: index,
             barRods: [
               BarChartRodData(
-                toY: weekdayCompletion[daysOfWeek[index]] ?? 0,
+                toY: weekdayCompletion[daysOfWeek[index]]?.toDouble() ?? 0,
                 color: _getDayColor(daysOfWeek[index]),
                 width: 20,
                 borderRadius: const BorderRadius.only(
