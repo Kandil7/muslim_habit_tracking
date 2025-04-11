@@ -12,6 +12,7 @@ import '../../../dua_dhikr/domain/entities/dhikr.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
+import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import '../../../prayer_times/domain/entities/prayer_time.dart';
 import '../../../prayer_times/presentation/bloc/prayer_time_bloc.dart';
 import '../../../prayer_times/presentation/bloc/prayer_time_state.dart';
@@ -564,7 +565,7 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
                 color: dhikr.isFavorite ? AppColors.secondary : null,
               ),
               onPressed: () {
-                // TODO: Implement toggle dhikr favorite
+                context.read<DuaDhikrBloc>().add(ToggleDhikrFavoriteEvent(id: dhikr.id));
               },
             ),
             children: [
@@ -607,7 +608,12 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
                           icon: const Icon(Icons.add),
                           label: const Text('Count'),
                           onPressed: () {
-                            // TODO: Implement dhikr counter
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DhikrCounterPage(dhikr: dhikr),
+                              ),
+                            );
                           },
                         ),
                       ],
