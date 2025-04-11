@@ -3,6 +3,8 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/services/cache_manager.dart';
+import '../models/dua_model.dart';
+import '../models/dhikr_model.dart';
 import '../../domain/entities/dua.dart';
 import '../../domain/entities/dhikr.dart';
 import '../../domain/repositories/dua_dhikr_repository.dart';
@@ -24,7 +26,7 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
       // Try to get from memory cache first
       final cachedDuas = await cacheManager.getFromCache<List<dynamic>>('all_duas');
       if (cachedDuas != null) {
-        return Right(cachedDuas.map((dua) => Dua.fromJson(dua)).toList());
+        return Right(cachedDuas.map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>)).toList());
       }
 
       // Get from local data source
@@ -46,7 +48,7 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
       final cacheKey = 'duas_category_$category';
       final cachedDuas = await cacheManager.getFromCache<List<dynamic>>(cacheKey);
       if (cachedDuas != null) {
-        return Right(cachedDuas.map((dua) => Dua.fromJson(dua)).toList());
+        return Right(cachedDuas.map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>)).toList());
       }
 
       // Get from local data source
@@ -87,7 +89,7 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
       // Try to get from memory cache first
       final cachedDhikrs = await cacheManager.getFromCache<List<dynamic>>('all_dhikrs');
       if (cachedDhikrs != null) {
-        return Right(cachedDhikrs.map((dhikr) => Dhikr.fromJson(dhikr)).toList());
+        return Right(cachedDhikrs.map((dhikr) => DhikrModel.fromJson(dhikr as Map<String, dynamic>)).toList());
       }
 
       // Get from local data source
