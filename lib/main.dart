@@ -7,9 +7,12 @@ import 'core/di/injection_container.dart' as di;
 import 'core/theme/app_theme.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
+import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
+import 'features/habit_tracking/presentation/bloc/habit_event.dart';
 import 'features/habit_tracking/presentation/pages/home_page.dart';
 import 'features/prayer_times/presentation/bloc/prayer_time_bloc.dart';
+import 'features/prayer_times/presentation/bloc/prayer_time_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

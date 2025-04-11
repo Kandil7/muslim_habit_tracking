@@ -15,6 +15,7 @@ import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
 import '../../../prayer_times/domain/entities/prayer_time.dart';
 import '../../../prayer_times/presentation/bloc/prayer_time_bloc.dart';
 import '../../../prayer_times/presentation/bloc/prayer_time_state.dart';
+import '../../../prayer_times/presentation/pages/prayer_settings_page.dart';
 import '../../domain/entities/habit.dart';
 import '../bloc/habit_bloc.dart';
 import '../bloc/habit_event.dart';
@@ -223,7 +224,12 @@ class PrayerTimesPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // TODO: Navigate to prayer settings page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrayerSettingsPage(),
+                ),
+              );
             },
           ),
         ],
