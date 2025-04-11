@@ -7,27 +7,27 @@ class AppColors {
   static const Color primary = Color(0xFF1F7A5D);
   static const Color primaryLight = Color(0xFF4CAF8D);
   static const Color primaryDark = Color(0xFF005B3F);
-  
+
   // Secondary colors
   static const Color secondary = Color(0xFFD4AF37);
   static const Color secondaryLight = Color(0xFFFFDF64);
   static const Color secondaryDark = Color(0xFFA08000);
-  
+
   // Neutral colors
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color error = Color(0xFFB00020);
-  
+
   // Text colors
   static const Color textPrimary = Color(0xFF212121);
   static const Color textSecondary = Color(0xFF757575);
   static const Color textHint = Color(0xFF9E9E9E);
-  
+
   // Status colors
   static const Color success = Color(0xFF4CAF50);
   static const Color warning = Color(0xFFFFC107);
   static const Color info = Color(0xFF2196F3);
-  
+
   // Prayer time colors
   static const Color fajrColor = Color(0xFF81D4FA);
   static const Color dhuhrColor = Color(0xFFFFD54F);
@@ -38,40 +38,40 @@ class AppColors {
 
 /// Text styles for the app
 class AppTextStyles {
-  static TextStyle get headingLarge => GoogleFonts.amiri(
+  static TextStyle get headingLarge => GoogleFonts.lato(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get headingMedium => GoogleFonts.amiri(
+
+  static TextStyle get headingMedium => GoogleFonts.lato(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get headingSmall => GoogleFonts.amiri(
+
+  static TextStyle get headingSmall => GoogleFonts.lato(
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get bodyLarge => GoogleFonts.amiri(
+
+  static TextStyle get bodyLarge => GoogleFonts.lato(
     fontSize: 18,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get bodyMedium => GoogleFonts.amiri(
+
+  static TextStyle get bodyMedium => GoogleFonts.lato(
     fontSize: 16,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get bodySmall => GoogleFonts.amiri(
+
+  static TextStyle get bodySmall => GoogleFonts.lato(
     fontSize: 14,
     color: AppColors.textSecondary,
   );
-  
-  static TextStyle get arabicText => GoogleFonts.amiri(
+
+  static TextStyle get arabicText => GoogleFonts.scheherazadeNew(
     fontSize: 22,
     color: AppColors.textPrimary,
     height: 1.5,
@@ -172,7 +172,7 @@ class AppTheme {
       ),
     );
   }
-  
+
   // Dark theme
   static ThemeData get darkTheme {
     return ThemeData(

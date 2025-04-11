@@ -62,6 +62,7 @@ dependencies:
   flutter_local_notifications: ^16.3.2
   shared_preferences: ^2.2.2
   logger: ^2.0.2+1
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:
@@ -102,17 +103,17 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Amiri
-      fonts:
-        - asset: assets/fonts/Amiri-Regular.ttf
-        - asset: assets/fonts/Amiri-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Amiri-Italic.ttf
-          style: italic
-        - asset: assets/fonts/Amiri-BoldItalic.ttf
-          weight: 700
-          style: italic
+  # fonts:
+  #   - family: Amiri
+  #     fonts:
+  #       - asset: assets/fonts/Amiri-Regular.ttf
+  #       - asset: assets/fonts/Amiri-Bold.ttf
+  #         weight: 700
+  #       - asset: assets/fonts/Amiri-Italic.ttf
+  #         style: italic
+  #       - asset: assets/fonts/Amiri-BoldItalic.ttf
+  #         weight: 700
+  #         style: italic
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
