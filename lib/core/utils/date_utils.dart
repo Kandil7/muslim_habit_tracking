@@ -58,34 +58,8 @@ class DateTimeUtils {
     return DateFormat.EEEE().format(date);
   }
 
-  /// Get the current date with time set to midnight
-  static DateTime get today {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
 
-  /// Get the start of the current week (Sunday)
-  static DateTime get startOfWeek {
-    final now = today;
-    return now.subtract(Duration(days: now.weekday % 7));
-  }
 
-  /// Get the end of the current week (Saturday)
-  static DateTime get endOfWeek {
-    return startOfWeek.add(const Duration(days: 6));
-  }
-
-  /// Get the start of the current month
-  static DateTime get startOfMonth {
-    final now = today;
-    return DateTime(now.year, now.month, 1);
-  }
-
-  /// Get the end of the current month
-  static DateTime get endOfMonth {
-    final now = today;
-    return DateTime(now.year, now.month + 1, 0);
-  }
 
   /// Check if two dates are the same day
   static bool isSameDay(DateTime date1, DateTime date2) {

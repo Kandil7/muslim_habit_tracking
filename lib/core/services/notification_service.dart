@@ -93,7 +93,7 @@ class NotificationService {
             'general_channel',
             'General Notifications',
             description: 'General app notifications',
-            importance: Importance.default_,
+            importance: Importance.defaultImportance
           ),
         );
 
