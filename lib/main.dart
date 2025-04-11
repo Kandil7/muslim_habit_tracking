@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/onboarding/presentation/pages/onboarding_page.dart';
+import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
@@ -35,9 +38,14 @@ void main() async {
   runApp(const SunnahTrackApp());
 }
 
-class SunnahTrackApp extends StatelessWidget {
+class SunnahTrackApp extends StatefulWidget {
   const SunnahTrackApp({super.key});
 
+  @override
+  State<SunnahTrackApp> createState() => _SunnahTrackAppState();
+}
+
+class _SunnahTrackAppState extends State<SunnahTrackApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -61,7 +69,7 @@ class SunnahTrackApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: const HomePage(),
+        home: const SplashPage(),
       ),
     );
   }
