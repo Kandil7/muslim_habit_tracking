@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../errors/exceptions.dart';
+
 import '../constants/app_constants.dart';
 import '../network/network_info.dart';
 import '../services/cache_manager.dart';
@@ -22,6 +24,7 @@ import '../../features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import '../../features/prayer_times/data/datasources/prayer_time_local_data_source.dart';
 import '../../features/prayer_times/data/datasources/prayer_time_remote_data_source.dart';
 import '../../features/prayer_times/data/repositories/prayer_time_repository_impl.dart';
+import '../../features/prayer_times/data/services/location_service.dart';
 import '../../features/prayer_times/domain/repositories/prayer_time_repository.dart';
 import '../../features/prayer_times/domain/usecases/get_prayer_time_by_date.dart';
 import '../../features/prayer_times/domain/usecases/get_prayer_times_by_date_range.dart';
@@ -146,10 +149,12 @@ Future<void> _initPrayerTimesFeature() async {
 
   sl.registerLazySingleton<PrayerTimeRemoteDataSource>(
     () => PrayerTimeRemoteDataSourceImpl(
-      client: sl(),
       uuid: sl(),
     ),
   );
+
+  // Services
+  sl.registerLazySingleton(() => LocationService(sharedPreferences: sl()));
 
   // Repositories
   sl.registerLazySingleton<PrayerTimeRepository>(

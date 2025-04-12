@@ -1,10 +1,8 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/prayer_time_model.dart';
+import '../services/prayer_calculation_service.dart';
 
 /// Interface for remote data source for prayer times
 abstract class PrayerTimeRemoteDataSource {
@@ -15,7 +13,7 @@ abstract class PrayerTimeRemoteDataSource {
     double longitude,
     String calculationMethod,
   );
-  
+
   /// Get prayer times for a date range
   Future<List<PrayerTimeModel>> getPrayerTimesByDateRange(
     DateTime startDate,
@@ -24,21 +22,22 @@ abstract class PrayerTimeRemoteDataSource {
     double longitude,
     String calculationMethod,
   );
-  
+
   /// Get available calculation methods
   Future<Map<String, String>> getAvailableCalculationMethods();
 }
 
-/// Implementation of PrayerTimeRemoteDataSource using Aladhan API
+/// Implementation of PrayerTimeRemoteDataSource using adhan_dart
 class PrayerTimeRemoteDataSourceImpl implements PrayerTimeRemoteDataSource {
-  final http.Client client;
   final Uuid uuid;
-  
+  late final PrayerCalculationService _prayerCalculationService;
+
   PrayerTimeRemoteDataSourceImpl({
-    required this.client,
     required this.uuid,
-  });
-  
+  }) {
+    _prayerCalculationService = PrayerCalculationService(uuid: uuid);
+  }
+
   @override
   Future<PrayerTimeModel> getPrayerTimeByDate(
     DateTime date,
@@ -46,33 +45,18 @@ class PrayerTimeRemoteDataSourceImpl implements PrayerTimeRemoteDataSource {
     double longitude,
     String calculationMethod,
   ) async {
-    final url = Uri.parse(
-      '${AppConstants.prayerTimesBaseUrl}/timings/${date.day}-${date.month}-${date.year}?latitude=$latitude&longitude=$longitude&method=$calculationMethod',
-    );
-    
     try {
-      final response = await client.get(url);
-      
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        
-        if (jsonData['code'] == 200 && jsonData['status'] == 'OK') {
-          return PrayerTimeModel.fromAladhanApi(
-            jsonData['data'],
-            uuid.v4(),
-            calculationMethod,
-          );
-        } else {
-          throw ServerException(message: jsonData['data'] ?? 'Failed to get prayer times');
-        }
-      } else {
-        throw ServerException(message: 'Failed to get prayer times');
-      }
+      return _prayerCalculationService.calculatePrayerTimes(
+        date: date,
+        latitude: latitude,
+        longitude: longitude,
+        calculationMethod: calculationMethod,
+      );
     } catch (e) {
-      throw ServerException(message: e.toString());
+      throw ServerException(message: 'Failed to calculate prayer times: ${e.toString()}');
     }
   }
-  
+
   @override
   Future<List<PrayerTimeModel>> getPrayerTimesByDateRange(
     DateTime startDate,
@@ -81,71 +65,25 @@ class PrayerTimeRemoteDataSourceImpl implements PrayerTimeRemoteDataSource {
     double longitude,
     String calculationMethod,
   ) async {
-    final url = Uri.parse(
-      '${AppConstants.prayerTimesBaseUrl}/calendar/${startDate.year}/${startDate.month}?latitude=$latitude&longitude=$longitude&method=$calculationMethod',
-    );
-    
     try {
-      final response = await client.get(url);
-      
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        
-        if (jsonData['code'] == 200 && jsonData['status'] == 'OK') {
-          final List<dynamic> days = jsonData['data'];
-          
-          // Filter days within the date range
-          final filteredDays = days.where((day) {
-            final date = DateTime.parse(day['date']['gregorian']['date']);
-            return date.isAfter(startDate.subtract(const Duration(days: 1))) && 
-                   date.isBefore(endDate.add(const Duration(days: 1)));
-          }).toList();
-          
-          // Convert to PrayerTimeModel objects
-          return filteredDays.map((day) => PrayerTimeModel.fromAladhanApi(
-            day,
-            uuid.v4(),
-            calculationMethod,
-          )).toList();
-        } else {
-          throw ServerException(message: jsonData['data'] ?? 'Failed to get prayer times');
-        }
-      } else {
-        throw ServerException(message: 'Failed to get prayer times');
-      }
+      return _prayerCalculationService.calculatePrayerTimesRange(
+        startDate: startDate,
+        endDate: endDate,
+        latitude: latitude,
+        longitude: longitude,
+        calculationMethod: calculationMethod,
+      );
     } catch (e) {
-      throw ServerException(message: e.toString());
+      throw ServerException(message: 'Failed to calculate prayer times: ${e.toString()}');
     }
   }
-  
+
   @override
   Future<Map<String, String>> getAvailableCalculationMethods() async {
-    final url = Uri.parse('${AppConstants.prayerTimesBaseUrl}/methods');
-    
     try {
-      final response = await client.get(url);
-      
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        
-        if (jsonData['code'] == 200 && jsonData['status'] == 'OK') {
-          final Map<String, dynamic> methods = jsonData['data'];
-          
-          // Convert to Map<String, String>
-          final Map<String, String> result = {};
-          methods.forEach((key, value) {
-            result[key] = value['name'];
-          });
-          
-          return result;
-        } else {
-          throw ServerException(message: jsonData['data'] ?? 'Failed to get calculation methods');
-        }
-      } else {
-        throw ServerException(message: 'Failed to get calculation methods');
-      }
+      return _prayerCalculationService.getAvailableCalculationMethods();
     } catch (e) {
-      throw ServerException(message: e.toString());
+      throw ServerException(message: 'Failed to get calculation methods: ${e.toString()}');
     }
   }
 }

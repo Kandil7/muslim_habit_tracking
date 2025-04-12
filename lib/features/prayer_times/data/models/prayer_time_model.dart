@@ -15,7 +15,7 @@ class PrayerTimeModel extends PrayerTime {
     required super.isha,
     required super.calculationMethod,
   });
-  
+
   /// Create a PrayerTimeModel from a JSON map
   factory PrayerTimeModel.fromJson(Map<String, dynamic> json) {
     return PrayerTimeModel(
@@ -30,7 +30,7 @@ class PrayerTimeModel extends PrayerTime {
       calculationMethod: json['calculationMethod'],
     );
   }
-  
+
   /// Convert this PrayerTimeModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -45,7 +45,7 @@ class PrayerTimeModel extends PrayerTime {
       'calculationMethod': calculationMethod,
     };
   }
-  
+
   /// Create a PrayerTimeModel from a PrayerTime entity
   factory PrayerTimeModel.fromEntity(PrayerTime prayerTime) {
     return PrayerTimeModel(
@@ -60,7 +60,7 @@ class PrayerTimeModel extends PrayerTime {
       calculationMethod: prayerTime.calculationMethod,
     );
   }
-  
+
   /// Create a copy of this PrayerTimeModel with the given fields replaced with the new values
   @override
   PrayerTimeModel copyWith({
@@ -84,41 +84,6 @@ class PrayerTimeModel extends PrayerTime {
       maghrib: maghrib ?? this.maghrib,
       isha: isha ?? this.isha,
       calculationMethod: calculationMethod ?? this.calculationMethod,
-    );
-  }
-  
-  /// Create a PrayerTimeModel from the Aladhan API response
-  factory PrayerTimeModel.fromAladhanApi(Map<String, dynamic> json, String id, String calculationMethod) {
-    final date = DateTime.parse(json['date']['gregorian']['date']);
-    final timings = json['timings'];
-    
-    // Convert prayer time strings to DateTime objects
-    DateTime convertToDateTime(String timeString, DateTime date) {
-      // Remove the timezone part (e.g., "(EET)")
-      final time = timeString.split(' ')[0];
-      final parts = time.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      
-      return DateTime(
-        date.year,
-        date.month,
-        date.day,
-        hour,
-        minute,
-      );
-    }
-    
-    return PrayerTimeModel(
-      id: id,
-      date: date,
-      fajr: convertToDateTime(timings['Fajr'], date),
-      sunrise: convertToDateTime(timings['Sunrise'], date),
-      dhuhr: convertToDateTime(timings['Dhuhr'], date),
-      asr: convertToDateTime(timings['Asr'], date),
-      maghrib: convertToDateTime(timings['Maghrib'], date),
-      isha: convertToDateTime(timings['Isha'], date),
-      calculationMethod: calculationMethod,
     );
   }
 }
