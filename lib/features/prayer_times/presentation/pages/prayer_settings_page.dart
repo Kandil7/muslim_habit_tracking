@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/errors/exceptions.dart';
+import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
+import '../../data/services/location_service.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../bloc/prayer_time_bloc.dart';
 import '../bloc/prayer_time_event.dart';
@@ -35,58 +38,136 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
   }
 
   Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final locationService = LocationService(sharedPreferences: prefs);
 
-    setState(() {
-      _latitude = prefs.getDouble('latitude') ?? 0.0;
-      _longitude = prefs.getDouble('longitude') ?? 0.0;
-      _notificationTime = prefs.getInt('notificationTime') ?? AppConstants.defaultNotificationTime;
-      _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
-    });
+      // Try to get saved location
+      try {
+        final location = await locationService.getSavedLocation();
+        setState(() {
+          _latitude = location['latitude']!;
+          _longitude = location['longitude']!;
+        });
+      } catch (e) {
+        // No saved location, will use default values
+      }
 
-    // Load calculation methods
-    _calculationMethods = {
-      'MWL': 'Muslim World League',
-      'ISNA': 'Islamic Society of North America',
-      'Egypt': 'Egyptian General Authority of Survey',
-      'Makkah': 'Umm Al-Qura University, Makkah',
-      'Karachi': 'University of Islamic Sciences, Karachi',
-      'Tehran': 'Institute of Geophysics, University of Tehran',
-      'Jafari': 'Shia Ithna-Ashari, Leva Institute, Qum',
-    };
+      setState(() {
+        _notificationTime = prefs.getInt('notificationTime') ?? AppConstants.defaultNotificationTime;
+        _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
+        _selectedCalculationMethod = prefs.getString('calculationMethod') ?? AppConstants.defaultCalculationMethod;
+      });
 
-    setState(() {
-      _isLoading = false;
-    });
+      // Get calculation methods from the service
+      final prayerCalculationService = context.read<PrayerTimeBloc>().getPrayerTimeByDate.repository.remoteDataSource;
+      final methods = await prayerCalculationService.getAvailableCalculationMethods();
+      setState(() {
+        _calculationMethods = methods;
+        _isLoading = false;
+      });
+    } catch (e) {
+      // Fallback to default calculation methods if service fails
+      _calculationMethods = {
+        'MWL': 'Muslim World League',
+        'ISNA': 'Islamic Society of North America',
+        'Egypt': 'Egyptian General Authority of Survey',
+        'Makkah': 'Umm Al-Qura University, Makkah',
+        'Karachi': 'University of Islamic Sciences, Karachi',
+        'Tehran': 'Institute of Geophysics, University of Tehran',
+        'Jafari': 'Shia Ithna-Ashari, Leva Institute, Qum',
+      };
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _saveSettings() async {
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final locationService = LocationService(sharedPreferences: prefs);
 
-    await prefs.setDouble('latitude', _latitude);
-    await prefs.setDouble('longitude', _longitude);
-    await prefs.setInt('notificationTime', _notificationTime);
-    await prefs.setBool('notificationsEnabled', _notificationsEnabled);
+      // Save location
+      await locationService.saveLocation(_latitude, _longitude);
 
-    // Update calculation method
-    context.read<PrayerTimeBloc>().add(
-      UpdateCalculationMethodEvent(method: _selectedCalculationMethod),
-    );
+      // Save other settings
+      await prefs.setInt('notificationTime', _notificationTime);
+      await prefs.setBool('notificationsEnabled', _notificationsEnabled);
 
-    // Update prayer notifications if enabled
-    if (_notificationsEnabled) {
-      // Get current prayer times
+      // Update calculation method
       context.read<PrayerTimeBloc>().add(
-        GetPrayerTimeByDateEvent(date: DateTime.now()),
+        UpdateCalculationMethodEvent(method: _selectedCalculationMethod),
+      );
+
+      // Update prayer notifications if enabled
+      if (_notificationsEnabled) {
+        // Get current prayer times
+        context.read<PrayerTimeBloc>().add(
+          GetPrayerTimeByDateEvent(date: DateTime.now()),
+        );
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Settings saved successfully!'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saving settings: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings saved successfully!'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+  Future<void> _getCurrentLocation() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final prefs = await SharedPreferences.getInstance();
+      final locationService = LocationService(sharedPreferences: prefs);
+
+      final location = await locationService.getCurrentLocation();
+
+      setState(() {
+        _latitude = location['latitude']!;
+        _longitude = location['longitude']!;
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location updated successfully!'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (e is LocationException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error getting location: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -122,7 +203,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
           }
         },
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const LoadingIndicator(text: 'Loading settings...')
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -131,45 +212,45 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                     // Calculation method
                     _buildSectionHeader('Calculation Method'),
                     Card(
+
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Select the calculation method for prayer times',
-                              style: AppTextStyles.bodyMedium,
-                            ),
-                            const SizedBox(height: 16),
-                            DropdownButtonFormField<String>(
-                              value: _selectedCalculationMethod,
-                              decoration: const InputDecoration(
-                                labelText: 'Calculation Method',
-                                border: OutlineInputBorder(),
+                        padding: EdgeInsets.all(10),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Select the calculation method for prayer times',
+                                style: AppTextStyles.bodyMedium,
                               ),
-                              items: _calculationMethods.entries.map((entry) {
-                                return DropdownMenuItem<String>(
-                                  value: entry.key,
-                                  child: Text(entry.value),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _selectedCalculationMethod = value;
-                                  });
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Different regions use different calculation methods',
-                              style: AppTextStyles.bodySmall,
-                            ),
-                          ],
+                              DropdownButtonFormField<String>(
+                                value: _selectedCalculationMethod,
+                                decoration: InputDecoration(
+                                  labelText: 'Calculation Method',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: _calculationMethods.entries.map((entry) {
+                                  return DropdownMenuItem<String>(
+                                    value: entry.key,
+                                    child: Text(entry.value),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _selectedCalculationMethod = value;
+                                    });
+                                  }
+                                },
+                              ),
+                              Text(
+                                'Different regions use different calculation methods',
+                                style: AppTextStyles.bodySmall,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     const SizedBox(height: 24),
 
                     // Location
@@ -194,6 +275,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                     decoration: const InputDecoration(
                                       labelText: 'Latitude',
                                       border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.location_on),
                                     ),
                                     onChanged: (value) {
                                       final latitude = double.tryParse(value);
@@ -213,6 +295,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                     decoration: const InputDecoration(
                                       labelText: 'Longitude',
                                       border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.location_on),
                                     ),
                                     onChanged: (value) {
                                       final longitude = double.tryParse(value);
@@ -229,18 +312,18 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                             const SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // TODO: Implement auto-detect location
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Auto-detect location not implemented yet'),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(AppIcons.calendar),
-                                label: const Text('Auto-detect Location'),
+                              child: CustomButton(
+                                text: 'Auto-detect Location',
+                                icon: Icons.my_location,
+                                onPressed: _getCurrentLocation,
+                                buttonType: ButtonType.primary,
                               ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'This will use your device GPS to get your current location',
+                              style: AppTextStyles.bodySmall,
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
@@ -311,10 +394,11 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                     // Save button
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
+                      child: CustomButton(
+                        text: 'Save Settings',
                         onPressed: _saveSettings,
-                        child: const Text('Save Settings'),
+                        buttonType: ButtonType.primary,
+                        icon: Icons.save,
                       ),
                     ),
                   ],
@@ -325,12 +409,9 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 8),
-      child: Text(
-        title,
-        style: AppTextStyles.headingSmall,
-      ),
+    return SectionHeader(
+      title: title,
+      padding: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
     );
   }
 }
