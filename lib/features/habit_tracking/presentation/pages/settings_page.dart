@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ramadan_habit_tracking/core/presentation/widgets/widgets.dart';
 import 'package:ramadan_habit_tracking/core/services/cache_manager.dart';
 import 'package:ramadan_habit_tracking/core/theme/app_icons.dart';
 import 'package:ramadan_habit_tracking/core/theme/app_theme.dart';
-import 'package:ramadan_habit_tracking/core/theme/theme_provider.dart';
+import 'package:ramadan_habit_tracking/core/theme/bloc/theme_bloc_exports.dart';
 import 'package:ramadan_habit_tracking/features/prayer_times/presentation/pages/prayer_settings_page.dart';
 
 /// Settings page
@@ -67,14 +67,19 @@ class SettingsPage extends StatelessWidget {
 
           // Appearance section
           const SectionHeader(title: 'Appearance'),
-          SettingsCard(
-            title: 'Theme',
-            subtitle: Provider.of<ThemeProvider>(context).isDarkMode ? 'Dark mode' : 'Light mode',
-            leading: Icon(
-              Provider.of<ThemeProvider>(context).isDarkMode ? AppIcons.themeDark : AppIcons.themeLight,
-            ),
-            onTap: () {
-              _showThemeSelectionDialog(context);
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              final isDarkMode = state.themeMode == ThemeMode.dark;
+              return SettingsCard(
+                title: 'Theme',
+                subtitle: _getThemeModeText(state.themeMode),
+                leading: Icon(
+                  _getThemeModeIcon(state.themeMode),
+                ),
+                onTap: () {
+                  _showThemeSelectionDialog(context);
+                },
+              );
             },
           ),
           SettingsCard(
@@ -140,7 +145,8 @@ class SettingsPage extends StatelessWidget {
   }
 
   void _showThemeSelectionDialog(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final themeBloc = context.read<ThemeBloc>();
+    final currentThemeMode = (themeBloc.state as ThemeLoaded).themeMode;
 
     showDialog(
       context: context,
@@ -156,10 +162,10 @@ class SettingsPage extends StatelessWidget {
               ],
             ),
             value: ThemeMode.light,
-            groupValue: themeProvider.themeMode,
+            groupValue: currentThemeMode,
             onChanged: (value) {
               if (value != null) {
-                themeProvider.setThemeMode(value);
+                themeBloc.add(SetThemeModeEvent(value));
                 Navigator.pop(context);
               }
             },
@@ -173,10 +179,10 @@ class SettingsPage extends StatelessWidget {
               ],
             ),
             value: ThemeMode.dark,
-            groupValue: themeProvider.themeMode,
+            groupValue: currentThemeMode,
             onChanged: (value) {
               if (value != null) {
-                themeProvider.setThemeMode(value);
+                themeBloc.add(SetThemeModeEvent(value));
                 Navigator.pop(context);
               }
             },
@@ -190,10 +196,10 @@ class SettingsPage extends StatelessWidget {
               ],
             ),
             value: ThemeMode.system,
-            groupValue: themeProvider.themeMode,
+            groupValue: currentThemeMode,
             onChanged: (value) {
               if (value != null) {
-                themeProvider.setThemeMode(value);
+                themeBloc.add(SetThemeModeEvent(value));
                 Navigator.pop(context);
               }
             },
@@ -201,6 +207,30 @@ class SettingsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Get the text description for a theme mode
+  String _getThemeModeText(ThemeMode themeMode) {
+    switch (themeMode) {
+      case ThemeMode.light:
+        return 'Light mode';
+      case ThemeMode.dark:
+        return 'Dark mode';
+      case ThemeMode.system:
+        return 'System default';
+    }
+  }
+
+  /// Get the icon for a theme mode
+  IconData _getThemeModeIcon(ThemeMode themeMode) {
+    switch (themeMode) {
+      case ThemeMode.light:
+        return AppIcons.themeLight;
+      case ThemeMode.dark:
+        return AppIcons.themeDark;
+      case ThemeMode.system:
+        return AppIcons.themeSystem;
+    }
   }
 
   void _clearCache(BuildContext context) async {
@@ -224,7 +254,7 @@ class SettingsPage extends StatelessWidget {
             onPressed: () async {
               Navigator.pop(context);
               await cacheManager.clearCache();
-              
+
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
