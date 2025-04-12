@@ -3,9 +3,9 @@ import 'package:equatable/equatable.dart';
 /// Base class for all failures in the application
 abstract class Failure extends Equatable {
   final String message;
-  
+
   const Failure({required this.message});
-  
+
   @override
   List<Object> get props => [message];
 }
@@ -33,6 +33,11 @@ class AuthFailure extends Failure {
 /// Permission failures (e.g., notification permissions)
 class PermissionFailure extends Failure {
   const PermissionFailure({required String message}) : super(message: message);
+}
+
+/// Location failures (e.g., location services disabled)
+class LocationFailure extends Failure {
+  const LocationFailure({required String message}) : super(message: message);
 }
 
 /// General application failures

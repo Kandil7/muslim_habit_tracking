@@ -1,9 +1,9 @@
 /// Base class for all exceptions in the application
 class AppException implements Exception {
   final String message;
-  
+
   AppException({required this.message});
-  
+
   @override
   String toString() => message;
 }
@@ -31,4 +31,9 @@ class AuthException extends AppException {
 /// Permission exceptions (e.g., notification permissions)
 class PermissionException extends AppException {
   PermissionException({required String message}) : super(message: message);
+}
+
+/// Location exceptions (e.g., location services disabled)
+class LocationException extends AppException {
+  LocationException({required String message}) : super(message: message);
 }
