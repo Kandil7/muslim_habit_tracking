@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../errors/exceptions.dart';
+import '../../features/location/di/location_injection_container.dart';
 
 import '../constants/app_constants.dart';
 import '../network/network_info.dart';
@@ -243,4 +244,7 @@ Future<void> _initAnalyticsFeature() async {
       getHabitStatsByDateRange: sl(),
     ),
   );
+
+  // Register location dependencies
+  registerLocationDependencies(sl);
 }
