@@ -70,6 +70,10 @@ dependencies:
   crypto: ^3.0.3
 #  awesome_notifications: ^0.10.0
 
+  # Prayer Times
+  adhan_dart: ^1.1.2
+  geolocator: ^10.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
