@@ -32,26 +32,31 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.habitStats.habitName),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Overview'),
-            Tab(text: 'Weekly'),
-            Tab(text: 'Trends'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildOverviewTab(),
-          _buildWeeklyTab(),
-          _buildTrendsTab(),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTablet = constraints.maxWidth > 600;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.habitStats.habitName),
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Overview'),
+                Tab(text: 'Weekly'),
+                Tab(text: 'Trends'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildOverviewTab(),
+              _buildWeeklyTab(),
+              _buildTrendsTab(),
+            ],
+          ),
+        );
+      },
     );
   }
   

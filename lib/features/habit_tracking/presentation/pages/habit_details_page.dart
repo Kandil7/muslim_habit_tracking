@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
@@ -63,14 +64,14 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
         title: Text(_habit.name),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: const Icon(AppIcons.notification),
             onPressed: () {
               _showReminderDialog();
             },
             tooltip: 'Set Reminder',
           ),
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(AppIcons.edit),
             onPressed: () {
               // TODO: Navigate to edit habit page
             },
