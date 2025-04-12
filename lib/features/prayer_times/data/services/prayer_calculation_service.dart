@@ -1,4 +1,4 @@
-import 'package:adhan_dart/adhan_dart.dart';
+import 'package:adhan/adhan.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/prayer_time.dart';
