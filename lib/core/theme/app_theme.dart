@@ -104,7 +104,7 @@ class AppTextStyles {
   // Arabic text style for dark mode
   static TextStyle get arabicTextDark => GoogleFonts.scheherazadeNew(
     fontSize: 22,
-    color: AppColors.darkTextPrimary,
+    // color: AppColors.darkTextPrimary,
     height: 1.5,
     letterSpacing: 0.5,
     fontWeight: FontWeight.w500,

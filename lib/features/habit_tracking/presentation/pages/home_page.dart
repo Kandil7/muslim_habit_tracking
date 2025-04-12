@@ -19,6 +19,7 @@ import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
 import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import '../../../prayer_times/domain/entities/prayer_time.dart';
 import '../../../prayer_times/presentation/bloc/prayer_time_bloc.dart';
+import '../../../prayer_times/presentation/bloc/prayer_time_event.dart';
 import '../../../prayer_times/presentation/bloc/prayer_time_state.dart';
 import '../../../prayer_times/presentation/pages/prayer_settings_page.dart';
 import '../../domain/entities/habit.dart';
@@ -137,13 +138,32 @@ class HabitDashboardPage extends StatelessWidget {
       body: BlocBuilder<HabitBloc, HabitState>(
         builder: (context, state) {
           if (state is HabitLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator(text: 'Loading habits...');
           } else if (state is HabitsLoaded) {
             return _buildHabitsList(context, state.habits);
           } else if (state is HabitError) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: ${state.message}'),
+                  const SizedBox(height: 16),
+                  CustomButton(
+                    text: 'Try Again',
+                    onPressed: () => context.read<HabitBloc>().add(GetHabitsEvent()),
+                    buttonType: ButtonType.primary,
+                  ),
+                ],
+              ),
+            );
           } else {
-            return const Center(child: Text('No habits found. Add one!'));
+            return const EmptyState(
+              title: 'No Habits Found',
+              message: 'Start tracking your habits by adding one!',
+              icon: Icons.track_changes,
+              actionText: 'Add Habit',
+              onAction: null, // Will use FAB instead
+            );
           }
         },
       ),
@@ -381,28 +401,10 @@ class HabitDashboardPage extends StatelessWidget {
 
   Widget _buildHabitsList(BuildContext context, List<Habit> habits) {
     if (habits.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.track_changes,
-              size: 80,
-              color: AppColors.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No habits yet',
-              style: AppTextStyles.headingMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tap the + button to add your first habit',
-              style: AppTextStyles.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      return const EmptyState(
+        title: 'No habits yet',
+        message: 'Tap the + button to add your first habit',
+        icon: Icons.track_changes,
       );
     }
 
@@ -529,13 +531,30 @@ class PrayerTimesPage extends StatelessWidget {
       body: BlocBuilder<PrayerTimeBloc, PrayerTimeState>(
         builder: (context, state) {
           if (state is PrayerTimeLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator(text: 'Loading prayer times...');
           } else if (state is PrayerTimeLoaded) {
             return _buildPrayerTimesView(context, state.prayerTime);
           } else if (state is PrayerTimeError) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: ${state.message}'),
+                  const SizedBox(height: 16),
+                  CustomButton(
+                    text: 'Try Again',
+                    onPressed: () => context.read<PrayerTimeBloc>().add(GetPrayerTimeByDateEvent(date: DateTime.now())),
+                    buttonType: ButtonType.primary,
+                  ),
+                ],
+              ),
+            );
           } else {
-            return const Center(child: Text('No prayer times available'));
+            return const EmptyState(
+              title: 'No Prayer Times Available',
+              message: 'Please check your settings and try again',
+              icon: Icons.access_time,
+            );
           }
         },
       ),
@@ -698,13 +717,13 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
     return BlocBuilder<DuaDhikrBloc, DuaDhikrState>(
       builder: (context, state) {
         if (state is DuaDhikrLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator(text: 'Loading duas...');
         } else if (state is DuasLoaded) {
           return _buildDuasList(state.duas);
         } else {
           // Trigger loading of duas by category
           context.read<DuaDhikrBloc>().add(const GetDuasByCategoryEvent(category: 'Morning'));
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator(text: 'Loading duas...');
         }
       },
     );
@@ -712,22 +731,10 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
 
   Widget _buildDuasList(List<Dua> duas) {
     if (duas.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.menu_book,
-              size: 80,
-              color: AppColors.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No duas available',
-              style: AppTextStyles.headingMedium,
-            ),
-          ],
-        ),
+      return const EmptyState(
+        title: 'No Duas Available',
+        message: 'Please check your connection and try again',
+        icon: Icons.menu_book,
       );
     }
 
@@ -801,13 +808,13 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
     return BlocBuilder<DuaDhikrBloc, DuaDhikrState>(
       builder: (context, state) {
         if (state is DuaDhikrLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator(text: 'Loading dhikrs...');
         } else if (state is DhikrsLoaded) {
           return _buildDhikrList(state.dhikrs);
         } else {
           // Trigger loading of dhikrs
           context.read<DuaDhikrBloc>().add(GetAllDhikrsEvent());
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator(text: 'Loading dhikrs...');
         }
       },
     );
@@ -815,22 +822,10 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
 
   Widget _buildDhikrList(List<Dhikr> dhikrs) {
     if (dhikrs.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.repeat,
-              size: 80,
-              color: AppColors.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No dhikrs available',
-              style: AppTextStyles.headingMedium,
-            ),
-          ],
-        ),
+      return const EmptyState(
+        title: 'No Dhikrs Available',
+        message: 'Please check your connection and try again',
+        icon: Icons.repeat,
       );
     }
 

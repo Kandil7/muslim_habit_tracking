@@ -137,7 +137,7 @@ class LocationService {
         throw LocationException(
             message: 'No saved location found. Please set your location.');
       }
-    }
+   }
 
     return LocationModel(
       latitude: latitude,
@@ -150,9 +150,9 @@ class LocationService {
   /// Get default location (Mecca coordinates)
   LocationModel getDefaultLocation() {
     return const LocationModel(
-      latitude: 21.4225,  // Mecca latitude
-      longitude: 39.8262, // Mecca longitude
-      address: 'Mecca, Saudi Arabia',
+      latitude: 31.1675877,  // Mecca latitude
+      longitude: 30.8892849, // Mecca longitude
+      address: 'Kafr el-Sheikh, Egypt',
     );
   }
   

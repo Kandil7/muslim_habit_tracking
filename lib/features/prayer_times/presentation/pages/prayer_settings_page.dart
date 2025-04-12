@@ -224,6 +224,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                 style: AppTextStyles.bodyMedium,
                               ),
                               DropdownButtonFormField<String>(
+                                isExpanded: true,
                                 value: _selectedCalculationMethod,
                                 decoration: InputDecoration(
                                   labelText: 'Calculation Method',

@@ -17,7 +17,7 @@ class PrayerCalculationService {
     required double longitude,
     required String calculationMethod,
   }) {
-    try {
+    // try {
       // Create coordinates
       final coordinates = Coordinates(latitude, longitude);
 
@@ -31,6 +31,7 @@ class PrayerCalculationService {
       final params = CalculationParameters(
         method: method,
         madhab: Madhab.shafi,
+        fajrAngle: 19.5
       );
 
       // Adjust parameters based on calculation method
@@ -51,33 +52,23 @@ class PrayerCalculationService {
       // Calculate prayer times
       final prayerTimes = PrayerTimes(coordinates, dateComponents, params);
 
-      // Verify that all prayer times are not null
-      if (prayerTimes.fajr == null ||
-          prayerTimes.sunrise == null ||
-          prayerTimes.dhuhr == null ||
-          prayerTimes.asr == null ||
-          prayerTimes.maghrib == null ||
-          prayerTimes.isha == null) {
-        throw Exception('Some prayer times could not be calculated');
-      }
-
       // Create prayer time model
       return PrayerTimeModel(
         id: uuid.v4(),
         date: date,
-        fajr: prayerTimes.fajr!.toLocal(),
-        sunrise: prayerTimes.sunrise!.toLocal(),
-        dhuhr: prayerTimes.dhuhr!.toLocal(),
-        asr: prayerTimes.asr!.toLocal(),
-        maghrib: prayerTimes.maghrib!.toLocal(),
-        isha: prayerTimes.isha!.toLocal(),
+        fajr: prayerTimes.fajr.toLocal(),
+        sunrise: prayerTimes.sunrise.toLocal(),
+        dhuhr: prayerTimes.dhuhr.toLocal(),
+        asr: prayerTimes.asr.toLocal(),
+        maghrib: prayerTimes.maghrib.toLocal(),
+        isha: prayerTimes.isha.toLocal(),
         calculationMethod: calculationMethod,
       );
-    } catch (e) {
-      // If there's an error, use default prayer times
-      print('Error calculating prayer times: $e');
-      return _getDefaultPrayerTimes(date, calculationMethod);
-    }
+    // } catch (e) {
+    //   // If there's an error, use default prayer times
+    //   print('Error calculating prayer times: $e');
+    //   return _getDefaultPrayerTimes(date, calculationMethod);
+    // }
   }
 
   /// Get default prayer times when calculation fails

@@ -44,7 +44,7 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
 
       if (localPrayerTime != null) {
         // Save to memory cache for faster access next time
-        await cacheManager.saveToCache(cacheKey, (localPrayerTime as PrayerTimeModel).toJson());
+        await cacheManager.saveToCache(cacheKey, (localPrayerTime).toJson());
         return Right(localPrayerTime);
       }
 
@@ -68,7 +68,7 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
 
           // Save to memory cache
           final cacheKey = 'prayer_time_${date.year}_${date.month}_${date.day}';
-          await cacheManager.saveToCache(cacheKey, (remotePrayerTime as PrayerTimeModel).toJson());
+          await cacheManager.saveToCache(cacheKey, (remotePrayerTime).toJson());
 
           return Right(remotePrayerTime);
         } on ServerException catch (e) {

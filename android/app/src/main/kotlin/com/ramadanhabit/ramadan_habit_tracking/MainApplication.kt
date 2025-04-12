@@ -1,11 +1,14 @@
 package com.ramadanhabit.ramadan_habit_tracking
 
-import io.flutter.app.FlutterApplication
 import android.util.Log
 
-class MainApplication : FlutterApplication() {
+import android.app.Application
+
+class MainApplication : Application() {
     override fun onCreate() {
-        super.onCreate()
+            super.onCreate()
+            // Your code here
+
         
         // Suppress specific warnings by filtering LogCat
         val warningFilter = { tag: String, _: Int, message: String ->
