@@ -10,8 +10,8 @@ class AppIcons {
   static const IconData prayer = IconlyBold.time_circle;
   static const IconData prayerOutlined = IconlyLight.time_circle;
   
-  static const IconData dua = IconlyBold.book;
-  static const IconData duaOutlined = IconlyLight.book;
+  static const IconData dua = IconlyBold.paper;
+  static const IconData duaOutlined = IconlyLight.paper;
   
   static const IconData analytics = IconlyBold.chart;
   static const IconData analyticsOutlined = IconlyLight.chart;
@@ -34,14 +34,20 @@ class AppIcons {
   
   // Habit types
   static const IconData prayer_habit = IconlyBold.time_circle;
-  static const IconData quran = IconlyBold.book_mark;
+  static const IconData quran = Icons.book;
   static const IconData fasting = IconlyBold.time_square;
   static const IconData dhikr = IconlyBold.voice;
   static const IconData charity = IconlyBold.wallet;
   static const IconData custom = IconlyBold.star;
   
   // Settings
-  static const IconData theme = IconlyBold.show;
+  static const IconData theme = Icons.brightness_4;
+  static const IconData themeOutlined = Icons.brightness_4_outlined;
+  static const IconData themeLight = Icons.light_mode;
+  static const IconData themeDark = Icons.dark_mode;
+  static const IconData themeSystem = Icons.brightness_auto;
+
+
   static const IconData language = IconlyBold.message;
   static const IconData notifications = IconlyBold.notification;
   static const IconData about = IconlyBold.info_circle;

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_icons.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../bloc/prayer_time_bloc.dart';
 import '../bloc/prayer_time_event.dart';
@@ -237,7 +238,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                                     ),
                                   );
                                 },
-                                icon: const Icon(Icons.my_location),
+                                icon: const Icon(AppIcons.calendar),
                                 label: const Text('Auto-detect Location'),
                               ),
                             ),

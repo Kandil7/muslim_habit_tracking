@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
+
+import 'package:ramadan_habit_tracking/core/theme/bloc/theme_bloc_exports.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/theme/theme_provider.dart';
+
+import '../../../../core/theme/app_icons.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/services/cache_manager.dart';
-import '../../../analytics/domain/entities/habit_stats.dart';
-import '../../../analytics/presentation/bloc/analytics_bloc.dart';
-import '../../../analytics/presentation/bloc/analytics_event.dart';
-import '../../../analytics/presentation/bloc/analytics_state.dart';
-import '../../../analytics/presentation/pages/habit_stats_detail_page.dart';
+import '../../../analytics/presentation/pages/analytics_page.dart';
 import '../../../dua_dhikr/domain/entities/dua.dart';
 import '../../../dua_dhikr/domain/entities/dhikr.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
@@ -29,6 +28,7 @@ import '../bloc/habit_event.dart';
 import '../bloc/habit_state.dart';
 import 'add_habit_page.dart';
 import 'habit_details_page.dart';
+import 'settings_page.dart';
 
 /// The main home page of the application
 class HomePage extends StatefulWidget {
@@ -66,28 +66,28 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: AppColors.textSecondary,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            icon: Icon(AppIcons.homeOutlined),
+            activeIcon: Icon(AppIcons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.access_time_outlined),
-            activeIcon: Icon(Icons.access_time),
+            icon: Icon(AppIcons.prayerOutlined),
+            activeIcon: Icon(AppIcons.prayer),
             label: 'Prayer',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
+            icon: Icon(AppIcons.duaOutlined),
+            activeIcon: Icon(AppIcons.dua),
             label: 'Dua',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart),
+            icon: Icon(AppIcons.analyticsOutlined),
+            activeIcon: Icon(AppIcons.analytics),
             label: 'Analytics',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
+            icon: Icon(AppIcons.settingsOutlined),
+            activeIcon: Icon(AppIcons.settings),
             label: 'Settings',
           ),
         ],
@@ -106,19 +106,23 @@ class HabitDashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('SunnahTrack'),
         actions: [
-          IconButton(
+          BlocBuilder<ThemeBloc, ThemeState>(
+  builder: (context, state) {
+    return IconButton(
             icon: Icon(
-              Provider.of<ThemeProvider>(context).isDarkMode
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
+              state.themeMode == ThemeMode.dark
+                  ? AppIcons.themeDark
+                  : AppIcons.themeLight,
             ),
             onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+              context.read<ThemeBloc>().add(ToggleThemeEvent());
             },
             tooltip: 'Toggle Theme',
-          ),
+          );
+  },
+),
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(AppIcons.add),
             onPressed: () {
               Navigator.push(
                 context,
@@ -436,7 +440,7 @@ class HabitDashboardPage extends StatelessWidget {
               style: AppTextStyles.bodySmall,
             ),
             trailing: PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(AppIcons.more),
               onSelected: (value) {
                 if (value == 'view') {
                   Navigator.push(
@@ -456,7 +460,7 @@ class HabitDashboardPage extends StatelessWidget {
                   value: 'view',
                   child: Row(
                     children: [
-                      Icon(Icons.visibility),
+                      Icon(AppIcons.info),
                       SizedBox(width: 8),
                       Text('View Details'),
                     ],
@@ -466,7 +470,7 @@ class HabitDashboardPage extends StatelessWidget {
                   value: 'edit',
                   child: Row(
                     children: [
-                      Icon(Icons.edit),
+                      Icon(AppIcons.edit),
                       SizedBox(width: 8),
                       Text('Edit'),
                     ],
@@ -476,7 +480,7 @@ class HabitDashboardPage extends StatelessWidget {
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete, color: Colors.red),
+                      Icon(AppIcons.delete, color: Colors.red),
                       SizedBox(width: 8),
                       Text('Delete', style: TextStyle(color: Colors.red)),
                     ],
@@ -912,637 +916,6 @@ class _DuaDhikrPageState extends State<DuaDhikrPage> with SingleTickerProviderSt
           ),
         );
       },
-    );
-  }
-}
-
-/// Analytics page
-class AnalyticsPage extends StatefulWidget {
-  const AnalyticsPage({super.key});
-
-  @override
-  State<AnalyticsPage> createState() => _AnalyticsPageState();
-}
-
-class _AnalyticsPageState extends State<AnalyticsPage> {
-  DateTime _startDate = DateTimeUtils.startOfWeek;
-  DateTime _endDate = DateTimeUtils.endOfWeek;
-
-  @override
-  void initState() {
-    super.initState();
-    // Load analytics for the current week
-    _loadAnalytics();
-  }
-
-  void _loadAnalytics() {
-    context.read<AnalyticsBloc>().add(
-      GetHabitStatsByDateRangeEvent(
-        startDate: _startDate,
-        endDate: _endDate,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Analytics'),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              setState(() {
-                switch (value) {
-                  case 'week':
-                    _startDate = DateTimeUtils.startOfWeek;
-                    _endDate = DateTimeUtils.endOfWeek;
-                    break;
-                  case 'month':
-                    _startDate = DateTimeUtils.startOfMonth;
-                    _endDate = DateTimeUtils.endOfMonth;
-                    break;
-                  case 'custom':
-                    // TODO: Implement date range picker
-                    break;
-                }
-                _loadAnalytics();
-              });
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem<String>(
-                value: 'week',
-                child: Text('This Week'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'month',
-                child: Text('This Month'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'custom',
-                child: Text('Custom Range'),
-              ),
-            ],
-            icon: const Icon(Icons.calendar_today),
-          ),
-        ],
-      ),
-      body: BlocBuilder<AnalyticsBloc, AnalyticsState>(
-        builder: (context, state) {
-          if (state is AnalyticsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is HabitStatsByDateRangeLoaded) {
-            return _buildAnalyticsView(state.habitStats);
-          } else if (state is AnalyticsError) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else {
-            return const Center(child: Text('No analytics available'));
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildAnalyticsView(List<HabitStats> habitStats) {
-    if (habitStats.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.bar_chart,
-              size: 80,
-              color: AppColors.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No analytics available',
-              style: AppTextStyles.headingMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Start tracking habits to see analytics',
-              style: AppTextStyles.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Calculate overall completion rate
-    final overallCompletionRate = habitStats.fold<double>(
-      0.0,
-      (sum, stats) => sum + stats.completionRate,
-    ) / habitStats.length;
-
-    // Find most consistent habit
-    habitStats.sort((a, b) => b.completionRate.compareTo(a.completionRate));
-    final mostConsistentHabit = habitStats.first;
-
-    // Find least consistent habit
-    final leastConsistentHabit = habitStats.last;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Date range
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    'Analytics for',
-                    style: AppTextStyles.bodyMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${DateTimeUtils.formatShortDate(_startDate)} - ${DateTimeUtils.formatShortDate(_endDate)}',
-                    style: AppTextStyles.headingSmall,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Overall completion rate
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Overall Completion Rate',
-                    style: AppTextStyles.headingSmall,
-                  ),
-                  const SizedBox(height: 16),
-                  LinearProgressIndicator(
-                    value: overallCompletionRate / 100,
-                    minHeight: 10,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${overallCompletionRate.toStringAsFixed(1)}%',
-                    style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Most consistent habit
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Most Consistent Habit',
-                    style: AppTextStyles.headingSmall,
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppColors.success,
-                      child: const Icon(Icons.emoji_events, color: Colors.white),
-                    ),
-                    title: Text(
-                      mostConsistentHabit.habitName,
-                      style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Completion rate: ${mostConsistentHabit.completionRate.toStringAsFixed(1)}%',
-                    ),
-                    trailing: Text(
-                      '${mostConsistentHabit.currentStreak} day streak',
-                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.primary),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Least consistent habit
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Needs Improvement',
-                    style: AppTextStyles.headingSmall,
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppColors.warning,
-                      child: const Icon(Icons.warning, color: Colors.white),
-                    ),
-                    title: Text(
-                      leastConsistentHabit.habitName,
-                      style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Completion rate: ${leastConsistentHabit.completionRate.toStringAsFixed(1)}%',
-                    ),
-                    trailing: Text(
-                      '${leastConsistentHabit.completionCount}/${leastConsistentHabit.totalDays} days',
-                      style: AppTextStyles.bodyMedium,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // All habits stats
-          Text(
-            'All Habits',
-            style: AppTextStyles.headingMedium,
-          ),
-          const SizedBox(height: 8),
-          ...habitStats.map((stats) => _buildHabitStatsCard(stats)).toList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHabitStatsCard(HabitStats stats) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HabitStatsDetailPage(habitStats: stats),
-            ),
-          );
-        },
-        child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              stats.habitName,
-              style: AppTextStyles.headingSmall,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatItem('Completion', '${stats.completionRate.toStringAsFixed(1)}%'),
-                _buildStatItem('Current Streak', '${stats.currentStreak} days'),
-                _buildStatItem('Longest Streak', '${stats.longestStreak} days'),
-              ],
-            ),
-            const SizedBox(height: 16),
-            LinearProgressIndicator(
-              value: stats.completionRate / 100,
-              minHeight: 8,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-            ),
-          ],
-        ),
-      ),
-    )
-    );
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppTextStyles.bodySmall,
-        ),
-      ],
-    );
-  }
-}
-
-/// Settings page
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // App info section
-          _buildSectionHeader('App Info'),
-          _buildSettingsCard(
-            title: 'SunnahTrack',
-            subtitle: 'Version 1.0.0',
-            leading: const Icon(Icons.info_outline),
-            onTap: () {
-              // TODO: Show app info dialog
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Prayer settings section
-          _buildSectionHeader('Prayer Settings'),
-          _buildSettingsCard(
-            title: 'Prayer Times Calculation Method',
-            subtitle: 'Muslim World League',
-            leading: const Icon(Icons.calculate),
-            onTap: () {
-              // TODO: Navigate to prayer calculation method settings
-            },
-          ),
-          _buildSettingsCard(
-            title: 'Location',
-            subtitle: 'Automatic',
-            leading: const Icon(Icons.location_on),
-            onTap: () {
-              // TODO: Navigate to location settings
-            },
-          ),
-          _buildSettingsCard(
-            title: 'Prayer Notifications',
-            subtitle: '15 minutes before prayer',
-            leading: const Icon(Icons.notifications),
-            onTap: () {
-              // TODO: Navigate to prayer notification settings
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Appearance section
-          _buildSectionHeader('Appearance'),
-          _buildSettingsCard(
-            title: 'Theme',
-            subtitle: Provider.of<ThemeProvider>(context).isDarkMode ? 'Dark mode' : 'Light mode',
-            leading: Icon(
-              Provider.of<ThemeProvider>(context).isDarkMode ? Icons.dark_mode : Icons.light_mode,
-            ),
-            onTap: () {
-              _showThemeSelectionDialog(context);
-            },
-          ),
-          _buildSettingsCard(
-            title: 'Language',
-            subtitle: 'English',
-            leading: const Icon(Icons.language),
-            onTap: () {
-              // TODO: Show language selection dialog
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Data section
-          _buildSectionHeader('Data'),
-          _buildSettingsCard(
-            title: 'Export Data',
-            subtitle: 'Export your habits and progress',
-            leading: const Icon(Icons.upload),
-            onTap: () {
-              // TODO: Implement data export
-            },
-          ),
-          _buildSettingsCard(
-            title: 'Import Data',
-            subtitle: 'Import habits and progress',
-            leading: const Icon(Icons.download),
-            onTap: () {
-              // TODO: Implement data import
-            },
-          ),
-          _buildSettingsCard(
-            title: 'Clear All Data',
-            subtitle: 'Delete all habits and progress',
-            leading: const Icon(Icons.delete_forever, color: AppColors.error),
-            onTap: () {
-              _showClearDataConfirmationDialog(context);
-            },
-          ),
-          _buildSettingsCard(
-            title: 'Clear Cache',
-            subtitle: 'Clear temporary data and images',
-            leading: const Icon(Icons.cleaning_services),
-            onTap: () {
-              _clearCache(context);
-            },
-          ),
-          const SizedBox(height: 32),
-
-          // About section
-          Center(
-            child: TextButton(
-              onPressed: () {
-                // TODO: Show about dialog
-              },
-              child: const Text('About SunnahTrack'),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, bottom: 8),
-      child: Text(
-        title,
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  void _showThemeSelectionDialog(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-
-    showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(
-        title: const Text('Choose Theme'),
-        children: [
-          RadioListTile<ThemeMode>(
-            title: const Row(
-              children: [
-                Icon(Icons.light_mode),
-                SizedBox(width: 16),
-                Text('Light'),
-              ],
-            ),
-            value: ThemeMode.light,
-            groupValue: themeProvider.themeMode,
-            onChanged: (value) {
-              if (value != null) {
-                themeProvider.setThemeMode(value);
-                Navigator.pop(context);
-              }
-            },
-          ),
-          RadioListTile<ThemeMode>(
-            title: const Row(
-              children: [
-                Icon(Icons.dark_mode),
-                SizedBox(width: 16),
-                Text('Dark'),
-              ],
-            ),
-            value: ThemeMode.dark,
-            groupValue: themeProvider.themeMode,
-            onChanged: (value) {
-              if (value != null) {
-                themeProvider.setThemeMode(value);
-                Navigator.pop(context);
-              }
-            },
-          ),
-          RadioListTile<ThemeMode>(
-            title: const Row(
-              children: [
-                Icon(Icons.brightness_auto),
-                SizedBox(width: 16),
-                Text('System Default'),
-              ],
-            ),
-            value: ThemeMode.system,
-            groupValue: themeProvider.themeMode,
-            onChanged: (value) {
-              if (value != null) {
-                themeProvider.setThemeMode(value);
-                Navigator.pop(context);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _clearCache(BuildContext context) async {
-    final cacheManager = CacheManager();
-    final cacheSize = await cacheManager.getCacheSize();
-    final cacheSizeInMB = (cacheSize / (1024 * 1024)).toStringAsFixed(2);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear Cache'),
-        content: Text('This will clear ${cacheSizeInMB} MB of cached data. This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-
-              // Show loading indicator
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-
-              // Clear cache
-              await cacheManager.clearCache();
-
-              // Dismiss loading indicator
-              if (context.mounted) Navigator.pop(context);
-
-              // Show success message
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cache cleared successfully'),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
-              }
-            },
-            child: const Text('Clear Cache'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showClearDataConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Data'),
-        content: const Text(
-          'This will delete all your habits, progress, and settings. This action cannot be undone.',
-          style: TextStyle(color: AppColors.error),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // TODO: Implement clear all data functionality
-              Navigator.pop(context);
-
-              // Show success message
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('All data has been cleared'),
-                  backgroundColor: AppColors.error,
-                ),
-              );
-            },
-            child: const Text('Clear All Data', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSettingsCard({
-    required String title,
-    required String subtitle,
-    required Icon leading,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      child: ListTile(
-        leading: leading,
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
-      ),
     );
   }
 }
