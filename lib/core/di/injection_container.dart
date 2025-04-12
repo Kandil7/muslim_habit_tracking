@@ -25,6 +25,7 @@ import '../../features/prayer_times/data/datasources/prayer_time_local_data_sour
 import '../../features/prayer_times/data/datasources/prayer_time_remote_data_source.dart';
 import '../../features/prayer_times/data/repositories/prayer_time_repository_impl.dart';
 import '../../features/prayer_times/data/services/location_service.dart';
+import '../../features/prayer_times/data/services/prayer_calculation_service.dart';
 import '../../features/prayer_times/domain/repositories/prayer_time_repository.dart';
 import '../../features/prayer_times/domain/usecases/get_prayer_time_by_date.dart';
 import '../../features/prayer_times/domain/usecases/get_prayer_times_by_date_range.dart';
@@ -155,6 +156,7 @@ Future<void> _initPrayerTimesFeature() async {
 
   // Services
   sl.registerLazySingleton(() => LocationService(sharedPreferences: sl()));
+  sl.registerLazySingleton(() => PrayerCalculationService(uuid: sl()));
 
   // Repositories
   sl.registerLazySingleton<PrayerTimeRepository>(

@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/di/injection_container.dart' as di;
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../data/services/location_service.dart';
+import '../../data/services/prayer_calculation_service.dart';
 import '../../domain/entities/prayer_time.dart';
 import '../bloc/prayer_time_bloc.dart';
 import '../bloc/prayer_time_event.dart';
@@ -60,8 +62,8 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
       });
 
       // Get calculation methods from the service
-      final prayerCalculationService = context.read<PrayerTimeBloc>().getPrayerTimeByDate.repository.remoteDataSource;
-      final methods = await prayerCalculationService.getAvailableCalculationMethods();
+      final prayerCalculationService = di.sl<PrayerCalculationService>();
+      final methods = prayerCalculationService.getAvailableCalculationMethods();
       setState(() {
         _calculationMethods = methods;
         _isLoading = false;
@@ -251,6 +253,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                           ),
                         ),
                       ),
+                    ),
                     const SizedBox(height: 24),
 
                     // Location
@@ -401,7 +404,9 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
                         icon: Icons.save,
                       ),
                     ),
+
                   ],
+
                 ),
               ),
       ),
