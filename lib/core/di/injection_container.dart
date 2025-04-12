@@ -164,7 +164,7 @@ Future<void> _initPrayerTimesFeature() async {
       remoteDataSource: sl(),
       localDataSource: sl(),
       networkInfo: sl(),
-      sharedPreferences: sl(),
+      locationService: sl(),
       cacheManager: sl(),
     ),
   );

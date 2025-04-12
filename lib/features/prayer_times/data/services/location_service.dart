@@ -10,17 +10,20 @@ class LocationService {
   LocationService({required this.sharedPreferences});
 
   /// Get the user's current location
-  Future<Map<String, double>> getCurrentLocation() async {
+  /// If useCache is true, returns saved location if available
+  Future<Map<String, double>> getCurrentLocation({bool useCache = true}) async {
     try {
-      // Check if location is saved in preferences
-      final savedLatitude = sharedPreferences.getDouble('latitude');
-      final savedLongitude = sharedPreferences.getDouble('longitude');
+      // Check if location is saved in preferences and useCache is true
+      if (useCache) {
+        final savedLatitude = sharedPreferences.getDouble('latitude');
+        final savedLongitude = sharedPreferences.getDouble('longitude');
 
-      if (savedLatitude != null && savedLongitude != null) {
-        return {
-          'latitude': savedLatitude,
-          'longitude': savedLongitude,
-        };
+        if (savedLatitude != null && savedLongitude != null) {
+          return {
+            'latitude': savedLatitude,
+            'longitude': savedLongitude,
+          };
+        }
       }
 
       // Check if location services are enabled
@@ -74,18 +77,32 @@ class LocationService {
   }
 
   /// Get saved location from preferences
-  Future<Map<String, double>> getSavedLocation() async {
+  /// If no location is saved, returns default location or throws exception based on parameter
+  Future<Map<String, double>> getSavedLocation({bool useDefaultIfNotFound = false}) async {
     final latitude = sharedPreferences.getDouble('latitude');
     final longitude = sharedPreferences.getDouble('longitude');
 
     if (latitude == null || longitude == null) {
-      throw LocationException(
-          message: 'No saved location found. Please set your location.');
+      if (useDefaultIfNotFound) {
+        // Return default location (Mecca coordinates)
+        return getDefaultLocation();
+      } else {
+        throw LocationException(
+            message: 'No saved location found. Please set your location.');
+      }
     }
 
     return {
       'latitude': latitude,
       'longitude': longitude,
+    };
+  }
+
+  /// Get default location (Mecca coordinates)
+  Map<String, double> getDefaultLocation() {
+    return {
+      'latitude': 21.4225,  // Mecca latitude
+      'longitude': 39.8262, // Mecca longitude
     };
   }
 }

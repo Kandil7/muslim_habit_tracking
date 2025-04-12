@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
@@ -10,20 +9,21 @@ import '../../domain/repositories/prayer_time_repository.dart';
 import '../datasources/prayer_time_local_data_source.dart';
 import '../datasources/prayer_time_remote_data_source.dart';
 import '../models/prayer_time_model.dart';
+import '../services/location_service.dart';
 
 /// Implementation of PrayerTimeRepository
 class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
   final PrayerTimeRemoteDataSource remoteDataSource;
   final PrayerTimeLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
-  final SharedPreferences sharedPreferences;
+  final LocationService locationService;
   final CacheManager cacheManager;
 
   PrayerTimeRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
-    required this.sharedPreferences,
+    required this.locationService,
     required this.cacheManager,
   });
 
@@ -52,13 +52,14 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
       if (await networkInfo.isConnected) {
         try {
           final calculationMethod = await localDataSource.getCalculationMethod();
-          final latitude = sharedPreferences.getDouble('latitude') ?? 0.0;
-          final longitude = sharedPreferences.getDouble('longitude') ?? 0.0;
+
+          // Get location using LocationService with default fallback
+          final location = await locationService.getSavedLocation(useDefaultIfNotFound: true);
 
           final remotePrayerTime = await remoteDataSource.getPrayerTimeByDate(
             date,
-            latitude,
-            longitude,
+            location['latitude']!,
+            location['longitude']!,
             calculationMethod,
           );
 
@@ -102,14 +103,15 @@ class PrayerTimeRepositoryImpl implements PrayerTimeRepository {
       if (await networkInfo.isConnected) {
         try {
           final calculationMethod = await localDataSource.getCalculationMethod();
-          final latitude = sharedPreferences.getDouble('latitude') ?? 0.0;
-          final longitude = sharedPreferences.getDouble('longitude') ?? 0.0;
+
+          // Get location using LocationService with default fallback
+          final location = await locationService.getSavedLocation(useDefaultIfNotFound: true);
 
           final remotePrayerTimes = await remoteDataSource.getPrayerTimesByDateRange(
             startDate,
             endDate,
-            latitude,
-            longitude,
+            location['latitude']!,
+            location['longitude']!,
             calculationMethod,
           );
 

@@ -42,18 +42,14 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
   Future<void> _loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final locationService = LocationService(sharedPreferences: prefs);
+      final locationService = di.sl<LocationService>();
 
-      // Try to get saved location
-      try {
-        final location = await locationService.getSavedLocation();
-        setState(() {
-          _latitude = location['latitude']!;
-          _longitude = location['longitude']!;
-        });
-      } catch (e) {
-        // No saved location, will use default values
-      }
+      // Try to get saved location with default fallback
+      final location = await locationService.getSavedLocation(useDefaultIfNotFound: true);
+      setState(() {
+        _latitude = location['latitude']!;
+        _longitude = location['longitude']!;
+      });
 
       setState(() {
         _notificationTime = prefs.getInt('notificationTime') ?? AppConstants.defaultNotificationTime;
@@ -89,7 +85,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
   Future<void> _saveSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final locationService = LocationService(sharedPreferences: prefs);
+      final locationService = di.sl<LocationService>();
 
       // Save location
       await locationService.saveLocation(_latitude, _longitude);
@@ -97,6 +93,7 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
       // Save other settings
       await prefs.setInt('notificationTime', _notificationTime);
       await prefs.setBool('notificationsEnabled', _notificationsEnabled);
+      await prefs.setString('calculationMethod', _selectedCalculationMethod);
 
       // Update calculation method
       context.read<PrayerTimeBloc>().add(
@@ -132,10 +129,11 @@ class _PrayerSettingsPageState extends State<PrayerSettingsPage> {
         _isLoading = true;
       });
 
-      final prefs = await SharedPreferences.getInstance();
-      final locationService = LocationService(sharedPreferences: prefs);
+      // Use the injected LocationService instead of creating a new one
+      final locationService = di.sl<LocationService>();
 
-      final location = await locationService.getCurrentLocation();
+      // Force refresh from GPS by setting useCache to false
+      final location = await locationService.getCurrentLocation(useCache: false);
 
       setState(() {
         _latitude = location['latitude']!;
