@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../core/localization/app_localizations_extension.dart';
-import '../../../../core/localization/language_provider.dart';
+import '../../../../core/localization/bloc/language_bloc_exports.dart';
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/services/cache_manager.dart';
 import '../../../../core/theme/app_icons.dart';
@@ -88,14 +87,14 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          Consumer<LanguageProvider>(
-            builder: (context, languageProvider, _) {
+          BlocBuilder<LanguageCubit, LanguageState>(
+            builder: (context, languageState) {
               return SettingsCard(
                 title: context.tr.translate('settings.language'),
-                subtitle: languageProvider.locale.languageCode == 'en' ? 'English' : 'العربية',
+                subtitle: languageState.locale.languageCode == 'en' ? 'English' : 'العربية',
                 leading: const Icon(AppIcons.language),
                 onTap: () {
-                  _showLanguageSelectionDialog(context, languageProvider);
+                  _showLanguageSelectionDialog(context);
                 },
               );
             },
@@ -316,8 +315,9 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  void _showLanguageSelectionDialog(BuildContext context, LanguageProvider languageProvider) {
-    final currentLanguage = languageProvider.locale.languageCode;
+  void _showLanguageSelectionDialog(BuildContext context) {
+    final languageCubit = context.read<LanguageCubit>();
+    final currentLanguage = languageCubit.state.locale.languageCode;
 
     showDialog(
       context: context,
@@ -330,7 +330,7 @@ class SettingsPage extends StatelessWidget {
             groupValue: currentLanguage,
             onChanged: (value) {
               if (value != null) {
-                languageProvider.changeLanguage(const Locale('en'));
+                languageCubit.changeLanguage(const Locale('en'));
                 Navigator.pop(context);
               }
             },
@@ -341,7 +341,7 @@ class SettingsPage extends StatelessWidget {
             groupValue: currentLanguage,
             onChanged: (value) {
               if (value != null) {
-                languageProvider.changeLanguage(const Locale('ar'));
+                languageCubit.changeLanguage(const Locale('ar'));
                 Navigator.pop(context);
               }
             },

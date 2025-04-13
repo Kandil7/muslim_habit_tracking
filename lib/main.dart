@@ -3,11 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/localization/app_localizations.dart';
-import 'core/localization/language_provider.dart';
+import 'core/localization/bloc/language_bloc_exports.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/services/cache_manager.dart';
@@ -46,10 +45,10 @@ void main() async {
   final cacheManager = CacheManager();
   await cacheManager.init();
 
-  // Run the app with the language provider
+  // Run the app with the language cubit from the DI container
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => LanguageProvider(),
+    BlocProvider<LanguageCubit>(
+      create: (context) => di.sl<LanguageCubit>(),
       child: const SunnahTrackApp(),
     ),
   );
@@ -83,8 +82,8 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
           create: (context) => di.sl<AnalyticsBloc>(),
         ),
       ],
-      child: Consumer<LanguageProvider>(
-        builder: (context, languageProvider, child) {
+      child: BlocBuilder<LanguageCubit, LanguageState>(
+        builder: (context, languageState) {
           return BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, themeState) {
               return MaterialApp(
@@ -93,7 +92,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                 theme: AppTheme.lightTheme,
                 darkTheme: AppTheme.darkTheme,
                 themeMode: themeState.themeMode,
-                locale: languageProvider.locale,
+                locale: languageState.locale,
                 supportedLocales: const [
                   Locale('en', ''), // English
                   Locale('ar', ''), // Arabic
@@ -107,7 +106,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                 // RTL support based on the current locale
                 builder: (context, child) {
                   return Directionality(
-                    textDirection: languageProvider.isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection: languageState.isRtl ? TextDirection.rtl : TextDirection.ltr,
                     child: child!,
                   );
                 },

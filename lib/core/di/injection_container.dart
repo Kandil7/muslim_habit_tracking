@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../errors/exceptions.dart';
 import '../../features/location/di/location_injection_container.dart';
+import '../localization/bloc/language_bloc_exports.dart';
 
 import '../constants/app_constants.dart';
 import '../network/network_info.dart';
@@ -252,6 +253,6 @@ Future<void> _initAnalyticsFeature() async {
 
 /// Initialize localization feature dependencies
 Future<void> _initLocalizationFeature() async {
-  // No dependencies to register for now as we're using Provider for language state
-  // This method is a placeholder for future localization-related dependencies
+  // Register the LanguageCubit
+  sl.registerFactory(() => LanguageCubit(sl()));
 }
