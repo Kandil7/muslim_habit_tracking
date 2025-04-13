@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ramadan_habit_tracking/core/presentation/widgets/widgets.dart';
-import 'package:ramadan_habit_tracking/core/services/cache_manager.dart';
-import 'package:ramadan_habit_tracking/core/theme/app_icons.dart';
-import 'package:ramadan_habit_tracking/core/theme/app_theme.dart';
-import 'package:ramadan_habit_tracking/core/theme/bloc/theme_bloc_exports.dart';
-import 'package:ramadan_habit_tracking/features/prayer_times/presentation/pages/prayer_settings_page.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../core/localization/app_localizations_extension.dart';
+import '../../../../core/localization/language_provider.dart';
+import '../../../../core/presentation/widgets/widgets.dart';
+import '../../../../core/services/cache_manager.dart';
+import '../../../../core/theme/app_icons.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/bloc/theme_bloc_exports.dart';
+import '../../../../features/prayer_times/presentation/pages/prayer_settings_page.dart';
+
+import '../../../../core/presentation/widgets/section_header.dart';
 
 /// Settings page
 class SettingsPage extends StatelessWidget {
@@ -15,16 +21,16 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(context.tr.translate('settings.title')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // App info section
-          const SectionHeader(title: 'App Info'),
+          SectionHeader(title: context.tr.translate('settings.about')),
           SettingsCard(
-            title: 'SunnahTrack',
-            subtitle: 'Version 1.0.0',
+            title: context.tr.translate('app.name'),
+            subtitle: '${context.tr.translate('settings.version')} 1.0.0',
             leading: const Icon(AppIcons.info),
             onTap: () {
               // TODO: Show app info dialog
@@ -33,9 +39,9 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Prayer settings section
-          const SectionHeader(title: 'Prayer Settings'),
+          SectionHeader(title: context.tr.translate('prayer.settings')),
           SettingsCard(
-            title: 'Prayer Times Calculation Method',
+            title: context.tr.translate('prayer.calculationMethod'),
             subtitle: 'Muslim World League',
             leading: const Icon(AppIcons.prayer),
             onTap: () {
@@ -48,16 +54,16 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           SettingsCard(
-            title: 'Location',
-            subtitle: 'Automatic',
+            title: context.tr.translate('prayer.location'),
+            subtitle: context.tr.translate('prayer.autoDetectLocation'),
             leading: const Icon(AppIcons.calendar),
             onTap: () {
               // TODO: Navigate to location settings
             },
           ),
           SettingsCard(
-            title: 'Prayer Notifications',
-            subtitle: '15 minutes before prayer',
+            title: context.tr.translate('prayer.notifications'),
+            subtitle: '15 ${context.tr.translate('prayer.notificationTime')}',
             leading: const Icon(AppIcons.notification),
             onTap: () {
               // TODO: Navigate to prayer notification settings
@@ -66,12 +72,12 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Appearance section
-          const SectionHeader(title: 'Appearance'),
+          SectionHeader(title: context.tr.translate('settings.appearance')),
           BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, state) {
               final isDarkMode = state.themeMode == ThemeMode.dark;
               return SettingsCard(
-                title: 'Theme',
+                title: context.tr.translate('settings.theme'),
                 subtitle: _getThemeModeText(state.themeMode),
                 leading: Icon(
                   _getThemeModeIcon(state.themeMode),
@@ -82,45 +88,49 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          SettingsCard(
-            title: 'Language',
-            subtitle: 'English',
-            leading: const Icon(AppIcons.language),
-            onTap: () {
-              // TODO: Show language selection dialog
+          Consumer<LanguageProvider>(
+            builder: (context, languageProvider, _) {
+              return SettingsCard(
+                title: context.tr.translate('settings.language'),
+                subtitle: languageProvider.locale.languageCode == 'en' ? 'English' : 'العربية',
+                leading: const Icon(AppIcons.language),
+                onTap: () {
+                  _showLanguageSelectionDialog(context, languageProvider);
+                },
+              );
             },
           ),
           const SizedBox(height: 16),
 
           // Data section
-          const SectionHeader(title: 'Data'),
+          SectionHeader(title: context.tr.translate('settings.dataManagement')),
           SettingsCard(
-            title: 'Export Data',
-            subtitle: 'Export your habits and progress',
+            title: context.tr.translate('settings.exportData'),
+            subtitle: context.tr.translate('settings.exportData'),
             leading: const Icon(AppIcons.share),
             onTap: () {
               // TODO: Implement data export
             },
           ),
           SettingsCard(
-            title: 'Import Data',
-            subtitle: 'Import habits and progress',
+            title: context.tr.translate('settings.importData'),
+            subtitle: context.tr.translate('settings.importData'),
             leading: const Icon(AppIcons.share),
             onTap: () {
               // TODO: Implement data import
             },
           ),
           SettingsCard(
-            title: 'Clear All Data',
-            subtitle: 'Delete all habits and progress',
+            title: context.tr.translate('settings.deleteData'),
+            subtitle: context.tr.translate('settings.deleteData'),
             leading: const Icon(AppIcons.clearData, color: AppColors.error),
             onTap: () {
               _showClearDataConfirmationDialog(context);
             },
           ),
           SettingsCard(
-            title: 'Clear Cache',
-            subtitle: 'Clear temporary data and images',
+            title: context.tr.translate('settings.clearCache'),
+            subtitle: context.tr.translate('settings.clearCache'),
             leading: const Icon(AppIcons.clearCache),
             onTap: () {
               _clearCache(context);
@@ -131,7 +141,7 @@ class SettingsPage extends StatelessWidget {
           // About section
           Center(
             child: CustomButton(
-              text: 'About SunnahTrack',
+              text: context.tr.translate('settings.about') + ' ' + context.tr.translate('app.name'),
               onPressed: () {
                 // TODO: Show about dialog
               },
@@ -151,14 +161,14 @@ class SettingsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
-        title: const Text('Choose Theme'),
+        title: Text(context.tr.translate('settings.theme')),
         children: [
           RadioListTile<ThemeMode>(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(AppIcons.themeLight),
-                SizedBox(width: 16),
-                Text('Light'),
+                const Icon(AppIcons.themeLight),
+                const SizedBox(width: 16),
+                Text(context.tr.translate('settings.lightMode')),
               ],
             ),
             value: ThemeMode.light,
@@ -171,11 +181,11 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(AppIcons.themeDark),
-                SizedBox(width: 16),
-                Text('Dark'),
+                const Icon(AppIcons.themeDark),
+                const SizedBox(width: 16),
+                Text(context.tr.translate('settings.darkMode')),
               ],
             ),
             value: ThemeMode.dark,
@@ -188,11 +198,11 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(AppIcons.themeSystem),
-                SizedBox(width: 16),
-                Text('System Default'),
+                const Icon(AppIcons.themeSystem),
+                const SizedBox(width: 16),
+                Text(context.tr.translate('settings.systemMode')),
               ],
             ),
             value: ThemeMode.system,
@@ -213,11 +223,11 @@ class SettingsPage extends StatelessWidget {
   String _getThemeModeText(ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.light:
-        return 'Light mode';
+        return context.tr.translate('settings.lightMode');
       case ThemeMode.dark:
-        return 'Dark mode';
+        return context.tr.translate('settings.darkMode');
       case ThemeMode.system:
-        return 'System default';
+        return context.tr.translate('settings.systemMode');
     }
   }
 
@@ -242,23 +252,23 @@ class SettingsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear Cache'),
-        content: Text('This will clear $cacheSizeInMB MB of cached data. Continue?'),
+        title: Text(context.tr.translate('settings.clearCache')),
+        content: Text('${context.tr.translate('settings.clearCacheConfirm')} $cacheSizeInMB MB'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.tr.translate('common.cancel')),
           ),
           CustomButton(
-            text: 'Clear Cache',
+            text: context.tr.translate('settings.clearCache'),
             onPressed: () async {
               Navigator.pop(context);
               await cacheManager.clearCache();
 
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cache cleared successfully'),
+                  SnackBar(
+                    content: Text(context.tr.translate('settings.clearCacheSuccess')),
                   ),
                 );
               }
@@ -274,25 +284,25 @@ class SettingsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear All Data'),
-        content: const Text(
-          'This will permanently delete all your habits, progress, and settings. This action cannot be undone.',
+        title: Text(context.tr.translate('settings.deleteData')),
+        content: Text(
+          context.tr.translate('settings.deleteDataConfirm'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.tr.translate('common.cancel')),
           ),
           CustomButton(
-            text: 'Clear All Data',
+            text: context.tr.translate('settings.deleteData'),
             onPressed: () {
               // TODO: Implement clear all data functionality
               Navigator.pop(context);
 
               // Show success message
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('All data has been cleared'),
+                SnackBar(
+                  content: Text(context.tr.translate('settings.deleteSuccess')),
                   backgroundColor: AppColors.error,
                 ),
               );
@@ -300,6 +310,41 @@ class SettingsPage extends StatelessWidget {
             buttonType: ButtonType.primary,
             backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLanguageSelectionDialog(BuildContext context, LanguageProvider languageProvider) {
+    final currentLanguage = languageProvider.locale.languageCode;
+
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(context.tr.translate('settings.language')),
+        children: [
+          RadioListTile<String>(
+            title: const Text('English'),
+            value: 'en',
+            groupValue: currentLanguage,
+            onChanged: (value) {
+              if (value != null) {
+                languageProvider.changeLanguage(const Locale('en'));
+                Navigator.pop(context);
+              }
+            },
+          ),
+          RadioListTile<String>(
+            title: const Text('العربية'),
+            value: 'ar',
+            groupValue: currentLanguage,
+            onChanged: (value) {
+              if (value != null) {
+                languageProvider.changeLanguage(const Locale('ar'));
+                Navigator.pop(context);
+              }
+            },
           ),
         ],
       ),

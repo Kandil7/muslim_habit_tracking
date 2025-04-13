@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/localization/app_localizations.dart';
+import 'core/localization/language_provider.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/services/cache_manager.dart';
@@ -41,7 +46,13 @@ void main() async {
   final cacheManager = CacheManager();
   await cacheManager.init();
 
-  runApp(const SunnahTrackApp());
+  // Run the app with the language provider
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(),
+      child: const SunnahTrackApp(),
+    ),
+  );
 }
 
 class SunnahTrackApp extends StatefulWidget {
@@ -72,15 +83,37 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
           create: (context) => di.sl<AnalyticsBloc>(),
         ),
       ],
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, themeState) {
-          return MaterialApp(
-            title: 'SunnahTrack',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeState.themeMode,
-            home: const SplashPage(),
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, child) {
+          return BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, themeState) {
+              return MaterialApp(
+                title: 'Muslim Habbit',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeState.themeMode,
+                locale: languageProvider.locale,
+                supportedLocales: const [
+                  Locale('en', ''), // English
+                  Locale('ar', ''), // Arabic
+                ],
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                // RTL support based on the current locale
+                builder: (context, child) {
+                  return Directionality(
+                    textDirection: languageProvider.isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    child: child!,
+                  );
+                },
+                home: const SplashPage(),
+              );
+            },
           );
         },
       ),

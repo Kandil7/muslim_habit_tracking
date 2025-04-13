@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:ramadan_habit_tracking/core/theme/bloc/theme_bloc_exports.dart';
+import 'package:muslim_habbit/core/theme/bloc/theme_bloc_exports.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/presentation/widgets/widgets.dart';

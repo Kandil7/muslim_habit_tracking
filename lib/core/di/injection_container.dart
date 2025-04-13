@@ -61,6 +61,7 @@ Future<void> init() async {
   await _initPrayerTimesFeature();
   await _initDuaDhikrFeature();
   await _initAnalyticsFeature();
+  await _initLocalizationFeature();
 }
 
 /// Initialize external dependencies
@@ -247,4 +248,10 @@ Future<void> _initAnalyticsFeature() async {
 
   // Register location dependencies
   registerLocationDependencies(sl);
+}
+
+/// Initialize localization feature dependencies
+Future<void> _initLocalizationFeature() async {
+  // No dependencies to register for now as we're using Provider for language state
+  // This method is a placeholder for future localization-related dependencies
 }
