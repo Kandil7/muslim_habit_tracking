@@ -2,10 +2,13 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:muslim_habbit/core/utils/services/notification_service.dart';
+import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../features/prayer_times/data/repo/prayer_repo_impl.dart';
 import '../errors/exceptions.dart';
 import '../../features/location/di/location_injection_container.dart';
 import '../localization/bloc/language_bloc_exports.dart';
@@ -23,16 +26,7 @@ import '../../features/habit_tracking/domain/usecases/get_habit_logs_by_date_ran
 import '../../features/habit_tracking/domain/usecases/get_habits.dart';
 import '../../features/habit_tracking/domain/usecases/update_habit.dart';
 import '../../features/habit_tracking/presentation/bloc/habit_bloc.dart';
-import '../../features/prayer_times/data/datasources/prayer_time_local_data_source.dart';
-import '../../features/prayer_times/data/datasources/prayer_time_remote_data_source.dart';
-import '../../features/prayer_times/data/repositories/prayer_time_repository_impl.dart';
-import '../../features/prayer_times/data/services/location_service.dart';
-import '../../features/prayer_times/data/services/prayer_calculation_service.dart';
-import '../../features/prayer_times/domain/repositories/prayer_time_repository.dart';
-import '../../features/prayer_times/domain/usecases/get_prayer_time_by_date.dart';
-import '../../features/prayer_times/domain/usecases/get_prayer_times_by_date_range.dart';
-import '../../features/prayer_times/domain/usecases/update_calculation_method.dart';
-import '../../features/prayer_times/presentation/bloc/prayer_time_bloc.dart';
+
 import '../../features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart';
 import '../../features/dua_dhikr/data/repositories/dua_dhikr_repository_impl.dart';
 import '../../features/dua_dhikr/domain/repositories/dua_dhikr_repository.dart';
@@ -46,6 +40,7 @@ import '../../features/analytics/domain/repositories/analytics_repository.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats_by_date_range.dart';
 import '../../features/analytics/presentation/bloc/analytics_bloc.dart';
+import '../utils/services/location_service.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -143,47 +138,24 @@ Future<void> _initHabitTrackingFeature() async {
 
 /// Initialize prayer times feature dependencies
 Future<void> _initPrayerTimesFeature() async {
-  // Data sources
-  sl.registerLazySingleton<PrayerTimeLocalDataSource>(
-    () => PrayerTimeLocalDataSourceImpl(
-      prayerTimesBox: Hive.box(AppConstants.prayerTimesBoxName),
-      sharedPreferences: sl(),
-    ),
-  );
 
-  sl.registerLazySingleton<PrayerTimeRemoteDataSource>(
-    () => PrayerTimeRemoteDataSourceImpl(
-      uuid: sl(),
-    ),
-  );
+
+
+
 
   // Services
-  sl.registerLazySingleton(() => LocationService(sharedPreferences: sl()));
-  sl.registerLazySingleton(() => PrayerCalculationService(uuid: sl()));
+  sl.registerLazySingleton(() => LocationService());
+  sl.registerLazySingleton(() => NotificationService());
 
   // Repositories
-  sl.registerLazySingleton<PrayerTimeRepository>(
-    () => PrayerTimeRepositoryImpl(
-      remoteDataSource: sl(),
-      localDataSource: sl(),
-      networkInfo: sl(),
-      locationService: sl(),
-      cacheManager: sl(),
-    ),
-  );
+  sl.registerSingleton<PrayerRepoImpl>(PrayerRepoImpl());
 
-  // Use cases
-  sl.registerLazySingleton(() => GetPrayerTimeByDate(sl()));
-  sl.registerLazySingleton(() => GetPrayerTimesByDateRange(sl()));
-  sl.registerLazySingleton(() => UpdateCalculationMethod(sl()));
+
+
 
   // BLoC
   sl.registerFactory(
-    () => PrayerTimeBloc(
-      getPrayerTimeByDate: sl(),
-      getPrayerTimesByDateRange: sl(),
-      updateCalculationMethod: sl(),
-    ),
+    () => PrayerCubit(sl(), sl())
   );
 }
 
@@ -247,8 +219,7 @@ Future<void> _initAnalyticsFeature() async {
     ),
   );
 
-  // Register location dependencies
-  registerLocationDependencies(sl);
+
 }
 
 /// Initialize localization feature dependencies

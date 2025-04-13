@@ -10,10 +10,12 @@ import 'core/localization/bloc/language_bloc_exports.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/services/cache_manager.dart';
-import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/bloc/theme_bloc_exports.dart';
+import 'core/utils/services/location_service.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
+import 'features/prayer_times/data/repo/prayer_repo_impl.dart';
+import 'features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
@@ -21,8 +23,6 @@ import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
 import 'features/habit_tracking/presentation/pages/home_page.dart';
-import 'features/prayer_times/presentation/bloc/prayer_time_bloc.dart';
-import 'features/prayer_times/presentation/bloc/prayer_time_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,10 +36,7 @@ void main() async {
   // Initialize dependencies
   await di.init();
 
-  // Initialize notification service
-  final notificationService = NotificationService();
-  await notificationService.init();
-  await notificationService.requestPermissions();
+
 
   // Initialize cache manager
   final cacheManager = CacheManager();
@@ -72,8 +69,9 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
         BlocProvider<HabitBloc>(
           create: (context) => di.sl<HabitBloc>()..add(GetHabitsEvent()),
         ),
-        BlocProvider<PrayerTimeBloc>(
-          create: (context) => di.sl<PrayerTimeBloc>()..add(GetPrayerTimeByDateEvent(date: DateTime.now())),
+        BlocProvider<PrayerCubit>(
+          create: (context) => PrayerCubit(
+    di.sl<PrayerRepoImpl>(), di.sl<LocationService>()),
         ),
         BlocProvider<DuaDhikrBloc>(
           create: (context) => di.sl<DuaDhikrBloc>()..add(GetAllDhikrsEvent()),

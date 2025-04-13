@@ -76,10 +76,17 @@ dependencies:
 #  awesome_notifications: ^0.10.0
 
   # Prayer Times
-  adhan: ^2.0.0+1
+  pray_times: ^0.0.1
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   flutter_compass: ^0.8.0
+  location: ^8.0.0
+  flutter_local_notifications: ^18.0.1
+  sqflite: ^2.4.2
+  workmanager: ^0.5.2
+  hijri: ^3.0.0
+  cached_network_image: ^3.4.1
+  flutter_image_slideshow: ^0.1.6
 
 dev_dependencies:
   flutter_test:

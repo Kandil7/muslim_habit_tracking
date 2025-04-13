@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/utils/date_utils.dart';
@@ -578,14 +577,8 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  ///TODO: Schedule the reminder
                   // Schedule the reminder
-                  final notificationService = NotificationService();
-                  notificationService.scheduleHabitReminder(
-                    habitId: _habit.id,
-                    habitName: _habit.name,
-                    reminderTime: selectedTime,
-                    daysOfWeek: _habit.daysOfWeek,
-                  );
 
                   Navigator.pop(context);
 

@@ -8,7 +8,6 @@ import '../../../../core/services/cache_manager.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/bloc/theme_bloc_exports.dart';
-import '../../../../features/prayer_times/presentation/pages/prayer_settings_page.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
 
@@ -37,29 +36,7 @@ class SettingsPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Prayer settings section
-          SectionHeader(title: context.tr.translate('prayer.settings')),
-          SettingsCard(
-            title: context.tr.translate('prayer.calculationMethod'),
-            subtitle: 'Muslim World League',
-            leading: const Icon(AppIcons.prayer),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PrayerSettingsPage(),
-                ),
-              );
-            },
-          ),
-          SettingsCard(
-            title: context.tr.translate('prayer.location'),
-            subtitle: context.tr.translate('prayer.autoDetectLocation'),
-            leading: const Icon(AppIcons.calendar),
-            onTap: () {
-              // TODO: Navigate to location settings
-            },
-          ),
+
           SettingsCard(
             title: context.tr.translate('prayer.notifications'),
             subtitle: '15 ${context.tr.translate('prayer.notificationTime')}',
@@ -77,7 +54,7 @@ class SettingsPage extends StatelessWidget {
               final isDarkMode = state.themeMode == ThemeMode.dark;
               return SettingsCard(
                 title: context.tr.translate('settings.theme'),
-                subtitle: _getThemeModeText(state.themeMode),
+                subtitle: _getThemeModeText(context,state.themeMode),
                 leading: Icon(
                   _getThemeModeIcon(state.themeMode),
                 ),
@@ -219,7 +196,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   /// Get the text description for a theme mode
-  String _getThemeModeText(ThemeMode themeMode) {
+  String _getThemeModeText(BuildContext context,ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.light:
         return context.tr.translate('settings.lightMode');

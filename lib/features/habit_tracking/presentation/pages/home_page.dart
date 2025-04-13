@@ -17,11 +17,8 @@ import '../../../dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
 import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
-import '../../../prayer_times/domain/entities/prayer_time.dart';
-import '../../../prayer_times/presentation/bloc/prayer_time_bloc.dart';
-import '../../../prayer_times/presentation/bloc/prayer_time_event.dart';
-import '../../../prayer_times/presentation/bloc/prayer_time_state.dart';
-import '../../../prayer_times/presentation/pages/prayer_settings_page.dart';
+
+import '../../../prayer_times/presentation/views/prayer_view.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
 import '../bloc/habit_bloc.dart';
@@ -44,7 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const HabitDashboardPage(),
-    const PrayerTimesPage(),
+    const PrayerView(),
     const DuaDhikrPage(),
     const AnalyticsPage(),
     const SettingsPage(),
@@ -505,167 +502,6 @@ class HabitDashboardPage extends StatelessWidget {
   }
 }
 
-/// Prayer Times page
-class PrayerTimesPage extends StatelessWidget {
-  const PrayerTimesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Prayer Times'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PrayerSettingsPage(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: BlocBuilder<PrayerTimeBloc, PrayerTimeState>(
-        builder: (context, state) {
-          if (state is PrayerTimeLoading) {
-            return const LoadingIndicator(text: 'Loading prayer times...');
-          } else if (state is PrayerTimeLoaded) {
-            return _buildPrayerTimesView(context, state.prayerTime);
-          } else if (state is PrayerTimeError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Error: ${state.message}'),
-                  const SizedBox(height: 16),
-                  CustomButton(
-                    text: 'Try Again',
-                    onPressed: () => context.read<PrayerTimeBloc>().add(GetPrayerTimeByDateEvent(date: DateTime.now())),
-                    buttonType: ButtonType.primary,
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return const EmptyState(
-              title: 'No Prayer Times Available',
-              message: 'Please check your settings and try again',
-              icon: Icons.access_time,
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildPrayerTimesView(BuildContext context, PrayerTime prayerTime) {
-    final now = DateTime.now();
-    final nextPrayer = prayerTime.getNextPrayer(now);
-    final nextPrayerName = nextPrayer.keys.first;
-    final nextPrayerTime = nextPrayer.values.first;
-
-    return Column(
-      children: [
-        // Date and next prayer
-        Container(
-          padding: const EdgeInsets.all(20),
-          color: AppColors.primary,
-          width: double.infinity,
-          child: Column(
-            children: [
-              Text(
-                DateTimeUtils.formatDate(prayerTime.date),
-                style: AppTextStyles.bodyLarge.copyWith(color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Next Prayer',
-                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white.withOpacity(0.8)),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                nextPrayerName,
-                style: AppTextStyles.headingLarge.copyWith(color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                DateTimeUtils.formatTime(nextPrayerTime),
-                style: AppTextStyles.headingMedium.copyWith(color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              // Countdown
-              Text(
-                'In ${_formatTimeRemaining(nextPrayerTime, now)}',
-                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white.withOpacity(0.8)),
-              ),
-            ],
-          ),
-        ),
-
-        // Prayer times list
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildPrayerTimeItem('Fajr', prayerTime.fajr, AppColors.fajrColor, now),
-              _buildPrayerTimeItem('Sunrise', prayerTime.sunrise, AppColors.dhuhrColor.withOpacity(0.7), now),
-              _buildPrayerTimeItem('Dhuhr', prayerTime.dhuhr, AppColors.dhuhrColor, now),
-              _buildPrayerTimeItem('Asr', prayerTime.asr, AppColors.asrColor, now),
-              _buildPrayerTimeItem('Maghrib', prayerTime.maghrib, AppColors.maghribColor, now),
-              _buildPrayerTimeItem('Isha', prayerTime.isha, AppColors.ishaColor, now),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPrayerTimeItem(String name, DateTime time, Color color, DateTime now) {
-    final isPast = time.isBefore(now);
-    final isNext = !isPast && now.isBefore(time) &&
-                  !now.isAfter(time.subtract(const Duration(hours: 2)));
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: color,
-          child: Icon(
-            isPast ? Icons.check : Icons.access_time,
-            color: Colors.white,
-          ),
-        ),
-        title: Text(
-          name,
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: isNext ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-        trailing: Text(
-          DateTimeUtils.formatTime(time),
-          style: AppTextStyles.bodyMedium.copyWith(
-            fontWeight: isNext ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatTimeRemaining(DateTime futureTime, DateTime now) {
-    final difference = futureTime.difference(now);
-    final hours = difference.inHours;
-    final minutes = difference.inMinutes % 60;
-
-    if (hours > 0) {
-      return '$hours hr ${minutes > 0 ? '$minutes min' : ''}';
-    } else {
-      return '${minutes > 0 ? '$minutes min' : 'less than a minute'}';
-    }
-  }
-}
 
 /// Dua & Dhikr page
 class DuaDhikrPage extends StatefulWidget {
