@@ -83,10 +83,11 @@ dependencies:
   location: ^8.0.0
   flutter_local_notifications: ^18.0.1
   sqflite: ^2.4.2
-  workmanager: ^0.5.2
+  workmanager: ^0.5.1+2
   hijri: ^3.0.0
   cached_network_image: ^3.4.1
   flutter_image_slideshow: ^0.1.6
+  flutter_timezone: ^4.1.0
 
 dev_dependencies:
   flutter_test:
@@ -116,7 +117,7 @@ flutter:
   # Assets for the application
   assets:
     - assets/images/
-    - assets/icons/
+    - assets/json/
     - assets/fonts/
     - assets/translations/
 

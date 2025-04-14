@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../home/presentation/manager/app/app_cubit.dart';
 import '../../manager/notification/notification_cubit.dart';
 import 'notification_view_item.dart';
 
@@ -14,7 +13,7 @@ class NotificationViewListView extends StatelessWidget {
     return BlocConsumer<NotificationCubit, NotificationState>(
       listener: (context, state) async {
         if (state is ChangeNotificationSuccess) {
-          await context.read<AppCubit>().makeNotification();
+          await context.read<NotificationCubit>().makeNotification();
         }
       },
       builder: (context, state) {

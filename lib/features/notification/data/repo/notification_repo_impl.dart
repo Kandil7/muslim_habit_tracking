@@ -1,21 +1,17 @@
-import 'package:jumaa/core/utils/constants.dart';
-import 'package:jumaa/core/utils/helper.dart';
+import '../../../../core/di/injection_container.dart' as di;
+import '/core/utils/constants.dart';
+import '/core/utils/helper.dart';
 
 import '../../../../core/utils/services/notification_service.dart';
 import '../../../../core/utils/services/setup_locator_service.dart';
-import '../../../early_jumaa/data/repo/early_jumaa_repo.dart';
-import '../../../early_jumaa/data/repo/early_jumaa_repo_impl.dart';
-import '../../../night_prayer/data/repo/night_prayer_repo.dart';
-import '../../../night_prayer/data/repo/night_prayer_repo_impl.dart';
+
 import '../models/notification_model.dart';
 import 'notification_repo.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationRepoImpl extends NotificationRepo {
   final NotificationService _notificationService =
-      getIt.get<NotificationService>();
-  final EarlyJumaaRepo _earlyJumaaRepo = getIt.get<EarlyJumaaRepoImpl>();
-  final NightPrayerRepo _nightPrayerRepo = getIt.get<NightPrayerRepoImpl>();
+      di.sl<NotificationService>();
 
   @pragma('vm:entry-point')
   @override
@@ -32,9 +28,9 @@ class NotificationRepoImpl extends NotificationRepo {
           minute: prayerDateTimes[2].minute);
     }
 
-    if (boolList[1]) {
-      await _earlyJumaa();
-    }
+    // if (boolList[1]) {
+    //   await _earlyJumaa();
+    // }
 
     if (boolList[2]) {
       await _readingSurahAlKahfAndDoaaOnFriday(
@@ -58,9 +54,9 @@ class NotificationRepoImpl extends NotificationRepo {
       await _fastingMondayAndThursday(prayerDateTimes[5]);
     }
 
-    if (boolList[6]) {
-      await _rememberNightPrayerTimes();
-    }
+    // if (boolList[6]) {
+    //   await _rememberNightPrayerTimes();
+    // }
 
     if (boolList[7]) {
       await _rememberDoaaBeforIqmaaAndPrayerTimes(
@@ -244,26 +240,26 @@ class NotificationRepoImpl extends NotificationRepo {
         date: readingQuranTime));
   }
 
-  // early jumaa
-  @pragma('vm:entry-point')
-  Future<void> _earlyJumaa() async {
-    List<DateTime> earlyJumaa =
-        _earlyJumaaRepo.getEarlyJumaa()['earlyJumaaTimes'];
-
-    int firstAvailableIndex =
-        earlyJumaa.indexWhere((time) => time.isAfter(DateTime.now()));
-    if (firstAvailableIndex == -1) return;
-
-    for (int i = firstAvailableIndex; i < earlyJumaa.length; i++) {
-      DateTime earlyJumaaTime = earlyJumaa[i];
-
-      await _notificationService.scheduledNotification(NotificationModel(
-          id: Constants.earlyJumaaID[i],
-          title: "🕌 فضل التبكير لصلاة الجمعة",
-          body: Constants.earlyJumaaBody[i],
-          date: earlyJumaaTime));
-    }
-  }
+  // // early jumaa
+  // @pragma('vm:entry-point')
+  // Future<void> _earlyJumaa() async {
+  //   List<DateTime> earlyJumaa =
+  //       _earlyJumaaRepo.getEarlyJumaa()['earlyJumaaTimes'];
+  //
+  //   int firstAvailableIndex =
+  //       earlyJumaa.indexWhere((time) => time.isAfter(DateTime.now()));
+  //   if (firstAvailableIndex == -1) return;
+  //
+  //   for (int i = firstAvailableIndex; i < earlyJumaa.length; i++) {
+  //     DateTime earlyJumaaTime = earlyJumaa[i];
+  //
+  //     await _notificationService.scheduledNotification(NotificationModel(
+  //         id: Constants.earlyJumaaID[i],
+  //         title: "🕌 فضل التبكير لصلاة الجمعة",
+  //         body: Constants.earlyJumaaBody[i],
+  //         date: earlyJumaaTime));
+  //   }
+  // }
 
   // fasting monday and thursday
   @pragma('vm:entry-point')
@@ -361,23 +357,23 @@ class NotificationRepoImpl extends NotificationRepo {
     }
   }
 
-  // remember night prayer times
-  @pragma('vm:entry-point')
-  Future<void> _rememberNightPrayerTimes() async {
-    List<DateTime> prayerTimes =
-        _nightPrayerRepo.getNightPrayerData()['nightPrayers'];
-
-    int firstAvailableIndex =
-        prayerTimes.indexWhere((time) => time.isAfter(DateTime.now()));
-    if (firstAvailableIndex == -1) return;
-
-    for (int i = firstAvailableIndex; i < prayerTimes.length; i++) {
-      await _notificationService.scheduledNotification(NotificationModel(
-        id: Constants.nightPrayersID[i],
-        title: Constants.nightPrayersTitle[i],
-        body: Constants.nightPrayersBody[i],
-        date: prayerTimes[i],
-      ));
-    }
-  }
+  // // remember night prayer times
+  // @pragma('vm:entry-point')
+  // Future<void> _rememberNightPrayerTimes() async {
+  //   List<DateTime> prayerTimes =
+  //       _nightPrayerRepo.getNightPrayerData()['nightPrayers'];
+  //
+  //   int firstAvailableIndex =
+  //       prayerTimes.indexWhere((time) => time.isAfter(DateTime.now()));
+  //   if (firstAvailableIndex == -1) return;
+  //
+  //   for (int i = firstAvailableIndex; i < prayerTimes.length; i++) {
+  //     await _notificationService.scheduledNotification(NotificationModel(
+  //       id: Constants.nightPrayersID[i],
+  //       title: Constants.nightPrayersTitle[i],
+  //       body: Constants.nightPrayersBody[i],
+  //       date: prayerTimes[i],
+  //     ));
+  //   }
+  // }
 }

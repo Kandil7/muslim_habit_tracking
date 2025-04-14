@@ -8,9 +8,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../features/notification/data/repo/notification_repo_impl.dart';
+import '../../features/notification/presentation/manager/notification/notification_cubit.dart';
 import '../../features/prayer_times/data/repo/prayer_repo_impl.dart';
 import '../errors/exceptions.dart';
-import '../../features/location/di/location_injection_container.dart';
 import '../localization/bloc/language_bloc_exports.dart';
 
 import '../constants/app_constants.dart';
@@ -149,6 +150,7 @@ Future<void> _initPrayerTimesFeature() async {
 
   // Repositories
   sl.registerSingleton<PrayerRepoImpl>(PrayerRepoImpl());
+  sl.registerSingleton<NotificationRepoImpl>(NotificationRepoImpl());
 
 
 
@@ -156,6 +158,9 @@ Future<void> _initPrayerTimesFeature() async {
   // BLoC
   sl.registerFactory(
     () => PrayerCubit(sl(), sl())
+  );
+  sl.registerFactory(
+    () => NotificationCubit(sl(), sl())
   );
 }
 

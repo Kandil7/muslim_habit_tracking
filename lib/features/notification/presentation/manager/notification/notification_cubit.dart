@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jumaa/core/utils/constants.dart';
-import 'package:jumaa/core/utils/helper.dart';
-import 'package:jumaa/core/utils/services/notification_service.dart';
-import 'package:jumaa/core/utils/services/shared_pref_service.dart';
-import 'package:jumaa/generated/l10n.dart';
+import 'package:muslim_habbit/core/localization/app_localizations_extension.dart';
+import '../../../../../core/utils/services/work_manager_service.dart';
+import '/core/utils/constants.dart';
+import '/core/utils/helper.dart';
+import '/core/utils/services/notification_service.dart';
+import '/core/utils/services/shared_pref_service.dart';
 
+import '../../../../../core/utils/services/notification_service.dart';
+import '../../../../../core/utils/services/shared_pref_service.dart';
 import '../../../data/models/notification_item_model.dart';
 
 part 'notification_state.dart';
@@ -21,31 +24,32 @@ class NotificationCubit extends Cubit<NotificationState> {
     if (boolList == null) return [];
     return [
       NotificationItemModel(
-          name: S.of(context).readingSurahAlKahfOnFriday, value: boolList[0]),
+          name: context.tr.translate('notification.readingSurahAlKahfOnFriday'),
+          value: boolList[0]),
+      // NotificationItemModel(
+      //     name: context.tr.translate('notification.earlyJumaa'), value: boolList[1]),
+      // NotificationItemModel(
+      //     name: context.tr.translate('notification.jumaSunnin'), value: boolList[2]),
       NotificationItemModel(
-          name: S.of(context).earlyForJummah, value: boolList[1]),
+          name: context.tr.translate('notification.prayerOnProphetMuhammad'), value: boolList[3]),
       NotificationItemModel(
-          name: S.of(context).prayerInTheLastHourOfFriday, value: boolList[2]),
+          name: context.tr.translate('notification.reminderForDuhaPrayer'), value: boolList[4]),
       NotificationItemModel(
-          name: S.of(context).prayerOnProphetMuhammad, value: boolList[3]),
-      NotificationItemModel(
-          name: S.of(context).reminderForDuhaPrayer, value: boolList[4]),
-      NotificationItemModel(
-          name: S.of(context).fastingOnMondaysaAndThursdays,
+          name: context.tr.translate('notification.fastingOnMondaysaAndThursdays'),
           value: boolList[5]),
-      NotificationItemModel(
-          name: S.of(context).reminderToDoTheNightPrayers, value: boolList[6]),
+      // NotificationItemModel(
+      //     name: context.tr.translate('notification.reminderToDoTheNightPrayers'), value: boolList[6]),
       NotificationItemModel(
           name:
-              S.of(context).rememberingtopraybetweenthecalltoprayerandtheiqama,
+              context.tr.translate('notification.rememberingtopraybetweenthecalltoprayerandtheiqama'),
           value: boolList[7]),
       NotificationItemModel(
-          name: S.of(context).remindertoreadthedailyQuran, value: boolList[8]),
+          name: context.tr.translate('notification.remindertoreadthedailyQuran'), value: boolList[8]),
       NotificationItemModel(
-          name: S.of(context).rememberingthemorningandeveningremembrances,
+          name: context.tr.translate('notification.rememberingthemorningandeveningremembrances'),
           value: boolList[9]),
       NotificationItemModel(
-          name: S.of(context).remindingtheentryofprayertimes,
+          name: context.tr.translate('notification.remindingtheentryofprayertimes'),
           value: boolList[10]),
     ];
   }
@@ -110,4 +114,9 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }
   }
+  Future<void> makeNotification() async {
+      await WorkManagerService.cancelWorkManager();
+      await WorkManagerService.initWorkManager();
+    }
+
 }

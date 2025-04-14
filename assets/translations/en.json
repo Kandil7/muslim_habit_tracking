@@ -182,5 +182,29 @@
     "importError": "Error importing data",
     "deleteSuccess": "Data deleted successfully",
     "deleteError": "Error deleting data"
+  },
+  "onboarding": {
+    "welcome": "Welcome to SunnahTrack",
+    "habits": "Track Your Habits",
+    "prayer": "Prayer Times",
+    "dua": "Duas & Dhikr",
+    "analytics": "Track Your Progress",
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Done"
+  },
+  "notifications": {
+    "readingSurahAlKahfOnFriday": "Reading Surah Al Kahf on Friday",
+    "earlyForJummah": "Early for Jummah",
+    "prayerInTheLastHourOfFriday": "Prayer in the last hour of Friday",
+    "prayerOnProphetMuhammad": "Prayer on Prophet Muhammad",
+    "reminderForDuhaPrayer": "Reminder for Duha Prayer",
+    "fastingOnMondaysaAndThursdays": "Fasting on Mondays and Thursdays",
+    "reminderToDoTheNightPrayers": "Reminder to do the night prayers",
+    "rememberingtopraybetweenthecalltoprayerandtheiqama": "Remembering to pray between the call to prayer and the iqama",
+    "remindertoreadthedailyQuran": "Reminder to read the daily Quran",
+    "rememberingthemorningandeveningremembrances": "Remembering the morning and evening remembrances",
+    "remindingtheentryofprayertimes": "Reminding the entry of prayer times",
+
   }
 }

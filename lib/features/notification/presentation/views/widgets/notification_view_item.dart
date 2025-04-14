@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jumaa/core/utils/colors.dart';
-import 'package:jumaa/core/utils/styles.dart';
+import '/core/utils/colors.dart';
+import '/core/utils/styles.dart';
 
 import '../../../data/models/notification_item_model.dart';
 import '../../manager/notification/notification_cubit.dart';

@@ -30,6 +30,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Enable multidex support
+        multiDexEnabled = true
+
+        // Set vector drawables support
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -37,6 +43,19 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+
+            // Enable minification and optimization
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+
+        debug {
+            // Disable minification for debug builds for faster build times
+            isMinifyEnabled = false
+            isShrinkResources = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
 }
@@ -48,4 +67,11 @@ flutter {
 dependencies {
     // Add the desugaring dependency for Java 8 features
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
+    // Add multidex support
+    implementation("androidx.multidex:multidex:2.0.1")
+
+    // Add core androidx libraries
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.core:core-ktx:1.12.0")
 }

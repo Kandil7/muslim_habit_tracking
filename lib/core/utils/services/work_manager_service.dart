@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../../../features/notification/data/repo/notification_repo_impl.dart';
+import '../../di/injection_container.dart';
 import 'setup_locator_service.dart';
 import 'shared_pref_service.dart';
 
@@ -43,7 +44,7 @@ void _callbackDispatcher() {
       log("Hello from WorkManager");
       WidgetsFlutterBinding.ensureInitialized();
 
-      setupLocatorService();
+      init();
       await Future.wait([
         SharedPrefService.init(),
         initializeDateFormatting('ar_EG', null),

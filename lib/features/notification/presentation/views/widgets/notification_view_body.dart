@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jumaa/generated/l10n.dart';
+import 'package:muslim_habbit/core/localization/app_localizations_extension.dart';
 
-import '../../../../../core/widgets/setting_and_notification_header.dart';
+import '../../../../../core/presentation/widgets/setting_and_notification_header.dart';
 import 'notification_view_list_view.dart';
 
 class NotificationViewBody extends StatelessWidget {
@@ -16,7 +16,7 @@ class NotificationViewBody extends StatelessWidget {
             child: Stack(
           clipBehavior: Clip.none,
           children: [
-            SettingAndNotificationHeader(text: S.of(context).notices),
+            SettingAndNotificationHeader(text: context.tr.translate('settings.notifications')),
             NotificationViewListView(),
           ],
         ))

@@ -182,5 +182,18 @@
     "importError": "خطأ في استيراد البيانات",
     "deleteSuccess": "تم حذف البيانات بنجاح",
     "deleteError": "خطأ في حذف البيانات"
+  },
+  "notifications": {
+    "readingSurahAlKahfOnFriday": "قراءة سورة الكهف يوم الجمعة",
+    "earlyForJummah": "البكير لصلاة الجمعة",
+    "prayerInTheLastHourOfFriday": "صلاة الجمعة في آخر ساعة",
+    "prayerOnProphetMuhammad": "صلاة النبي محمد",
+    "reminderForDuhaPrayer": "تذكير بصلاة الضحى",
+    "fastingOnMondaysaAndThursdays": "صيام الإثنين والخميس",
+    "reminderToDoTheNightPrayers": "تذكير بصلوات الليل",
+    "rememberingtopraybetweenthecalltoprayerandtheiqama": "تذكير بصلاة بين الادعاء والإقامة",
+    "remindertoreadthedailyQuran": "تذكير بقراءة القرآن اليومي",
+    "rememberingthemorningandeveningremembrances": "تذكير بذكر الصباح والمساء",
+    "remindingtheentryofprayertimes": "تذكير بدخول أوقات الصلاة"
   }
 }
