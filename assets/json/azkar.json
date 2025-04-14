@@ -1,0 +1,97 @@
+[
+  {
+    "id": 1,
+    "arName": "أذكار الصباح",
+    "enName": "Morning Supplications"
+  },
+  {
+    "id": 2,
+    "arName": "أذكار المساء",
+    "enName": "Evening Supplications"
+  },
+  {
+    "id": 3,
+    "arName": "أذكار الحج والعمرة",
+    "enName": "Pilgrimage and Umrah Supplications"
+  },
+  {
+    "id": 4,
+    "arName": "أذكار النوم والأحلام",
+    "enName": "Sleep and Dreams Supplications"
+  },
+  {
+    "id": 5,
+    "arName": "أذكار الاستيقاظ من النوم",
+    "enName": "Wake-up Supplications"
+  },
+  {
+    "id": 6,
+    "arName": "أذكار قبل الوضوء",
+    "enName": "Supplications Before Ablution"
+  },
+  {
+    "id": 7,
+    "arName": "أذكار الأذان",
+    "enName": "Call to Prayer Supplications"
+  },
+  {
+    "id": 8,
+    "arName": "أذكار المسجد",
+    "enName": "Mosque Supplications"
+  },
+  {
+    "id": 9,
+    "arName": "أذكار الصلاة",
+    "enName": "Prayer Supplications"
+  },
+  {
+    "id": 10,
+    "arName": "أذكار بعد الصلاة",
+    "enName": "Supplications After Prayer"
+  },
+  {
+    "id": 11,
+    "arName": "أذكار عظيمة",
+    "enName": "Great Supplications"
+  },
+  {
+    "id": 12,
+    "arName": "أذكار المنزل",
+    "enName": "Home Supplications"
+  },
+  {
+    "id": 13,
+    "arName": "أذكار الطعام",
+    "enName": "Food Supplications"
+  },
+  {
+    "id": 14,
+    "arName": "أذكار الخلاء",
+    "enName": "Restroom Supplications"
+  },
+  {
+    "id": 15,
+    "arName": "أدعية من القرآن",
+    "enName": "Supplications from the Quran"
+  },
+  {
+    "id": 16,
+    "arName": "أدعية النبي (صلي الله عليه وسلم)",
+    "enName": "Supplications of the Prophet (PBUH)"
+  },
+  {
+    "id": 17,
+    "arName": "أدعية متنوعة",
+    "enName": "Various Supplications"
+  },
+  {
+    "id": 18,
+    "arName": "أدعية للميت",
+    "enName": "Supplications for the Deceased"
+  },
+  {
+    "id": 19,
+    "arName": "دعاء ختم القرآن",
+    "enName": "Supplication for Completing the Quran"
+  }
+]
