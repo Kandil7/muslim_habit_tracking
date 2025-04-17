@@ -3,24 +3,15 @@ import '../../domain/entities/bookmark.dart';
 /// Model class for QuranBookmark entity
 class QuranBookmarkModel extends QuranBookmark {
   const QuranBookmarkModel({
-    required String id,
-    required int surahId,
-    required int ayahNumber,
-    required int page,
-    required String surahName,
-    required String arabicSurahName,
-    required DateTime timestamp,
-    String? note,
-  }) : super(
-          id: id,
-          surahId: surahId,
-          ayahNumber: ayahNumber,
-          page: page,
-          surahName: surahName,
-          arabicSurahName: arabicSurahName,
-          timestamp: timestamp,
-          note: note,
-        );
+    required super.id,
+    required super.surahId,
+    required super.ayahNumber,
+    required super.page,
+    required super.surahName,
+    required super.arabicSurahName,
+    required super.timestamp,
+    super.note,
+  });
 
   /// Create a QuranBookmarkModel from a JSON map
   factory QuranBookmarkModel.fromJson(Map<String, dynamic> json) {

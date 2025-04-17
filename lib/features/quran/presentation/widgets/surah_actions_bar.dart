@@ -24,7 +24,7 @@ class SurahActionsBar extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -61,10 +61,7 @@ class SurahActionsBar extends StatelessWidget {
     required VoidCallback onPressed,
   }) {
     return IconButton(
-      icon: Icon(
-        icon,
-        color: color ?? AppColors.textSecondary,
-      ),
+      icon: Icon(icon, color: color ?? AppColors.textSecondary),
       onPressed: onPressed,
     );
   }

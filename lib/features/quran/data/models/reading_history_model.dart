@@ -3,22 +3,14 @@ import '../../domain/entities/reading_history.dart';
 /// Model class for QuranReadingHistory entity
 class QuranReadingHistoryModel extends QuranReadingHistory {
   const QuranReadingHistoryModel({
-    required String id,
-    required int surahId,
-    required int ayahNumber,
-    required int page,
-    required String surahName,
-    required String arabicSurahName,
-    required DateTime timestamp,
-  }) : super(
-          id: id,
-          surahId: surahId,
-          ayahNumber: ayahNumber,
-          page: page,
-          surahName: surahName,
-          arabicSurahName: arabicSurahName,
-          timestamp: timestamp,
-        );
+    required super.id,
+    required super.surahId,
+    required super.ayahNumber,
+    required super.page,
+    required super.surahName,
+    required super.arabicSurahName,
+    required super.timestamp,
+  });
 
   /// Create a QuranReadingHistoryModel from a JSON map
   factory QuranReadingHistoryModel.fromJson(Map<String, dynamic> json) {

@@ -3,24 +3,15 @@ import '../../domain/entities/quran.dart';
 /// Model class for Quran entity
 class QuranModel extends Quran {
   const QuranModel({
-    required int id,
-    required String name,
-    required String arabicName,
-    required String englishName,
-    required String revelationType,
-    required int numberOfAyahs,
-    required int startPage,
-    bool isBookmarked = false,
-  }) : super(
-          id: id,
-          name: name,
-          arabicName: arabicName,
-          englishName: englishName,
-          revelationType: revelationType,
-          numberOfAyahs: numberOfAyahs,
-          startPage: startPage,
-          isBookmarked: isBookmarked,
-        );
+    required super.id,
+    required super.name,
+    required super.arabicName,
+    required super.englishName,
+    required super.revelationType,
+    required super.numberOfAyahs,
+    required super.startPage,
+    super.isBookmarked = false,
+  });
 
   /// Create a QuranModel from a JSON map
   factory QuranModel.fromJson(Map<String, dynamic> json) {

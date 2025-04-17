@@ -6,10 +6,7 @@ import 'package:muslim_habbit/core/theme/app_theme.dart';
 class QuranTabs extends StatelessWidget {
   final TabController tabController;
 
-  const QuranTabs({
-    super.key,
-    required this.tabController,
-  });
+  const QuranTabs({super.key, required this.tabController});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +14,7 @@ class QuranTabs extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          bottom: BorderSide(
-            color: AppColors.border,
-            width: 1,
-          ),
+          bottom: BorderSide(color: AppColors.lightGrey, width: 1),
         ),
       ),
       child: TabBar(

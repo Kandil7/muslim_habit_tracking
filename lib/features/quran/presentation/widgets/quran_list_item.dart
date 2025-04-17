@@ -25,38 +25,29 @@ class QuranListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SurahDetailPage(
-              surahId: surah.id,
-              initialPage: surah.startPage,
-            ),
+            builder:
+                (context) => SurahDetailPage(
+                  surahId: surah.id,
+                  initialPage: surah.startPage,
+                ),
           ),
         );
       },
       leading: _buildLeading(context),
       title: Text(
-        isArabic
-            ? "سورة ${surah.arabicName}"
-            : "Surah ${surah.englishName}",
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
+        isArabic ? "سورة ${surah.arabicName}" : "Surah ${surah.englishName}",
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
       subtitle: Text(
         isArabic
             ? "عدد الايات ${Helper.convertToArabicNumbers(surah.numberOfAyahs.toString())} - ${surah.revelationType}"
             : "Number of verses ${surah.numberOfAyahs.toString()} - ${surah.revelationType}",
-        style: TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondary,
-        ),
+        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
-      trailing: surah.isBookmarked
-          ? Icon(
-              Icons.bookmark,
-              color: AppColors.primary,
-            )
-          : null,
+      trailing:
+          surah.isBookmarked
+              ? Icon(Icons.bookmark, color: AppColors.primary)
+              : null,
     );
   }
 
@@ -65,7 +56,7 @@ class QuranListItem extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(

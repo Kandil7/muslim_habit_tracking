@@ -9,7 +9,7 @@ import '../../domain/usecases/get_last_read_position.dart';
 import '../../domain/usecases/get_reading_history.dart';
 import '../../domain/usecases/get_surah_by_id.dart';
 import '../../domain/usecases/remove_bookmark.dart';
-import '../../domain/usecases/update_last_read_position.dart';
+import '../../domain/usecases/update_last_read_position.dart' as domain;
 import 'quran_event.dart';
 import 'quran_state.dart';
 
@@ -23,7 +23,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
   final GetReadingHistory getReadingHistory;
   final AddReadingHistory addReadingHistory;
   final GetLastReadPosition getLastReadPosition;
-  final UpdateLastReadPosition updateLastReadPosition;
+  final domain.UpdateLastReadPosition updateLastReadPosition;
 
   QuranBloc({
     required this.getAllSurahs,
@@ -49,10 +49,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
   }
 
   /// Handle LoadSurahs event
-  Future<void> _onLoadSurahs(
-    LoadSurahs event,
-    Emitter<QuranState> emit,
-  ) async {
+  Future<void> _onLoadSurahs(LoadSurahs event, Emitter<QuranState> emit) async {
     emit(const QuranLoading());
     final result = await getAllSurahs(NoParams());
     result.fold(
@@ -62,10 +59,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
   }
 
   /// Handle LoadSurah event
-  Future<void> _onLoadSurah(
-    LoadSurah event,
-    Emitter<QuranState> emit,
-  ) async {
+  Future<void> _onLoadSurah(LoadSurah event, Emitter<QuranState> emit) async {
     emit(const QuranLoading());
     final result = await getSurahById(SurahParams(id: event.surahId));
     result.fold(
@@ -106,12 +100,15 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     Emitter<QuranState> emit,
   ) async {
     emit(const QuranLoading());
-    final result = await removeBookmark(RemoveBookmarkParams(bookmarkId: event.bookmarkId));
+    final result = await removeBookmark(
+      RemoveBookmarkParams(bookmarkId: event.bookmarkId),
+    );
     result.fold(
       (failure) => emit(QuranError(message: failure.message)),
-      (success) => success
-          ? emit(BookmarkRemoved(bookmarkId: event.bookmarkId))
-          : emit(const QuranError(message: 'Failed to remove bookmark')),
+      (success) =>
+          success
+              ? emit(BookmarkRemoved(bookmarkId: event.bookmarkId))
+              : emit(const QuranError(message: 'Failed to remove bookmark')),
     );
   }
 
@@ -134,7 +131,9 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     Emitter<QuranState> emit,
   ) async {
     emit(const QuranLoading());
-    final result = await addReadingHistory(ReadingHistoryParams(history: event.history));
+    final result = await addReadingHistory(
+      ReadingHistoryParams(history: event.history),
+    );
     result.fold(
       (failure) => emit(QuranError(message: failure.message)),
       (history) => emit(ReadingHistoryAdded(history: history)),
@@ -169,12 +168,19 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     Emitter<QuranState> emit,
   ) async {
     emit(const QuranLoading());
-    final result = await updateLastReadPosition(LastReadPositionParams(history: event.history));
+    final result = await updateLastReadPosition(
+      domain.LastReadPositionParams(history: event.history),
+    );
     result.fold(
       (failure) => emit(QuranError(message: failure.message)),
-      (success) => success
-          ? emit(LastReadPositionUpdated(history: event.history))
-          : emit(const QuranError(message: 'Failed to update last read position')),
+      (success) =>
+          success
+              ? emit(LastReadPositionUpdated(history: event.history))
+              : emit(
+                const QuranError(
+                  message: 'Failed to update last read position',
+                ),
+              ),
     );
   }
 }
