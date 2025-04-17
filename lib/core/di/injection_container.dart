@@ -51,6 +51,9 @@ import '../../features/habit_tracking/data/repositories/habit_reminder_repositor
 import '../../features/habit_tracking/data/services/habit_notification_service.dart';
 import '../../features/habit_tracking/domain/repositories/habit_reminder_repository.dart';
 import '../../features/habit_tracking/domain/utils/streak_calculator.dart';
+import '../../features/home/data/services/home_preferences_service.dart';
+import '../../features/home/presentation/bloc/home_dashboard_bloc.dart';
+import '../../features/home/presentation/bloc/home_dashboard_event.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -63,6 +66,7 @@ Future<void> init() async {
   await _initCore();
 
   // Features
+  await _initHomeFeature();
   await _initHabitTrackingFeature();
   await _initPrayerTimesFeature();
   await _initDuaDhikrFeature();
@@ -262,4 +266,21 @@ Future<void> _initAnalyticsFeature() async {
 Future<void> _initLocalizationFeature() async {
   // Register the LanguageCubit
   sl.registerFactory(() => LanguageCubit(sl()));
+}
+
+/// Initialize home feature dependencies
+Future<void> _initHomeFeature() async {
+  // Services
+  sl.registerLazySingleton<HomePreferencesService>(
+    () => HomePreferencesService(
+      sharedPreferences: sl(),
+    ),
+  );
+
+  // BLoC
+  sl.registerFactory(
+    () => HomeDashboardBloc(
+      preferencesService: sl(),
+    ),
+  );
 }
