@@ -3,7 +3,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:logger/logger.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/services.dart';
 
 import '../../../features/prayer_times/data/models/prayer_item_model.dart';
@@ -87,9 +86,6 @@ class PrayerNotificationService {
 
   Future<void> _requestExactAlarmPermission() async {
     try {
-      // Initialize AndroidAlarmManager
-      await AndroidAlarmManager.initialize();
-
       // Check if we can schedule exact alarms
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
           _flutterLocalNotificationsPlugin
