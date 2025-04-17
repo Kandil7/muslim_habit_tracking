@@ -11,7 +11,7 @@ import '../../../habit_tracking/presentation/bloc/habit_state.dart';
 import '../../../prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import '../../../prayer_times/presentation/manager/prayer/prayer_state.dart';
 import '../../domain/models/dashboard_card_model.dart';
-import '../../domain/models/quick_action_model.dart';
+
 import '../bloc/home_dashboard_bloc.dart';
 import '../bloc/home_dashboard_event.dart';
 import '../bloc/home_dashboard_state.dart';
@@ -33,7 +33,8 @@ class HomeDashboardPage extends StatefulWidget {
   State<HomeDashboardPage> createState() => _HomeDashboardPageState();
 }
 
-class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTickerProviderStateMixin {
+class _HomeDashboardPageState extends State<HomeDashboardPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _isEditMode = false;
   final TextEditingController _nameController = TextEditingController();
@@ -75,9 +76,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               transitionBuilder: (Widget child, Animation<double> animation) {
                 return ScaleTransition(scale: animation, child: child);
               },
-              child: _isEditMode
-                  ? const Icon(Icons.check, key: ValueKey('check'))
-                  : const Icon(Icons.edit, key: ValueKey('edit')),
+              child:
+                  _isEditMode
+                      ? const Icon(Icons.check, key: ValueKey('check'))
+                      : const Icon(Icons.edit, key: ValueKey('edit')),
             ),
             onPressed: () {
               setState(() {
@@ -135,8 +137,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
                   ElevatedButton(
                     onPressed: () {
                       context.read<HomeDashboardBloc>().add(
-                            const LoadHomeDashboardEvent(),
-                          );
+                        const LoadHomeDashboardEvent(),
+                      );
                     },
                     child: const Text('Retry'),
                   ),
@@ -153,10 +155,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
 
   Widget _buildDashboard(BuildContext context, HomeDashboardLoaded state) {
     // Filter visible cards and sort by order
-    final visibleCards = state.dashboardCards
-        .where((card) => card.isVisible)
-        .toList()
-        ..sort((a, b) => a.order.compareTo(b.order));
+    final visibleCards =
+        state.dashboardCards.where((card) => card.isVisible).toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -177,7 +178,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               const SizedBox(height: 24),
 
               // Dashboard cards
-              ...visibleCards.map((card) => _buildCardWidget(context, card, state)),
+              ...visibleCards.map(
+                (card) => _buildCardWidget(context, card, state),
+              ),
 
               // Quick actions section
               const SizedBox(height: 24),
@@ -193,45 +196,33 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
     );
   }
 
-  Widget _buildCardWidget(BuildContext context, DashboardCardModel card, HomeDashboardLoaded state) {
+  Widget _buildCardWidget(
+    BuildContext context,
+    DashboardCardModel card,
+    HomeDashboardLoaded state,
+  ) {
     switch (card.id) {
       case 'prayer':
         return Column(
           children: [
-            _buildPrayerTimesSection(context),
+            _buildPrayerTimesSection(context, state),
             const SizedBox(height: 24),
           ],
         );
       case 'habits':
         return Column(
           children: [
-            _buildHabitsSection(context),
+            _buildHabitsSection(context, state),
             const SizedBox(height: 24),
           ],
         );
       case 'quran':
         return Column(
-          children: [
-            QuranCard(
-              isReorderable: _isEditMode,
-              onReorder: () => _showReorderDialog(context, state),
-              onVisibilityToggle: () => _toggleCardVisibility(context, 'quran'),
-              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'quran').isVisible,
-            ),
-            const SizedBox(height: 24),
-          ],
+          children: [const QuranCard(), const SizedBox(height: 24)],
         );
       case 'dhikr':
         return Column(
-          children: [
-            DhikrCard(
-              isReorderable: _isEditMode,
-              onReorder: () => _showReorderDialog(context, state),
-              onVisibilityToggle: () => _toggleCardVisibility(context, 'dhikr'),
-              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'dhikr').isVisible,
-            ),
-            const SizedBox(height: 24),
-          ],
+          children: [const DhikrCard(), const SizedBox(height: 24)],
         );
       case 'calendar':
         return Column(
@@ -239,8 +230,12 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
             IslamicCalendarCard(
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
-              onVisibilityToggle: () => _toggleCardVisibility(context, 'calendar'),
-              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'calendar').isVisible,
+              onVisibilityToggle:
+                  () => _toggleCardVisibility(context, 'calendar'),
+              isVisible:
+                  state.dashboardCards
+                      .firstWhere((c) => c.id == 'calendar')
+                      .isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -252,7 +247,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle: () => _toggleCardVisibility(context, 'qibla'),
-              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'qibla').isVisible,
+              isVisible:
+                  state.dashboardCards
+                      .firstWhere((c) => c.id == 'qibla')
+                      .isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -263,8 +261,12 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
             HadithCard(
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
-              onVisibilityToggle: () => _toggleCardVisibility(context, 'hadith'),
-              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'hadith').isVisible,
+              onVisibilityToggle:
+                  () => _toggleCardVisibility(context, 'hadith'),
+              isVisible:
+                  state.dashboardCards
+                      .firstWhere((c) => c.id == 'hadith')
+                      .isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -277,64 +279,64 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
   void _showReorderDialog(BuildContext context, HomeDashboardLoaded state) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reorder Dashboard Cards'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ReorderableListView.builder(
-            shrinkWrap: true,
-            itemCount: state.dashboardCards.length,
-            itemBuilder: (context, index) {
-              final card = state.dashboardCards[index];
-              return ListTile(
-                key: Key(card.id),
-                leading: Icon(card.icon),
-                title: Text(card.title),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Switch(
-                      value: card.isVisible,
-                      onChanged: (value) {
-                        Navigator.pop(context);
-                        _toggleCardVisibility(context, card.id);
-                      },
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Reorder Dashboard Cards'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ReorderableListView.builder(
+                shrinkWrap: true,
+                itemCount: state.dashboardCards.length,
+                itemBuilder: (context, index) {
+                  final card = state.dashboardCards[index];
+                  return ListTile(
+                    key: Key(card.id),
+                    leading: Icon(card.icon),
+                    title: Text(card.title),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Switch(
+                          value: card.isVisible,
+                          onChanged: (value) {
+                            Navigator.pop(context);
+                            _toggleCardVisibility(context, card.id);
+                          },
+                        ),
+                        const Icon(Icons.drag_handle),
+                      ],
                     ),
-                    const Icon(Icons.drag_handle),
-                  ],
-                ),
-              );
-            },
-            onReorder: (oldIndex, newIndex) {
-              if (oldIndex < newIndex) {
-                newIndex -= 1;
-              }
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  if (oldIndex < newIndex) {
+                    newIndex -= 1;
+                  }
 
-              // Create new order
-              final List<String> newOrder = state.dashboardCards
-                  .map((card) => card.id)
-                  .toList();
+                  // Create new order
+                  final List<String> newOrder =
+                      state.dashboardCards.map((card) => card.id).toList();
 
-              // Reorder
-              final String item = newOrder.removeAt(oldIndex);
-              newOrder.insert(newIndex, item);
+                  // Reorder
+                  final String item = newOrder.removeAt(oldIndex);
+                  newOrder.insert(newIndex, item);
 
-              // Update order
-              context.read<HomeDashboardBloc>().add(
+                  // Update order
+                  context.read<HomeDashboardBloc>().add(
                     ReorderDashboardCardsEvent(newOrder: newOrder),
                   );
-            },
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Close'),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Close'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -344,11 +346,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
       if (state is HomeDashboardLoaded) {
         final card = state.dashboardCards.firstWhere((c) => c.id == cardId);
         context.read<HomeDashboardBloc>().add(
-              ToggleCardVisibilityEvent(
-                cardId: cardId,
-                isVisible: !card.isVisible,
-              ),
-            );
+          ToggleCardVisibilityEvent(cardId: cardId, isVisible: !card.isVisible),
+        );
       }
     }
   }
@@ -363,16 +362,12 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
         break;
       case 'read_quran':
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Quran feature coming soon!'),
-          ),
+          const SnackBar(content: Text('Quran feature coming soon!')),
         );
         break;
       case 'dhikr_counter':
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Dhikr counter feature coming soon!'),
-          ),
+          const SnackBar(content: Text('Dhikr counter feature coming soon!')),
         );
         break;
       default:
@@ -404,10 +399,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              greeting,
-              style: AppTextStyles.headingMedium,
-            ),
+            Text(greeting, style: AppTextStyles.headingMedium),
             if (_isEditMode)
               IconButton(
                 icon: const Icon(Icons.edit),
@@ -432,39 +424,43 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Your Name'),
-        content: TextField(
-          controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: 'Your Name',
-            hintText: 'Enter your name',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final newName = _nameController.text.trim();
-              context.read<HomeDashboardBloc>().add(
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Edit Your Name'),
+            content: TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Your Name',
+                hintText: 'Enter your name',
+              ),
+              autofocus: true,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final newName = _nameController.text.trim();
+                  context.read<HomeDashboardBloc>().add(
                     UpdateUserNameEvent(userName: newName),
                   );
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
+                  Navigator.pop(context);
+                },
+                child: const Text('Save'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
-  Widget _buildPrayerTimesSection(BuildContext context) {
+  Widget _buildPrayerTimesSection(
+    BuildContext context,
+    HomeDashboardLoaded dashboardState,
+  ) {
     return BlocBuilder<PrayerCubit, PrayerState>(
       builder: (context, state) {
         if (state is PrayerInitial) {
@@ -474,35 +470,36 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
           return PrayerTimesCard(
             prayerList: context.read<PrayerCubit>().prayerList,
             nextPrayer: context.read<PrayerCubit>().nextPrayer,
-            isReorderable: _isEditMode,
-            onReorder: () => _showReorderDialog(
-              context,
-              context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
-            ),
-            onVisibilityToggle: () => _toggleCardVisibility(context, 'prayer'),
-            isVisible: context.read<HomeDashboardBloc>().state is HomeDashboardLoaded ?
-              (context.read<HomeDashboardBloc>().state as HomeDashboardLoaded)
-                .dashboardCards.firstWhere((c) => c.id == 'prayer', orElse: () =>
-                  DashboardCardModel(id: 'prayer', title: 'Prayer Times', icon: AppIcons.prayer, order: 0, isVisible: true)
-                ).isVisible : true,
           );
         } else if (state is GetPrayerError) {
           return AnimatedDashboardCard(
             title: 'Prayer Times',
             icon: AppIcons.prayer,
             isReorderable: _isEditMode,
-            onReorder: () => _showReorderDialog(
-              context,
-              context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
-            ),
+            onReorder: () => _showReorderDialog(context, dashboardState),
             onVisibilityToggle: () => _toggleCardVisibility(context, 'prayer'),
-            isVisible: true,
+            isVisible:
+                dashboardState.dashboardCards
+                    .firstWhere(
+                      (c) => c.id == 'prayer',
+                      orElse:
+                          () => DashboardCardModel(
+                            id: 'prayer',
+                            title: 'Prayer Times',
+                            icon: AppIcons.prayer,
+                            order: 0,
+                            isVisible: true,
+                          ),
+                    )
+                    .isVisible,
             child: Column(
               children: [
                 const Text('Failed to load prayer times'),
                 TextButton(
                   onPressed: () {
-                    context.read<PrayerCubit>().getPrayerTimes(forceRefresh: true);
+                    context.read<PrayerCubit>().getPrayerTimes(
+                      forceRefresh: true,
+                    );
                   },
                   child: const Text('Retry'),
                 ),
@@ -516,37 +513,37 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
     );
   }
 
-  Widget _buildHabitsSection(BuildContext context) {
+  Widget _buildHabitsSection(
+    BuildContext context,
+    HomeDashboardLoaded dashboardState,
+  ) {
     return BlocBuilder<HabitBloc, HabitState>(
       builder: (context, state) {
         if (state is HabitLoading) {
           return const LoadingIndicator(text: 'Loading habits...');
         } else if (state is HabitsLoaded) {
-          return HabitsSummaryCard(
-            habits: state.habits,
-            isReorderable: _isEditMode,
-            onReorder: () => _showReorderDialog(
-              context,
-              context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
-            ),
-            onVisibilityToggle: () => _toggleCardVisibility(context, 'habits'),
-            isVisible: context.read<HomeDashboardBloc>().state is HomeDashboardLoaded ?
-              (context.read<HomeDashboardBloc>().state as HomeDashboardLoaded)
-                .dashboardCards.firstWhere((c) => c.id == 'habits', orElse: () =>
-                  DashboardCardModel(id: 'habits', title: 'Habits', icon: AppIcons.home, order: 1, isVisible: true)
-                ).isVisible : true,
-          );
+          return HabitsSummaryCard(habits: state.habits);
         } else if (state is HabitError) {
           return AnimatedDashboardCard(
             title: 'Habits',
-            icon: AppIcons.habit,
+            icon: AppIcons.home,
             isReorderable: _isEditMode,
-            onReorder: () => _showReorderDialog(
-              context,
-              context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
-            ),
+            onReorder: () => _showReorderDialog(context, dashboardState),
             onVisibilityToggle: () => _toggleCardVisibility(context, 'habits'),
-            isVisible: true,
+            isVisible:
+                dashboardState.dashboardCards
+                    .firstWhere(
+                      (c) => c.id == 'habits',
+                      orElse:
+                          () => DashboardCardModel(
+                            id: 'habits',
+                            title: 'Habits',
+                            icon: AppIcons.home,
+                            order: 1,
+                            isVisible: true,
+                          ),
+                    )
+                    .isVisible,
             child: Column(
               children: [
                 Text('Error: ${state.message}'),
@@ -562,14 +559,24 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
         } else {
           return AnimatedDashboardCard(
             title: 'Habits',
-            icon: AppIcons.habit,
+            icon: AppIcons.home,
             isReorderable: _isEditMode,
-            onReorder: () => _showReorderDialog(
-              context,
-              context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
-            ),
+            onReorder: () => _showReorderDialog(context, dashboardState),
             onVisibilityToggle: () => _toggleCardVisibility(context, 'habits'),
-            isVisible: true,
+            isVisible:
+                dashboardState.dashboardCards
+                    .firstWhere(
+                      (c) => c.id == 'habits',
+                      orElse:
+                          () => DashboardCardModel(
+                            id: 'habits',
+                            title: 'Habits',
+                            icon: AppIcons.home,
+                            order: 1,
+                            isVisible: true,
+                          ),
+                    )
+                    .isVisible,
             child: const Text('No habits found'),
           );
         }
