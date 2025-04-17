@@ -52,4 +52,12 @@ class SharedPrefService {
   String? getString({required String key}) {
     return _prefs?.getString(key);
   }
+
+  Future<void> setBool({required String key, required bool value}) async {
+    await _prefs?.setBool(key, value);
+  }
+
+  bool? getBool({required String key}) {
+    return _prefs?.getBool(key);
+  }
 }
