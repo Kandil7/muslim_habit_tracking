@@ -216,7 +216,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle: () => _toggleCardVisibility(context, 'quran'),
-              isVisible: true,
+              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'quran').isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -228,7 +228,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle: () => _toggleCardVisibility(context, 'dhikr'),
-              isVisible: true,
+              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'dhikr').isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -240,7 +240,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle: () => _toggleCardVisibility(context, 'calendar'),
-              isVisible: true,
+              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'calendar').isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -252,7 +252,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle: () => _toggleCardVisibility(context, 'qibla'),
-              isVisible: true,
+              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'qibla').isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -264,7 +264,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle: () => _toggleCardVisibility(context, 'hadith'),
-              isVisible: true,
+              isVisible: state.dashboardCards.firstWhere((c) => c.id == 'hadith').isVisible,
             ),
             const SizedBox(height: 24),
           ],
@@ -480,7 +480,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
             ),
             onVisibilityToggle: () => _toggleCardVisibility(context, 'prayer'),
-            isVisible: true,
+            isVisible: context.read<HomeDashboardBloc>().state is HomeDashboardLoaded ?
+              (context.read<HomeDashboardBloc>().state as HomeDashboardLoaded)
+                .dashboardCards.firstWhere((c) => c.id == 'prayer', orElse: () =>
+                  DashboardCardModel(id: 'prayer', title: 'Prayer Times', icon: AppIcons.prayer, order: 0, isVisible: true)
+                ).isVisible : true,
           );
         } else if (state is GetPrayerError) {
           return AnimatedDashboardCard(
@@ -526,7 +530,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               context.read<HomeDashboardBloc>().state as HomeDashboardLoaded,
             ),
             onVisibilityToggle: () => _toggleCardVisibility(context, 'habits'),
-            isVisible: true,
+            isVisible: context.read<HomeDashboardBloc>().state is HomeDashboardLoaded ?
+              (context.read<HomeDashboardBloc>().state as HomeDashboardLoaded)
+                .dashboardCards.firstWhere((c) => c.id == 'habits', orElse: () =>
+                  DashboardCardModel(id: 'habits', title: 'Habits', icon: AppIcons.home, order: 1, isVisible: true)
+                ).isVisible : true,
           );
         } else if (state is HabitError) {
           return AnimatedDashboardCard(
