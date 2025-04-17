@@ -18,6 +18,7 @@ import '../../../dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
 import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 
+import '../../../home/presentation/pages/home_dashboard_page.dart';
 import '../../../prayer_times/presentation/views/prayer_view.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
+    const HomeDashboardPage(),
     const HabitDashboardPage(),
     const PrayerView(),
     const DuaDhikrPage(),
@@ -64,9 +66,14 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: AppColors.textSecondary,
         items: const [
           BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            activeIcon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(AppIcons.homeOutlined),
             activeIcon: Icon(AppIcons.home),
-            label: 'Home',
+            label: 'Habits',
           ),
           BottomNavigationBarItem(
             icon: Icon(AppIcons.prayerOutlined),
