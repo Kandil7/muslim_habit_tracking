@@ -54,6 +54,14 @@ import '../../features/habit_tracking/domain/utils/streak_calculator.dart';
 import '../../features/home/data/services/home_preferences_service.dart';
 import '../../features/home/presentation/bloc/home_dashboard_bloc.dart';
 import '../../features/home/presentation/bloc/home_dashboard_event.dart';
+import '../../features/hadith/data/datasources/hadith_local_data_source.dart';
+import '../../features/hadith/data/repositories/hadith_repository_impl.dart';
+import '../../features/hadith/domain/repositories/hadith_repository.dart';
+import '../../features/hadith/domain/usecases/get_all_hadiths.dart';
+import '../../features/hadith/domain/usecases/get_hadith_by_id.dart';
+import '../../features/hadith/domain/usecases/get_hadith_of_the_day.dart';
+import '../../features/hadith/domain/usecases/toggle_hadith_bookmark.dart';
+import '../../features/hadith/presentation/bloc/hadith_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -72,6 +80,7 @@ Future<void> init() async {
   await _initDuaDhikrFeature();
   await _initAnalyticsFeature();
   await _initLocalizationFeature();
+  await _initHadithFeature();
 }
 
 /// Initialize external dependencies
@@ -86,6 +95,7 @@ Future<void> _initExternalDependencies() async {
   await Hive.openBox(AppConstants.prayerTimesBoxName);
   await Hive.openBox(AppConstants.settingsBoxName);
   await Hive.openBox(AppConstants.duaDhikrBoxName);
+  await Hive.openBox(AppConstants.hadithBoxName);
 
   // SharedPreferences
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -138,10 +148,7 @@ Future<void> _initHabitTrackingFeature() async {
 
   // Repositories
   sl.registerLazySingleton<HabitRepository>(
-    () => HabitRepositoryImpl(
-      localDataSource: sl(),
-      networkInfo: sl(),
-    ),
+    () => HabitRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
   );
 
   sl.registerLazySingleton<HabitReminderRepository>(
@@ -174,11 +181,6 @@ Future<void> _initHabitTrackingFeature() async {
 
 /// Initialize prayer times feature dependencies
 Future<void> _initPrayerTimesFeature() async {
-
-
-
-
-
   // Services
   sl.registerLazySingleton(() => LocationService());
   sl.registerLazySingleton(() => NotificationService());
@@ -187,16 +189,9 @@ Future<void> _initPrayerTimesFeature() async {
   sl.registerSingleton<PrayerRepoImpl>(PrayerRepoImpl());
   sl.registerSingleton<NotificationRepoImpl>(NotificationRepoImpl());
 
-
-
-
   // BLoC
-  sl.registerFactory(
-    () => PrayerCubit(sl(), sl())
-  );
-  sl.registerFactory(
-    () => NotificationCubit(sl(), sl())
-  );
+  sl.registerFactory(() => PrayerCubit(sl(), sl()));
+  sl.registerFactory(() => NotificationCubit(sl(), sl()));
 }
 
 /// Initialize dua & dhikr feature dependencies
@@ -210,10 +205,7 @@ Future<void> _initDuaDhikrFeature() async {
 
   // Repositories
   sl.registerLazySingleton<DuaDhikrRepository>(
-    () => DuaDhikrRepositoryImpl(
-      localDataSource: sl(),
-      cacheManager: sl(),
-    ),
+    () => DuaDhikrRepositoryImpl(localDataSource: sl(), cacheManager: sl()),
   );
 
   // Use cases
@@ -235,16 +227,12 @@ Future<void> _initDuaDhikrFeature() async {
 Future<void> _initAnalyticsFeature() async {
   // Data sources
   sl.registerLazySingleton<AnalyticsDataSource>(
-    () => AnalyticsDataSourceImpl(
-      habitLocalDataSource: sl(),
-    ),
+    () => AnalyticsDataSourceImpl(habitLocalDataSource: sl()),
   );
 
   // Repositories
   sl.registerLazySingleton<AnalyticsRepository>(
-    () => AnalyticsRepositoryImpl(
-      dataSource: sl(),
-    ),
+    () => AnalyticsRepositoryImpl(dataSource: sl()),
   );
 
   // Use cases
@@ -253,13 +241,8 @@ Future<void> _initAnalyticsFeature() async {
 
   // BLoC
   sl.registerFactory(
-    () => AnalyticsBloc(
-      getHabitStats: sl(),
-      getHabitStatsByDateRange: sl(),
-    ),
+    () => AnalyticsBloc(getHabitStats: sl(), getHabitStatsByDateRange: sl()),
   );
-
-
 }
 
 /// Initialize localization feature dependencies
@@ -272,15 +255,43 @@ Future<void> _initLocalizationFeature() async {
 Future<void> _initHomeFeature() async {
   // Services
   sl.registerLazySingleton<HomePreferencesService>(
-    () => HomePreferencesService(
-      sharedPreferences: sl(),
-    ),
+    () => HomePreferencesService(sharedPreferences: sl()),
   );
 
   // BLoC
+  sl.registerFactory(() => HomeDashboardBloc(preferencesService: sl()));
+}
+
+/// Initialize hadith feature dependencies
+Future<void> _initHadithFeature() async {
+  // Data sources
+  sl.registerLazySingleton<HadithLocalDataSource>(
+    () => HadithLocalDataSourceImpl(
+      hadithBox: Hive.box(AppConstants.hadithBoxName),
+    ),
+  );
+
+  // Initialize with sample data
+  await sl<HadithLocalDataSource>().initializeWithSampleData();
+
+  // Repositories
+  sl.registerLazySingleton<HadithRepository>(
+    () => HadithRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => GetAllHadiths(sl()));
+  sl.registerLazySingleton(() => GetHadithById(sl()));
+  sl.registerLazySingleton(() => GetHadithOfTheDay(sl()));
+  sl.registerLazySingleton(() => ToggleHadithBookmark(sl()));
+
+  // BLoC
   sl.registerFactory(
-    () => HomeDashboardBloc(
-      preferencesService: sl(),
+    () => HadithBloc(
+      getAllHadiths: sl(),
+      getHadithById: sl(),
+      getHadithOfTheDay: sl(),
+      toggleHadithBookmark: sl(),
     ),
   );
 }
