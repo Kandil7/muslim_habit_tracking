@@ -24,7 +24,8 @@ import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import 'features/dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
-import 'features/habit_tracking/presentation/pages/home_page.dart';
+import 'features/habit_tracking/presentation/pages/add_habit_page.dart';
+import 'features/habit_tracking/presentation/pages/home_page.dart'; // Used in the app's home
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -122,6 +123,10 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                     final dhikr = settings.arguments as Dhikr;
                     return MaterialPageRoute(
                       builder: (context) => DhikrCounterPage(dhikr: dhikr),
+                    );
+                  } else if (settings.name == '/add-habit') {
+                    return MaterialPageRoute(
+                      builder: (context) => const AddHabitPage(),
                     );
                   }
                   return null;
