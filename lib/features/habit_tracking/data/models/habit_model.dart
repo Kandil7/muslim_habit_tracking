@@ -17,8 +17,11 @@ class HabitModel extends Habit {
     required super.isActive,
     required super.createdAt,
     super.updatedAt,
+    super.currentStreak = 0,
+    super.longestStreak = 0,
+    super.lastCompletedDate,
   });
-  
+
   /// Create a HabitModel from a JSON map
   factory HabitModel.fromJson(Map<String, dynamic> json) {
     return HabitModel(
@@ -34,9 +37,12 @@ class HabitModel extends Habit {
       isActive: json['isActive'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      currentStreak: json['currentStreak'] ?? 0,
+      longestStreak: json['longestStreak'] ?? 0,
+      lastCompletedDate: json['lastCompletedDate'] != null ? DateTime.parse(json['lastCompletedDate']) : null,
     );
   }
-  
+
   /// Convert this HabitModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -52,9 +58,12 @@ class HabitModel extends Habit {
       'isActive': isActive,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'currentStreak': currentStreak,
+      'longestStreak': longestStreak,
+      'lastCompletedDate': lastCompletedDate?.toIso8601String(),
     };
   }
-  
+
   /// Create a HabitModel from a Habit entity
   factory HabitModel.fromEntity(Habit habit) {
     return HabitModel(
@@ -70,9 +79,12 @@ class HabitModel extends Habit {
       isActive: habit.isActive,
       createdAt: habit.createdAt,
       updatedAt: habit.updatedAt,
+      currentStreak: habit.currentStreak,
+      longestStreak: habit.longestStreak,
+      lastCompletedDate: habit.lastCompletedDate,
     );
   }
-  
+
   /// Create a copy of this HabitModel with the given fields replaced with the new values
   @override
   HabitModel copyWith({
@@ -88,6 +100,10 @@ class HabitModel extends Habit {
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? currentStreak,
+    int? longestStreak,
+    DateTime? lastCompletedDate,
+    bool clearLastCompletedDate = false,
   }) {
     return HabitModel(
       id: id ?? this.id,
@@ -102,6 +118,9 @@ class HabitModel extends Habit {
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      lastCompletedDate: clearLastCompletedDate ? null : (lastCompletedDate ?? this.lastCompletedDate),
     );
   }
 }
