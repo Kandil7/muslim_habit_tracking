@@ -5,7 +5,7 @@ import 'package:muslim_habbit/core/localization/app_localizations_extension.dart
 import 'package:muslim_habbit/core/presentation/widgets/custom_app_bar.dart';
 import 'package:muslim_habbit/core/presentation/widgets/error_message.dart';
 import 'package:muslim_habbit/core/presentation/widgets/loading_indicator.dart';
-
+import 'package:quran_library/quran_library.dart' hide QuranState;
 import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/bookmark.dart';
@@ -41,6 +41,15 @@ class _SurahDetailPageState extends State<SurahDetailPage> {
     super.initState();
     _pageController = PageController(initialPage: widget.initialPage - 1);
     _currentPage = widget.initialPage;
+
+    // Initialize QuranLibrary
+    QuranLibrary().init();
+
+    // Jump to the specified surah and page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Jump to the specified page
+      QuranLibrary().jumpToPage(widget.initialPage);
+    });
   }
 
   @override
@@ -126,59 +135,17 @@ class _SurahDetailPageState extends State<SurahDetailPage> {
     } else if (state is SurahLoaded) {
       return Stack(
         children: [
-          // Using a placeholder for the Quran view
-          // In a real implementation, we would use a proper Quran viewer
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Surah ${state.surah.englishName}',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Page $_currentPage',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed:
-                          _currentPage > 1
-                              ? () {
-                                setState(() {
-                                  _currentPage--;
-                                });
-                                _updateReadingHistory(
-                                  context,
-                                  state.surah,
-                                  _currentPage,
-                                );
-                              }
-                              : null,
-                      child: const Icon(Icons.arrow_back),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _currentPage++;
-                        });
-                        _updateReadingHistory(
-                          context,
-                          state.surah,
-                          _currentPage,
-                        );
-                      },
-                      child: const Icon(Icons.arrow_forward),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          // Using QuranLibraryScreen to display the Quran
+          QuranLibraryScreen(
+            backgroundColor: const Color(0xffFEFFDD),
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index + 1;
+              });
+
+              // Update reading history
+              _updateReadingHistory(context, state.surah, _currentPage);
+            },
           ),
         ],
       );

@@ -131,7 +131,7 @@ class AppTheme {
   // Light theme
   static ThemeData get lightTheme {
     return ThemeData(
-      useMaterial3: true,
+      useMaterial3: false,
       colorScheme: ColorScheme(
         brightness: Brightness.light,
         primary: AppColors.primary,
@@ -225,7 +225,7 @@ class AppTheme {
   // Dark theme
   static ThemeData get darkTheme {
     return ThemeData(
-      useMaterial3: true,
+      useMaterial3: false,
       colorScheme: ColorScheme(
         brightness: Brightness.dark,
         primary: AppColors.darkPrimary,

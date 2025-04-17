@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:quran_library/quran_library.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/localization/app_localizations.dart';
@@ -40,6 +41,9 @@ void main() async {
   // Initialize cache manager
   final cacheManager = CacheManager();
   await cacheManager.init();
+
+  // Initialize QuranLibrary
+  QuranLibrary().init();
 
   // Run the app with the language cubit from the DI container
   runApp(
