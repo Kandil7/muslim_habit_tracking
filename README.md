@@ -63,7 +63,7 @@ This architecture provides several benefits:
 
 1. Clone the repository
    ```
-   git clone https://github.com/yourusername/sunnah_track.git
+   git clone https://github.com/Kandil7/sunnah_track.git
    ```
 
 2. Navigate to the project directory
