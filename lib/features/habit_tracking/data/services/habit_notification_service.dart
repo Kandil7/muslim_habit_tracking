@@ -134,6 +134,7 @@ final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
         'Time to complete your habit: $habitName',
         scheduledDate,
         platformChannelSpecifics,
+        payload: 'habit_$habitId', // Add payload for handling notification taps
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );

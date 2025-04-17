@@ -122,7 +122,7 @@ final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
         '${prayer.enName} prayer time in $minutesBefore minutes',
         scheduledDate,
         platformChannelSpecifics,
-
+        payload: 'prayer_${prayer.enName}', // Add payload for handling notification taps
         matchDateTimeComponents: DateTimeComponents.time,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
