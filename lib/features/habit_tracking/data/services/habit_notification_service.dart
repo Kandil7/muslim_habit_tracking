@@ -14,6 +14,20 @@ class HabitNotificationService {
   Future<void> _initNotifications() async {
     tz_data.initializeTimeZones();
 
+    // Create the notification channel for Android
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'habit_reminders_channel',
+      'Habit Reminders',
+      description: 'Reminders for your habits',
+      importance: Importance.max,
+    );
+
+    final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
+        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    await androidPlugin?.createNotificationChannel(channel);
+
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
