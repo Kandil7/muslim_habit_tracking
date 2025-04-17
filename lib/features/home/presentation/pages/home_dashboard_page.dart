@@ -328,7 +328,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                     newOrder.insert(newIndex, item);
 
                     // Update order
-                    context.read<HomeDashboardBloc>().add(
+                    homeDashboardBloc.add(
                       ReorderDashboardCardsEvent(newOrder: newOrder),
                     );
                   },
@@ -429,37 +429,46 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
   void _showNameEditDialog(BuildContext context, String currentName) {
     _nameController.text = currentName;
 
+    // Get the HomeDashboardBloc instance from the current context
+    final homeDashboardBloc = context.read<HomeDashboardBloc>();
+
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            title: Text(context.tr.translate('home.editName')),
-            content: TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: context.tr.translate('home.yourName'),
-                hintText: context.tr.translate('home.enterName'),
-              ),
-              autofocus: true,
+          (context) => BlocProvider<HomeDashboardBloc>.value(
+            value: homeDashboardBloc,
+            child: Builder(
+              builder:
+                  (context) => AlertDialog(
+                    title: Text(context.tr.translate('home.editName')),
+                    content: TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: context.tr.translate('home.yourName'),
+                        hintText: context.tr.translate('home.enterName'),
+                      ),
+                      autofocus: true,
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(context.tr.translate('home.cancel')),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          final newName = _nameController.text.trim();
+                          context.read<HomeDashboardBloc>().add(
+                            UpdateUserNameEvent(userName: newName),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Text(context.tr.translate('home.save')),
+                      ),
+                    ],
+                  ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(context.tr.translate('home.cancel')),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  final newName = _nameController.text.trim();
-                  context.read<HomeDashboardBloc>().add(
-                    UpdateUserNameEvent(userName: newName),
-                  );
-                  Navigator.pop(context);
-                },
-                child: Text(context.tr.translate('home.save')),
-              ),
-            ],
           ),
     );
   }

@@ -4,6 +4,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../domain/models/quick_action_model.dart';
 import '../bloc/home_dashboard_bloc.dart';
 import '../bloc/home_dashboard_event.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 
 /// Widget for customizable quick actions
 class CustomizableQuickActions extends StatelessWidget {
@@ -90,7 +91,11 @@ class CustomizableQuickActions extends StatelessWidget {
       builder:
           (context) => BlocProvider<HomeDashboardBloc>.value(
             value: homeDashboardBloc,
-            child: _QuickActionsEditDialog(quickActions: quickActions),
+            child: Builder(
+              builder:
+                  (context) =>
+                      _QuickActionsEditDialog(quickActions: quickActions),
+            ),
           ),
     );
   }
@@ -119,7 +124,7 @@ class _QuickActionsEditDialogState extends State<_QuickActionsEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Quick Actions'),
+      title: Text(context.tr.translate('home.editQuickActions')),
       content: SizedBox(
         width: double.maxFinite,
         child: ReorderableListView.builder(
@@ -163,7 +168,7 @@ class _QuickActionsEditDialogState extends State<_QuickActionsEditDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel'),
+          child: Text(context.tr.translate('home.cancel')),
         ),
         ElevatedButton(
           onPressed: () {
@@ -172,7 +177,7 @@ class _QuickActionsEditDialogState extends State<_QuickActionsEditDialog> {
             );
             Navigator.of(context).pop();
           },
-          child: const Text('Save'),
+          child: Text(context.tr.translate('home.save')),
         ),
       ],
     );

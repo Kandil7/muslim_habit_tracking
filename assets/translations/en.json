@@ -69,7 +69,8 @@
     "hideCard": "Hide card",
     "showCard": "Show card",
     "loadingHabits": "Loading habits...",
-    "noHabits": "No habits found"
+    "noHabits": "No habits found",
+    "editQuickActions": "Edit Quick Actions"
   },
   "habits": {
     "title": "Habits",
@@ -110,6 +111,7 @@
   },
   "prayer": {
     "title": "Prayer Times",
+    "time": "Remaining",
     "settings": "Prayer Settings",
     "calculationMethod": "Calculation Method",
     "location": "Location",

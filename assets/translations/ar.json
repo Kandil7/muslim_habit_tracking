@@ -69,7 +69,8 @@
     "hideCard": "إخفاء البطاقة",
     "showCard": "إظهار البطاقة",
     "loadingHabits": "جاري تحميل العادات...",
-    "noHabits": "لا توجد عادات"
+    "noHabits": "لا توجد عادات",
+    "editQuickActions": "تعديل الإجراءات السريعة"
   },
   "habits": {
     "title": "العادات",
@@ -110,6 +111,7 @@
   },
   "prayer": {
     "title": "أوقات الصلاة",
+    "time": "الوقت المتبقي",
     "settings": "إعدادات الصلاة",
     "calculationMethod": "طريقة الحساب",
     "location": "الموقع",
