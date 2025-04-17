@@ -1,10 +1,10 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:jumaa/core/utils/services/location_service.dart';
-// import 'package:jumaa/core/utils/services/setup_locator_service.dart';
-// import 'package:jumaa/core/utils/services/shared_pref_service.dart';
-// import 'package:jumaa/features/home/data/repo/jumaa_data_repo_impl.dart';
-// import 'package:jumaa/features/prayer/data/repo/prayer_repo_impl.dart';
+// import '/core/utils/services/location_service.dart';
+// import '/core/utils/services/setup_locator_service.dart';
+// import '/core/utils/services/shared_pref_service.dart';
+// import '/features/home/data/repo/jumaa_data_repo_impl.dart';
+// import '/features/prayer/data/repo/prayer_repo_impl.dart';
 //
 // import '../../features/home/presentation/manager/app/app_cubit.dart';
 // import '../../features/prayer/presentation/manager/prayer/prayer_cubit.dart';

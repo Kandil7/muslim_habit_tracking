@@ -3,11 +3,11 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:intl/date_symbol_data_local.dart';
-// import 'package:jumaa/core/utils/cached_images.dart';
-// import 'package:jumaa/core/utils/custom_bloc_observer.dart';
-// import 'package:jumaa/core/utils/helper.dart';
-// import 'package:jumaa/core/widgets/jumaa.dart';
-// import 'package:jumaa/core/utils/firebase_options.dart';
+// import '/core/utils/cached_images.dart';
+// import '/core/utils/custom_bloc_observer.dart';
+// import '/core/utils/helper.dart';
+// import '/core/widgets/jumaa.dart';
+// import '/core/utils/firebase_options.dart';
 // import 'package:quran_library/quran.dart';
 //
 // import 'services/setup_locator_service.dart';

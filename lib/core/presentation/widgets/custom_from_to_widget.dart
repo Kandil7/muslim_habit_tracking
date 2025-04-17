@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:jumaa/generated/l10n.dart';
+// import '/generated/l10n.dart';
 //
 // import '../../features/early_jumaa/presentation/views/widgets/early_jumaa_from_to_item.dart';
 //

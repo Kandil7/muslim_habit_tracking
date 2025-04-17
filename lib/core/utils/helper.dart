@@ -55,20 +55,20 @@ abstract class Helper {
     return '${_formatHijriDateTime(lan)} / ${_formatMiladDateTime(lan)}';
   }
 
-  // static String gethizbText(int page) {
-  //   final currentPage = Constants.quranPages[page - 1];
-  //   final hizb = currentPage.hizb;
-  //   switch (currentPage.hizbQuarter % 4) {
-  //     case 1:
-  //       return '¼ الحزب $hizb';
-  //     case 2:
-  //       return '½ الحزب $hizb';
-  //     case 3:
-  //       return '¾ الحزب $hizb';
-  //     default:
-  //       return 'الحزب $hizb';
-  //   }
-  // }
+  static String gethizbText(int page) {
+    final currentPage = Constants.quranPages[page - 1];
+    final hizb = currentPage.hizb;
+    switch (currentPage.hizbQuarter % 4) {
+      case 1:
+        return '¼ الحزب $hizb';
+      case 2:
+        return '½ الحزب $hizb';
+      case 3:
+        return '¾ الحزب $hizb';
+      default:
+        return 'الحزب $hizb';
+    }
+  }
 
   static Future<List<dynamic>> loadJson(String json) async {
     String data = await rootBundle.loadString(json);
