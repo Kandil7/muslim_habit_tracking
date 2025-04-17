@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/bloc/theme_bloc_exports.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 import '../../../habit_tracking/presentation/bloc/habit_bloc.dart';
 import '../../../habit_tracking/presentation/bloc/habit_event.dart';
 import '../../../habit_tracking/presentation/bloc/habit_state.dart';
 import '../../../prayer_times/presentation/manager/prayer/prayer_cubit.dart';
-import '../../../prayer_times/presentation/manager/prayer/prayer_state.dart';
 import '../../domain/models/dashboard_card_model.dart';
-
 import '../bloc/home_dashboard_bloc.dart';
 import '../bloc/home_dashboard_event.dart';
 import '../bloc/home_dashboard_state.dart';
@@ -68,7 +66,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SunnahTrack'),
+        title: Text(context.tr.translate('home.appTitle')),
         actions: [
           IconButton(
             icon: AnimatedSwitcher(
@@ -91,7 +89,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                 }
               });
             },
-            tooltip: _isEditMode ? 'Save changes' : 'Edit dashboard',
+            tooltip:
+                _isEditMode
+                    ? context.tr.translate('home.saveChanges')
+                    : context.tr.translate('home.editDashboard'),
           ),
           BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, state) {
@@ -104,7 +105,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                 onPressed: () {
                   context.read<ThemeBloc>().add(ToggleThemeEvent());
                 },
-                tooltip: 'Toggle Theme',
+                tooltip: context.tr.translate('home.toggleTheme'),
               );
             },
           ),
@@ -113,8 +114,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
             onPressed: () {
               // Navigate to notifications page
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notifications feature coming soon!'),
+                SnackBar(
+                  content: Text(context.tr.translate('home.notificationsSoon')),
                 ),
               );
             },
@@ -140,7 +141,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                         const LoadHomeDashboardEvent(),
                       );
                     },
-                    child: const Text('Retry'),
+                    child: Text(context.tr.translate('home.retry')),
                   ),
                 ],
               ),
@@ -281,7 +282,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Reorder Dashboard Cards'),
+            title: Text(context.tr.translate('home.reorderCards')),
             content: SizedBox(
               width: double.maxFinite,
               child: ReorderableListView.builder(
@@ -333,7 +334,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text('Close'),
+                child: Text(context.tr.translate('home.close')),
               ),
             ],
           ),
@@ -362,12 +363,12 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
         break;
       case 'read_quran':
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Quran feature coming soon!')),
+          SnackBar(content: Text(context.tr.translate('home.quranSoon'))),
         );
         break;
       case 'dhikr_counter':
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dhikr counter feature coming soon!')),
+          SnackBar(content: Text(context.tr.translate('home.dhikrSoon'))),
         );
         break;
       default:
@@ -381,11 +382,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
 
     String greeting;
     if (hour < 12) {
-      greeting = 'Good Morning';
+      greeting = context.tr.translate('home.goodMorning');
     } else if (hour < 17) {
-      greeting = 'Good Afternoon';
+      greeting = context.tr.translate('home.goodAfternoon');
     } else {
-      greeting = 'Good Evening';
+      greeting = context.tr.translate('home.goodEvening');
     }
 
     // Add user name if available
@@ -410,7 +411,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
         ),
         const SizedBox(height: 8),
         Text(
-          'Here\'s your Islamic dashboard for today',
+          context.tr.translate('home.dashboardSubtitle'),
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -426,12 +427,12 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Edit Your Name'),
+            title: Text(context.tr.translate('home.editName')),
             content: TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Your Name',
-                hintText: 'Enter your name',
+              decoration: InputDecoration(
+                labelText: context.tr.translate('home.yourName'),
+                hintText: context.tr.translate('home.enterName'),
               ),
               autofocus: true,
             ),
@@ -440,7 +441,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text('Cancel'),
+                child: Text(context.tr.translate('home.cancel')),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -450,7 +451,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                   );
                   Navigator.pop(context);
                 },
-                child: const Text('Save'),
+                child: Text(context.tr.translate('home.save')),
               ),
             ],
           ),
@@ -465,7 +466,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
       builder: (context, state) {
         if (state is PrayerInitial) {
           context.read<PrayerCubit>().getPrayerTimes();
-          return const LoadingIndicator(text: 'Loading prayer times...');
+          return LoadingIndicator(
+            text: context.tr.translate('home.loadingPrayer'),
+          );
         } else if (state is GetPrayerSuccess) {
           return PrayerTimesCard(
             prayerList: context.read<PrayerCubit>().prayerList,
@@ -494,20 +497,22 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                     .isVisible,
             child: Column(
               children: [
-                const Text('Failed to load prayer times'),
+                Text(context.tr.translate('home.prayerError')),
                 TextButton(
                   onPressed: () {
                     context.read<PrayerCubit>().getPrayerTimes(
                       forceRefresh: true,
                     );
                   },
-                  child: const Text('Retry'),
+                  child: Text(context.tr.translate('home.tryAgain')),
                 ),
               ],
             ),
           );
         } else {
-          return const LoadingIndicator(text: 'Loading prayer times...');
+          return LoadingIndicator(
+            text: context.tr.translate('home.loadingPrayer'),
+          );
         }
       },
     );
@@ -520,7 +525,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
     return BlocBuilder<HabitBloc, HabitState>(
       builder: (context, state) {
         if (state is HabitLoading) {
-          return const LoadingIndicator(text: 'Loading habits...');
+          return LoadingIndicator(
+            text: context.tr.translate('home.loadingHabits'),
+          );
         } else if (state is HabitsLoaded) {
           return HabitsSummaryCard(habits: state.habits);
         } else if (state is HabitError) {
@@ -551,7 +558,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                   onPressed: () {
                     context.read<HabitBloc>().add(GetHabitsEvent());
                   },
-                  child: const Text('Retry'),
+                  child: Text(context.tr.translate('home.tryAgain')),
                 ),
               ],
             ),
@@ -577,7 +584,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                           ),
                     )
                     .isVisible,
-            child: const Text('No habits found'),
+            child: Text(context.tr.translate('home.noHabits')),
           );
         }
       },

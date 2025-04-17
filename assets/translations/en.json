@@ -42,7 +42,34 @@
     "progress": "Progress",
     "streaks": "Streaks",
     "achievements": "Achievements",
-    "seeAll": "See All"
+    "seeAll": "See All",
+    "appTitle": "SunnahTrack",
+    "saveChanges": "Save changes",
+    "editDashboard": "Edit dashboard",
+    "toggleTheme": "Toggle Theme",
+    "notificationsSoon": "Notifications feature coming soon!",
+    "retry": "Retry",
+    "reorderCards": "Reorder Dashboard Cards",
+    "close": "Close",
+    "quranSoon": "Quran feature coming soon!",
+    "dhikrSoon": "Dhikr counter feature coming soon!",
+    "goodMorning": "Good Morning",
+    "goodAfternoon": "Good Afternoon",
+    "goodEvening": "Good Evening",
+    "dashboardSubtitle": "Here's your Islamic dashboard for today",
+    "editName": "Edit Your Name",
+    "yourName": "Your Name",
+    "enterName": "Enter your name",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loadingPrayer": "Loading prayer times...",
+    "prayerError": "Failed to load prayer times",
+    "tryAgain": "Try Again",
+    "reorder": "Reorder",
+    "hideCard": "Hide card",
+    "showCard": "Show card",
+    "loadingHabits": "Loading habits...",
+    "noHabits": "No habits found"
   },
   "habits": {
     "title": "Habits",
@@ -204,7 +231,6 @@
     "rememberingtopraybetweenthecalltoprayerandtheiqama": "Remembering to pray between the call to prayer and the iqama",
     "remindertoreadthedailyQuran": "Reminder to read the daily Quran",
     "rememberingthemorningandeveningremembrances": "Remembering the morning and evening remembrances",
-    "remindingtheentryofprayertimes": "Reminding the entry of prayer times",
-
+    "remindingtheentryofprayertimes": "Reminding the entry of prayer times"
   }
 }

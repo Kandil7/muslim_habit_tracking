@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 
 /// An animated card widget for the dashboard
 class AnimatedDashboardCard extends StatefulWidget {
@@ -52,18 +53,12 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 1.02,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _opacityAnimation = Tween<double>(
       begin: 1.0,
       end: 0.9,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -93,10 +88,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
       builder: (context, child) {
         return Transform.scale(
           scale: _scaleAnimation.value,
-          child: Opacity(
-            opacity: _opacityAnimation.value,
-            child: child,
-          ),
+          child: Opacity(opacity: _opacityAnimation.value, child: child),
         );
       },
       child: MouseRegion(
@@ -106,16 +98,17 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
           elevation: _isHovering ? 4 : 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: _isHovering
-                ? BorderSide(
-                    color: widget.iconColor ?? AppColors.primary,
-                    width: 1,
-                  )
-                : BorderSide.none,
+            side:
+                _isHovering
+                    ? BorderSide(
+                      color: widget.iconColor ?? AppColors.primary,
+                      width: 1,
+                    )
+                    : BorderSide.none,
           ),
-          color: widget.backgroundColor ?? (isDarkMode
-              ? AppColors.darkSurface
-              : AppColors.surface),
+          color:
+              widget.backgroundColor ??
+              (isDarkMode ? AppColors.darkSurface : AppColors.surface),
           child: InkWell(
             onTap: widget.onTap,
             borderRadius: BorderRadius.circular(12),
@@ -134,10 +127,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                             color: widget.iconColor ?? AppColors.primary,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            widget.title,
-                            style: AppTextStyles.headingSmall,
-                          ),
+                          Text(widget.title, style: AppTextStyles.headingSmall),
                         ],
                       ),
                       Row(
@@ -146,7 +136,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                             IconButton(
                               icon: const Icon(Icons.drag_handle),
                               onPressed: widget.onReorder,
-                              tooltip: 'Reorder',
+                              tooltip: context.tr.translate('home.reorder'),
                               iconSize: 20,
                               color: AppColors.textSecondary,
                             ),
@@ -158,9 +148,10 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                                     : Icons.visibility_off,
                               ),
                               onPressed: widget.onVisibilityToggle,
-                              tooltip: widget.isVisible
-                                  ? 'Hide card'
-                                  : 'Show card',
+                              tooltip:
+                                  widget.isVisible
+                                      ? context.tr.translate('home.hideCard')
+                                      : context.tr.translate('home.showCard'),
                               iconSize: 20,
                               color: AppColors.textSecondary,
                             ),
