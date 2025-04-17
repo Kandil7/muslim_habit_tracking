@@ -17,6 +17,8 @@ class Habit extends Equatable {
   final int currentStreak;
   final int longestStreak;
   final DateTime? lastCompletedDate;
+  final String? categoryId;
+  final List<String> tags;
 
   const Habit({
     required this.id,
@@ -34,6 +36,8 @@ class Habit extends Equatable {
     this.currentStreak = 0,
     this.longestStreak = 0,
     this.lastCompletedDate,
+    this.categoryId,
+    this.tags = const [],
   });
 
   @override
@@ -53,6 +57,8 @@ class Habit extends Equatable {
     currentStreak,
     longestStreak,
     lastCompletedDate,
+    categoryId,
+    tags,
   ];
 
   /// Create a copy of this Habit with the given fields replaced with the new values
@@ -73,6 +79,8 @@ class Habit extends Equatable {
     int? longestStreak,
     DateTime? lastCompletedDate,
     bool clearLastCompletedDate = false,
+    String? categoryId,
+    List<String>? tags,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -90,6 +98,8 @@ class Habit extends Equatable {
       currentStreak: currentStreak ?? this.currentStreak,
       longestStreak: longestStreak ?? this.longestStreak,
       lastCompletedDate: clearLastCompletedDate ? null : (lastCompletedDate ?? this.lastCompletedDate),
+      categoryId: categoryId ?? this.categoryId,
+      tags: tags ?? this.tags,
     );
   }
 }

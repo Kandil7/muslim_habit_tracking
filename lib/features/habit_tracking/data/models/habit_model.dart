@@ -20,6 +20,8 @@ class HabitModel extends Habit {
     super.currentStreak = 0,
     super.longestStreak = 0,
     super.lastCompletedDate,
+    super.categoryId,
+    super.tags = const [],
   });
 
   /// Create a HabitModel from a JSON map
@@ -40,6 +42,8 @@ class HabitModel extends Habit {
       currentStreak: json['currentStreak'] ?? 0,
       longestStreak: json['longestStreak'] ?? 0,
       lastCompletedDate: json['lastCompletedDate'] != null ? DateTime.parse(json['lastCompletedDate']) : null,
+      categoryId: json['categoryId'],
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
     );
   }
 
@@ -61,6 +65,8 @@ class HabitModel extends Habit {
       'currentStreak': currentStreak,
       'longestStreak': longestStreak,
       'lastCompletedDate': lastCompletedDate?.toIso8601String(),
+      'categoryId': categoryId,
+      'tags': tags,
     };
   }
 
@@ -82,6 +88,8 @@ class HabitModel extends Habit {
       currentStreak: habit.currentStreak,
       longestStreak: habit.longestStreak,
       lastCompletedDate: habit.lastCompletedDate,
+      categoryId: habit.categoryId,
+      tags: habit.tags,
     );
   }
 
@@ -104,6 +112,8 @@ class HabitModel extends Habit {
     int? longestStreak,
     DateTime? lastCompletedDate,
     bool clearLastCompletedDate = false,
+    String? categoryId,
+    List<String>? tags,
   }) {
     return HabitModel(
       id: id ?? this.id,
@@ -121,6 +131,8 @@ class HabitModel extends Habit {
       currentStreak: currentStreak ?? this.currentStreak,
       longestStreak: longestStreak ?? this.longestStreak,
       lastCompletedDate: clearLastCompletedDate ? null : (lastCompletedDate ?? this.lastCompletedDate),
+      categoryId: categoryId ?? this.categoryId,
+      tags: tags ?? this.tags,
     );
   }
 }
