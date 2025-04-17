@@ -2,8 +2,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 
-import '../../domain/entities/habit.dart';
-
 /// Service for scheduling habit reminders
 class HabitNotificationService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
@@ -46,23 +44,24 @@ class HabitNotificationService {
   }
 
   Future<void> scheduleHabitReminder(
-    Habit habit,
+    String habitId,
+    String habitName,
     TimeOfDay reminderTime,
     List<String> daysOfWeek,
   ) async {
     // Cancel any existing reminders for this habit
-    await cancelHabitReminder(habit.id);
+    await cancelHabitReminder(habitId);
 
     // Get current date
     final now = DateTime.now();
-    
+
     // For each selected day of the week, schedule a notification
     for (final day in daysOfWeek) {
       final int dayIndex = _getDayIndex(day);
-      
+
       // Calculate the next occurrence of this day
       final DateTime nextOccurrence = _getNextDayOccurrence(now, dayIndex);
-      
+
       // Set the reminder time
       final DateTime reminderDateTime = DateTime(
         nextOccurrence.year,
@@ -71,13 +70,13 @@ class HabitNotificationService {
         reminderTime.hour,
         reminderTime.minute,
       );
-      
+
       // Convert to TZ DateTime
       final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
         reminderDateTime,
         tz.local,
       );
-      
+
       // Create notification details
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
@@ -100,12 +99,12 @@ class HabitNotificationService {
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics,
       );
-      
+
       // Schedule the notification
       await _flutterLocalNotificationsPlugin.zonedSchedule(
-        '${habit.id}_$day'.hashCode, // Use habit ID + day as unique ID
-        'Habit Reminder: ${habit.name}',
-        'Time to complete your habit: ${habit.name}',
+        '${habitId}_$day'.hashCode, // Use habit ID + day as unique ID
+        'Habit Reminder: $habitName',
+        'Time to complete your habit: $habitName',
         scheduledDate,
         platformChannelSpecifics,
         androidAllowWhileIdle: true,
@@ -121,7 +120,7 @@ class HabitNotificationService {
     // In a real app, you'd want to store the notification IDs somewhere
     await _flutterLocalNotificationsPlugin.cancelAll();
   }
-  
+
   int _getDayIndex(String day) {
     switch (day.toLowerCase()) {
       case 'monday':
@@ -142,15 +141,15 @@ class HabitNotificationService {
         return DateTime.monday;
     }
   }
-  
+
   DateTime _getNextDayOccurrence(DateTime fromDate, int dayIndex) {
     DateTime resultDate = fromDate;
-    
+
     // If the day index is less than today's weekday, it will be next week
     while (resultDate.weekday != dayIndex) {
       resultDate = resultDate.add(const Duration(days: 1));
     }
-    
+
     return resultDate;
   }
 }
@@ -159,14 +158,14 @@ class HabitNotificationService {
 class TimeOfDay {
   final int hour;
   final int minute;
-  
+
   const TimeOfDay({required this.hour, required this.minute});
-  
+
   factory TimeOfDay.now() {
     final now = DateTime.now();
     return TimeOfDay(hour: now.hour, minute: now.minute);
   }
-  
+
   @override
   String toString() {
     final hourString = hour.toString().padLeft(2, '0');
