@@ -36,12 +36,22 @@ class PrayerNotificationService {
   }
 
   Future<bool> requestPermissions() async {
-    final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+    // Request permissions for iOS
+    final DarwinFlutterLocalNotificationsPlugin? iOSImplementation =
         _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+            DarwinFlutterLocalNotificationsPlugin>();
 
-    final bool? granted = await androidImplementation?.requestPermission();
-    return granted ?? false;
+    if (iOSImplementation != null) {
+      await iOSImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
+
+    // For Android, permissions are requested during initialization in newer versions
+    // or when creating the notification channel
+    return true;
   }
 
   Future<void> schedulePrayerNotification(
@@ -55,10 +65,10 @@ class PrayerNotificationService {
     final DateTime now = DateTime.now();
     final DateTime prayerDateTime = DateTime(
         now.year, now.month, now.day, hour, minute);
-    
+
     // Calculate notification time (minutes before prayer)
     final DateTime notificationTime = prayerDateTime.subtract(Duration(minutes: minutesBefore));
-    
+
     // Only schedule if it's in the future
     if (notificationTime.isAfter(now)) {
       final tz.TZDateTime scheduledDate = tz.TZDateTime.from(

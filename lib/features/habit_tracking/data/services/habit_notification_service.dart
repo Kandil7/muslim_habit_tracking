@@ -35,12 +35,22 @@ class HabitNotificationService {
   }
 
   Future<bool> requestPermissions() async {
-    final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+    // Request permissions for iOS
+    final DarwinFlutterLocalNotificationsPlugin? iOSImplementation =
         _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+            DarwinFlutterLocalNotificationsPlugin>();
 
-    final bool? granted = await androidImplementation?.requestPermission();
-    return granted ?? false;
+    if (iOSImplementation != null) {
+      await iOSImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
+
+    // For Android, permissions are requested during initialization in newer versions
+    // or when creating the notification channel
+    return true;
   }
 
   Future<void> scheduleHabitReminder(
@@ -107,10 +117,8 @@ class HabitNotificationService {
         'Time to complete your habit: $habitName',
         scheduledDate,
         platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }
   }
