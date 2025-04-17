@@ -10,15 +10,15 @@ class PrayerTimesHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final local = context.watch<LanguageCubit>().state.locale.languageCode == 'ar';
+    final local =
+        context.watch<LanguageCubit>().state.locale.languageCode == 'ar';
     return Row(
       spacing: 4,
       children: [
         const SizedBox(width: 16),
         Image.asset(Assets.imagesTime, height: 30, width: 30),
         if (!local) const SizedBox(width: 4),
-        Text(context.tr.translate('prayer.title'),
-            style: Styles.medium18)
+        Text(context.tr.translate('prayer.title')),
       ],
     );
   }

@@ -53,13 +53,15 @@ class PrayerRepoImpl extends PrayerRepo {
     for (var element in prayerDateTimes) {
       if (element.isAfter(currentTime)) {
         nextPrayer =
-            "${element.hour.toString().padLeft(2, '0')}:${element.minute.toString().padLeft(2, '0')}";
+        "${element.hour.toString().padLeft(2, '0')}:${element.minute
+            .toString()
+            .padLeft(2, '0')}";
         break;
       }
     }
 
     List<PrayerItemModel> prayerList =
-        _getPrayerTimesMethod(effectivePrayerTimes, prayerDateTimes);
+    _getPrayerTimesMethod(effectivePrayerTimes, prayerDateTimes);
 
     final result = {
       'nextPrayer': nextPrayer,
@@ -94,8 +96,10 @@ class PrayerRepoImpl extends PrayerRepo {
       };
 
       // Save to SharedPreferences
-      _sharedPrefService.setString(key: _cacheKey, value: jsonEncode(cacheData));
-      _sharedPrefService.setString(key: _cacheDateKey, value: DateTime.now().toIso8601String());
+      _sharedPrefService.setString(
+          key: _cacheKey, value: jsonEncode(cacheData));
+      _sharedPrefService.setString(
+          key: _cacheDateKey, value: DateTime.now().toIso8601String());
     } catch (e) {
       print('Error caching prayer times: $e');
     }
@@ -115,7 +119,8 @@ class PrayerRepoImpl extends PrayerRepo {
       // Check if cache is from today
       final cachedDate = DateTime.parse(cachedDateString);
       final now = DateTime.now();
-      if (cachedDate.year != now.year || cachedDate.month != now.month || cachedDate.day != now.day) {
+      if (cachedDate.year != now.year || cachedDate.month != now.month ||
+          cachedDate.day != now.day) {
         return null; // Cache is from a different day
       }
 
@@ -159,14 +164,16 @@ class PrayerRepoImpl extends PrayerRepo {
       final int minute = int.parse(timeParts[1]);
 
       // Create prayer time DateTime
-      final prayerDateTime = DateTime(now.year, now.month, now.day, hour, minute);
+      final prayerDateTime = DateTime(
+          now.year, now.month, now.day, hour, minute);
 
       // Calculate new remaining time
       final Duration remainingTime = prayerDateTime.difference(now);
 
       // Update the item (this is a hack since PrayerItemModel is immutable)
       // In a real app, you'd create a new instance or make the model mutable
-      (item as dynamic).remainingTime = remainingTime.isNegative ? remainingTime.abs() : remainingTime;
+      (item as dynamic).remainingTime =
+      remainingTime.isNegative ? remainingTime.abs() : remainingTime;
       (item as dynamic).isPrayerPassed = remainingTime.isNegative;
     }
   }
@@ -195,8 +202,8 @@ class PrayerRepoImpl extends PrayerRepo {
   //       DateTime(now.year, now.month, now.day, timeOnly.hour, timeOnly.minute));
   // }
 
-  List<PrayerItemModel> _getPrayerTimesMethod(
-      List<String> prayerTimes, List<DateTime> prayerDateTimes) {
+  List<PrayerItemModel> _getPrayerTimesMethod(List<String> prayerTimes,
+      List<DateTime> prayerDateTimes) {
     Map<String, String> prayerTimesAsString = {
       "الفجر": prayerTimes[0],
       "الشروق": prayerTimes[1],
@@ -247,4 +254,4 @@ class PrayerRepoImpl extends PrayerRepo {
 
     return prayerList;
   }
-
+}

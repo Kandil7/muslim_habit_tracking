@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:muslim_habbit/core/theme/app_theme.dart';
 import '/core/utils/styles.dart';
 
 class PrayerTimeRemainingWidget extends StatelessWidget {
@@ -11,7 +12,9 @@ class PrayerTimeRemainingWidget extends StatelessWidget {
       height: 26,
       width: 26,
       decoration: BoxDecoration(
-          color: Color(0xffE8E8E8), borderRadius: BorderRadius.circular(2)),
+        color: AppColors.lightGrey,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Center(
         child: FittedBox(child: Text(time, style: Styles.medium12)),
       ),

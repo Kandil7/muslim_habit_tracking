@@ -6,8 +6,11 @@ import 'prayer_times_item_title.dart';
 import 'prayer_times_item_trailing.dart';
 
 class PrayerTimesItem extends StatefulWidget {
-  const PrayerTimesItem(
-      {super.key, required this.prayerItemModel, required this.isNextPrayer});
+  const PrayerTimesItem({
+    super.key,
+    required this.prayerItemModel,
+    required this.isNextPrayer,
+  });
   final PrayerItemModel prayerItemModel;
   final bool isNextPrayer;
 
@@ -15,7 +18,8 @@ class PrayerTimesItem extends StatefulWidget {
   State<PrayerTimesItem> createState() => _PrayerTimesItemState();
 }
 
-class _PrayerTimesItemState extends State<PrayerTimesItem> with SingleTickerProviderStateMixin {
+class _PrayerTimesItemState extends State<PrayerTimesItem>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
@@ -31,18 +35,12 @@ class _PrayerTimesItemState extends State<PrayerTimesItem> with SingleTickerProv
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _opacityAnimation = Tween<double>(
       begin: 1.0,
       end: 0.8,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     if (widget.isNextPrayer) {
       _controller.repeat(reverse: true);
@@ -77,16 +75,17 @@ class _PrayerTimesItemState extends State<PrayerTimesItem> with SingleTickerProv
       height: 64,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: widget.isNextPrayer ? AppColors.primaryColor2 : AppColors.whiteColor,
+        color: widget.isNextPrayer ? AppColors.primaryColor2 : null,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            blurRadius: widget.isNextPrayer ? 8 : 4,
+            blurRadius: widget.isNextPrayer ? 8 : 0,
             spreadRadius: widget.isNextPrayer ? 2 : 0,
-            color: widget.isNextPrayer
-                ? AppColors.primaryColor2.withOpacity(0.3)
-                : AppColors.blackColor.withValues(alpha: .1),
-          )
+            color:
+                widget.isNextPrayer
+                    ? AppColors.primaryColor2
+                    : Colors.teal.shade100,
+          ),
         ],
       ),
       child: AnimatedBuilder(
@@ -104,9 +103,13 @@ class _PrayerTimesItemState extends State<PrayerTimesItem> with SingleTickerProv
           children: [
             const SizedBox(width: 12),
             PrayerTimesItemTitle(
-                prayerItemModel: widget.prayerItemModel, isNextPrayer: widget.isNextPrayer),
+              prayerItemModel: widget.prayerItemModel,
+              isNextPrayer: widget.isNextPrayer,
+            ),
             PrayerTimesItemTrailing(
-                prayerItemModel: widget.prayerItemModel, isNextPrayer: widget.isNextPrayer),
+              prayerItemModel: widget.prayerItemModel,
+              isNextPrayer: widget.isNextPrayer,
+            ),
             const SizedBox(width: 12),
           ],
         ),

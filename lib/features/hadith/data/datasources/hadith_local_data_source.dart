@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:hive/hive.dart';
-import '../../../../core/error/exceptions.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../models/hadith_model.dart';
 
 /// Interface for the local data source for Hadith feature
@@ -40,13 +40,16 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
   @override
   Future<List<HadithModel>> getAllHadiths() async {
     try {
-      final hadiths = hadithBox.values.map((hadith) {
-        return HadithModel.fromHiveObject(hadith as Map);
-      }).toList();
-      
+      final hadiths =
+          hadithBox.values.map((hadith) {
+            return HadithModel.fromHiveObject(hadith as Map);
+          }).toList();
+
       return hadiths;
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to get all hadiths from local storage : $e',
+      );
     }
   }
 
@@ -55,11 +58,15 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
     try {
       final hadith = hadithBox.get(id);
       if (hadith == null) {
-        throw CacheException();
+        throw CacheException(
+          message: 'Hadith with ID $id not found in local storage',
+        );
       }
       return HadithModel.fromHiveObject(hadith as Map);
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to get hadith with ID $id from local storage : $e',
+      );
     }
   }
 
@@ -68,17 +75,19 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
     try {
       final hadiths = await getAllHadiths();
       if (hadiths.isEmpty) {
-        throw CacheException();
+        throw CacheException(message: 'No hadiths found in local storage');
       }
-      
+
       // Use the current date to select a hadith deterministically
       final now = DateTime.now();
       final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
       final index = dayOfYear % hadiths.length;
-      
+
       return hadiths[index];
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to get hadith of the day from local storage : $e',
+      );
     }
   }
 
@@ -88,7 +97,9 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       final hadiths = await getAllHadiths();
       return hadiths.where((hadith) => hadith.source == source).toList();
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to get hadiths by source from local storage : $e',
+      );
     }
   }
 
@@ -98,7 +109,9 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       final hadiths = await getAllHadiths();
       return hadiths.where((hadith) => hadith.tags.contains(tag)).toList();
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to get hadiths by tag from local storage : $e',
+      );
     }
   }
 
@@ -108,7 +121,9 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       final hadiths = await getAllHadiths();
       return hadiths.where((hadith) => hadith.isBookmarked).toList();
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to get bookmarked hadiths from local storage : $e',
+      );
     }
   }
 
@@ -117,12 +132,14 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
     try {
       final hadith = await getHadithById(id);
       final updatedHadith = hadith.copyWith(isBookmarked: !hadith.isBookmarked);
-      
+
       await hadithBox.put(id, updatedHadith.toHiveObject());
-      
+
       return updatedHadith;
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to toggle bookmark status for hadith with ID $id : $e',
+      );
     }
   }
 
@@ -132,14 +149,16 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       // Only initialize if the box is empty
       if (hadithBox.isEmpty) {
         final sampleHadiths = _getSampleHadiths();
-        
+
         // Add sample hadiths to the box
         for (final hadith in sampleHadiths) {
           await hadithBox.put(hadith.id, hadith.toHiveObject());
         }
       }
     } catch (e) {
-      throw CacheException();
+      throw CacheException(
+        message: 'Failed to initialize with sample data : $e',
+      );
     }
   }
 
@@ -148,7 +167,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
     return [
       const HadithModel(
         id: 'hadith1',
-        text: 'The best of you are those who are best to their families, and I am the best of you to my family.',
+        text:
+            'The best of you are those who are best to their families, and I am the best of you to my family.',
         narrator: 'Aisha (RA)',
         source: 'Sunan al-Tirmidhī',
         book: 'Book of Virtues',
@@ -158,7 +178,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       ),
       const HadithModel(
         id: 'hadith2',
-        text: 'None of you truly believes until he loves for his brother what he loves for himself.',
+        text:
+            'None of you truly believes until he loves for his brother what he loves for himself.',
         narrator: 'Anas ibn Malik (RA)',
         source: 'Sahih al-Bukhari',
         book: 'Book of Faith',
@@ -168,7 +189,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       ),
       const HadithModel(
         id: 'hadith3',
-        text: 'The strong person is not the one who can wrestle someone else down. The strong person is the one who can control himself when he is angry.',
+        text:
+            'The strong person is not the one who can wrestle someone else down. The strong person is the one who can control himself when he is angry.',
         narrator: 'Abu Hurairah (RA)',
         source: 'Sahih al-Bukhari',
         book: 'Book of Good Manners',
@@ -178,7 +200,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       ),
       const HadithModel(
         id: 'hadith4',
-        text: 'Whoever believes in Allah and the Last Day, let him speak good or remain silent.',
+        text:
+            'Whoever believes in Allah and the Last Day, let him speak good or remain silent.',
         narrator: 'Abu Hurairah (RA)',
         source: 'Sahih al-Bukhari',
         book: 'Book of Good Manners',
@@ -188,7 +211,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       ),
       const HadithModel(
         id: 'hadith5',
-        text: 'The most beloved of deeds to Allah are those that are most consistent, even if they are small.',
+        text:
+            'The most beloved of deeds to Allah are those that are most consistent, even if they are small.',
         narrator: 'Aisha (RA)',
         source: 'Sahih al-Bukhari',
         book: 'Book of Faith',
@@ -198,7 +222,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       ),
       const HadithModel(
         id: 'hadith6',
-        text: 'Verily, the reward of deeds depends upon the intention, and every person will be rewarded according to what he intended.',
+        text:
+            'Verily, the reward of deeds depends upon the intention, and every person will be rewarded according to what he intended.',
         narrator: 'Umar ibn al-Khattab (RA)',
         source: 'Sahih al-Bukhari',
         book: 'Book of Revelation',
@@ -208,7 +233,8 @@ class HadithLocalDataSourceImpl implements HadithLocalDataSource {
       ),
       const HadithModel(
         id: 'hadith7',
-        text: 'A Muslim is the one from whose tongue and hands other Muslims are safe.',
+        text:
+            'A Muslim is the one from whose tongue and hands other Muslims are safe.',
         narrator: 'Abdullah ibn Amr (RA)',
         source: 'Sahih al-Bukhari',
         book: 'Book of Faith',

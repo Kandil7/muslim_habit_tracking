@@ -50,8 +50,7 @@ class NotificationService {
               notificationModel.date!.minute,
               3),
       notificationDetails,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }

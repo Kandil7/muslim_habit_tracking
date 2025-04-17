@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/services/home_preferences_service.dart';
 import '../../domain/models/dashboard_card_model.dart';

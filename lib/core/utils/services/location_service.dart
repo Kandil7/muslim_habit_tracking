@@ -2,13 +2,12 @@ import 'package:geolocator/geolocator.dart' as geolocator;
 import '../../di/injection_container.dart' as di;
 import '/core/utils/constants.dart';
 import '/core/utils/helper.dart';
-import '/core/utils/services/setup_locator_service.dart';
 import '/core/utils/services/shared_pref_service.dart';
 import 'package:location/location.dart';
 
 class LocationService {
   final Location _location = Location();
-  final SharedPrefService _sharedPrefService = di.sl<SharedPrefService>();
+  final SharedPrefService _sharedPrefService = di.sl.get<SharedPrefService>();
 
   Future<bool> _checkServiceEnabled() async {
     bool isServiceEnabled = await _location.serviceEnabled();
@@ -48,8 +47,12 @@ class LocationService {
 
   Future<void> _setLocation(double latitude, double longitude) async {
     await _sharedPrefService.setDouble(
-        key: Constants.latitude, value: latitude);
+      key: Constants.latitude,
+      value: latitude,
+    );
     await _sharedPrefService.setDouble(
-        key: Constants.longitude, value: longitude);
+      key: Constants.longitude,
+      value: longitude,
+    );
   }
 }

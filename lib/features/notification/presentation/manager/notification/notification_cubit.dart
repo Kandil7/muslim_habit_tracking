@@ -115,8 +115,8 @@ class NotificationCubit extends Cubit<NotificationState> {
     }
   }
   Future<void> makeNotification() async {
-      await WorkManagerService.cancelWorkManager();
-      await WorkManagerService.initWorkManager();
+      // await WorkManagerService.cancelWorkManager();
+      // await WorkManagerService.initWorkManager();
     }
 
 }

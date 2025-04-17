@@ -67,19 +67,13 @@ class PrayerTimesCard extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                Icons.access_time,
-                color: AppColors.primary,
-              ),
+              child: Icon(Icons.access_time, color: AppColors.primary),
             ),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  nextPrayer.enName,
-                  style: AppTextStyles.headingSmall,
-                ),
+                Text(nextPrayer.enName, style: AppTextStyles.headingSmall),
                 Text(
                   nextPrayer.prayerTime,
                   style: AppTextStyles.bodyLarge.copyWith(
@@ -130,7 +124,9 @@ class PrayerTimesCard extends StatelessWidget {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: _getPrayerColor(prayerList[i].enName).withOpacity(0.1),
+                          color: _getPrayerColor(
+                            prayerList[i].enName,
+                          ).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Icon(
@@ -140,21 +136,10 @@ class PrayerTimesCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Text(
-                        prayerList[i].enName,
-                        style: AppTextStyles.bodyMedium,
-                      ),
+                      Text(prayerList[i].enName),
                     ],
                   ),
-                  Text(
-                    prayerList[i].prayerTime,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: prayerList[i].isPrayerPassed
-                          ? AppColors.textSecondary
-                          : AppColors.textPrimary,
-                    ),
-                  ),
+                  Text(prayerList[i].prayerTime),
                 ],
               ),
             ),
@@ -202,7 +187,7 @@ class PrayerTimesCard extends StatelessWidget {
       case 'fajr':
         return AppColors.fajrColor;
       case 'sunrise':
-        return AppColors.sunriseColor;
+        return AppColors.asrColor;
       case 'dhuhr':
         return AppColors.dhuhrColor;
       case 'asr':

@@ -1,4 +1,4 @@
-package com.ramadanhabit.ramadan_habit_tracking
+package com.ramadanhabit.muslim_habbit
 
 import io.flutter.embedding.android.FlutterActivity
 

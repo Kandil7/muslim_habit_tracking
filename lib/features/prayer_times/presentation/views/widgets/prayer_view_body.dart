@@ -7,7 +7,6 @@ import 'location_error_widget.dart';
 import 'prayer_date_hijri_and_milad.dart';
 import 'prayer_times_header.dart';
 import 'prayer_times_list_view.dart';
-import 'prayer_view_header.dart';
 
 class PrayerViewBody extends StatelessWidget {
   const PrayerViewBody({super.key});
@@ -32,7 +31,7 @@ class PrayerViewBody extends StatelessWidget {
                 const SizedBox(height: 4),
                 const PrayerDateHijriAndMilad(),
                 const SizedBox(height: 20),
-                const PrayerTimesListView()
+                const PrayerTimesListView(),
               ],
             ),
           ),

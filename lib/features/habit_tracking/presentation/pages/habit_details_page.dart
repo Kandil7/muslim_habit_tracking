@@ -286,7 +286,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                   'Longest Streak',
                   '$longestStreak days',
                   Icons.emoji_events,
-                  AppColors.tertiary,
+                  AppColors.textTertiary,
                 ),
               ],
             ),

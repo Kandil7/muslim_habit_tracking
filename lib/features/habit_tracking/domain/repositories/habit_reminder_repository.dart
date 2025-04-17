@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/error/failures.dart';
+import '../../../../core/errors/failures.dart';
 import '../entities/habit_reminder.dart';
 
 /// Repository interface for habit reminders

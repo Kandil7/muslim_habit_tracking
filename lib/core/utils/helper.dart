@@ -14,7 +14,7 @@ import 'package:geocoding/geocoding.dart' as geocoding;
 
 abstract class Helper {
   static final SharedPrefService _sharedPrefService =
-  di.sl<SharedPrefService>();
+      di.sl<SharedPrefService>();
 
   static String convertToArabicNumbers(String input) {
     const englishNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -78,31 +78,34 @@ abstract class Helper {
   }
 
   static void setSystemSetting() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarIconBrightness: Brightness.dark,
-    ));
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+    );
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   static Map getLatlng() {
     double? latitude = _sharedPrefService.getDouble(key: Constants.latitude);
     double? longitude = _sharedPrefService.getDouble(key: Constants.longitude);
-    return {
-      "latitude": latitude,
-      "longitude": longitude,
-    };
+    return {"latitude": latitude, "longitude": longitude};
   }
 
   static Future<void> setLocationCountyAndCity() async {
     double? latitude = Helper.getLatlng()['latitude'];
     double? longitude = Helper.getLatlng()['longitude'];
 
-    List<geocoding.Placemark> placemarksAr =
-        await geocoding.placemarkFromCoordinates(latitude!, longitude!,localeIdentifier: 'ar');
+    List<geocoding.Placemark> placemarksAr = await geocoding
+        .placemarkFromCoordinates(
+          latitude!,
+          longitude!,
+          localeIdentifier: 'ar',
+        );
 
-    List<geocoding.Placemark> placemarksEn =
-        await geocoding.placemarkFromCoordinates(latitude!, longitude!,localeIdentifier: 'en');
+    List<geocoding.Placemark> placemarksEn = await geocoding
+        .placemarkFromCoordinates(latitude, longitude, localeIdentifier: 'en');
 
     final counryAr = placemarksAr.first.country ?? "";
     final cityAr = placemarksAr.first.subAdministrativeArea ?? "";
@@ -110,10 +113,14 @@ abstract class Helper {
     final counryEn = placemarksEn.first.country ?? "";
     final cityEn = placemarksEn.first.subAdministrativeArea ?? "";
 
-    await _sharedPrefService
-        .setList(key: Constants.addressAr, value: [cityAr, counryAr]);
-    await _sharedPrefService
-        .setList(key: Constants.addressEn, value: [cityEn, counryEn]);
+    await _sharedPrefService.setList(
+      key: Constants.addressAr,
+      value: [cityAr, counryAr],
+    );
+    await _sharedPrefService.setList(
+      key: Constants.addressEn,
+      value: [cityEn, counryEn],
+    );
   }
 
   // static Future<Translation> _getPlaceName(
@@ -123,8 +130,9 @@ abstract class Helper {
   // }
 
   static List<bool>? getBoolList() {
-    final boolList =
-        _sharedPrefService.getBoolList(key: Constants.notification);
+    final boolList = _sharedPrefService.getBoolList(
+      key: Constants.notification,
+    );
     return boolList;
   }
 
@@ -154,15 +162,23 @@ abstract class Helper {
       prayers.setCalcMethod(prayers.MWL);
     }
 
-    return prayers.getPrayerTimes(now, latitude ?? 24.697079250797515,
-        longitude ?? 46.67124576608985, timeZoneOffset);
+    return prayers.getPrayerTimes(
+      now,
+      latitude ?? 24.697079250797515,
+      longitude ?? 46.67124576608985,
+      timeZoneOffset,
+    );
   }
 
   static void setDateTime(
-      String prayerTimes, List<DateTime> prayerDateTimes, DateTime now) {
+    String prayerTimes,
+    List<DateTime> prayerDateTimes,
+    DateTime now,
+  ) {
     DateTime timeOnly = DateFormat("HH:mm", "en").parse(prayerTimes);
     prayerDateTimes.add(
-        DateTime(now.year, now.month, now.day, timeOnly.hour, timeOnly.minute));
+      DateTime(now.year, now.month, now.day, timeOnly.hour, timeOnly.minute),
+    );
   }
 
   static List<DateTime> getPrayerDateTimes({DateTime? dateTime}) {

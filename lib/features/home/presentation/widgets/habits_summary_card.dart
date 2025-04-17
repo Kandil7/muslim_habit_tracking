@@ -23,7 +23,7 @@ class HabitsSummaryCard extends StatelessWidget {
     
     return DashboardCard(
       title: 'Habits',
-      icon: AppIcons.habit,
+      icon: AppIcons.home,
       onTap: () {
         // Navigate to habits page or switch to home tab
         // This would be handled by the parent HomePage
