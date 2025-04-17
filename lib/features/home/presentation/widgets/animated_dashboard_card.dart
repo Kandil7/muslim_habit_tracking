@@ -34,7 +34,7 @@ class AnimatedDashboardCard extends StatefulWidget {
   State<AnimatedDashboardCard> createState() => _AnimatedDashboardCardState();
 }
 
-class _AnimatedDashboardCardState extends State<AnimatedDashboardCard> 
+class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -87,7 +87,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -106,16 +106,16 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
           elevation: _isHovering ? 4 : 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: _isHovering 
+            side: _isHovering
                 ? BorderSide(
                     color: widget.iconColor ?? AppColors.primary,
                     width: 1,
                   )
                 : BorderSide.none,
           ),
-          color: widget.backgroundColor ?? (isDarkMode 
-              ? AppColors.surfaceDark 
-              : AppColors.surfaceLight),
+          color: widget.backgroundColor ?? (isDarkMode
+              ? AppColors.darkSurface
+              : AppColors.surface),
           child: InkWell(
             onTap: widget.onTap,
             borderRadius: BorderRadius.circular(12),
@@ -153,13 +153,13 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                           if (widget.onVisibilityToggle != null)
                             IconButton(
                               icon: Icon(
-                                widget.isVisible 
-                                    ? Icons.visibility 
+                                widget.isVisible
+                                    ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                               onPressed: widget.onVisibilityToggle,
-                              tooltip: widget.isVisible 
-                                  ? 'Hide card' 
+                              tooltip: widget.isVisible
+                                  ? 'Hide card'
                                   : 'Show card',
                               iconSize: 20,
                               color: AppColors.textSecondary,
