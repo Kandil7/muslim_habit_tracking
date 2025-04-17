@@ -8,12 +8,10 @@ import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../features/notification/data/repo/notification_repo_impl.dart';
 import '../../features/notification/presentation/manager/notification/notification_cubit.dart';
 import '../../features/prayer_times/data/repo/prayer_repo_impl.dart';
-import '../errors/exceptions.dart';
 import '../localization/bloc/language_bloc_exports.dart';
 
 import '../constants/app_constants.dart';
@@ -45,15 +43,11 @@ import '../../features/analytics/domain/usecases/get_habit_stats_by_date_range.d
 import '../../features/analytics/presentation/bloc/analytics_bloc.dart';
 import '../utils/services/location_service.dart';
 
-import '../../features/habit_tracking/data/models/habit_category_model.dart';
-import '../../features/habit_tracking/data/models/habit_reminder_model.dart';
 import '../../features/habit_tracking/data/repositories/habit_reminder_repository_impl.dart';
 import '../../features/habit_tracking/data/services/habit_notification_service.dart';
 import '../../features/habit_tracking/domain/repositories/habit_reminder_repository.dart';
-import '../../features/habit_tracking/domain/utils/streak_calculator.dart';
 import '../../features/home/data/services/home_preferences_service.dart';
 import '../../features/home/presentation/bloc/home_dashboard_bloc.dart';
-import '../../features/home/presentation/bloc/home_dashboard_event.dart';
 import '../../features/hadith/data/datasources/hadith_local_data_source.dart';
 import '../../features/hadith/data/repositories/hadith_repository_impl.dart';
 import '../../features/hadith/domain/repositories/hadith_repository.dart';
@@ -62,6 +56,19 @@ import '../../features/hadith/domain/usecases/get_hadith_by_id.dart';
 import '../../features/hadith/domain/usecases/get_hadith_of_the_day.dart';
 import '../../features/hadith/domain/usecases/toggle_hadith_bookmark.dart';
 import '../../features/hadith/presentation/bloc/hadith_bloc.dart';
+import '../../features/quran/data/datasources/quran_local_data_source.dart';
+import '../../features/quran/data/repositories/quran_repository_impl.dart';
+import '../../features/quran/domain/repositories/quran_repository.dart';
+import '../../features/quran/domain/usecases/add_bookmark.dart';
+import '../../features/quran/domain/usecases/add_reading_history.dart';
+import '../../features/quran/domain/usecases/get_all_surahs.dart';
+import '../../features/quran/domain/usecases/get_bookmarks.dart';
+import '../../features/quran/domain/usecases/get_last_read_position.dart';
+import '../../features/quran/domain/usecases/get_reading_history.dart';
+import '../../features/quran/domain/usecases/get_surah_by_id.dart';
+import '../../features/quran/domain/usecases/remove_bookmark.dart';
+import '../../features/quran/domain/usecases/update_last_read_position.dart';
+import '../../features/quran/presentation/bloc/quran_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -81,6 +88,7 @@ Future<void> init() async {
   await _initAnalyticsFeature();
   await _initLocalizationFeature();
   await _initHadithFeature();
+  await _initQuranFeature();
 }
 
 /// Initialize external dependencies
@@ -292,6 +300,51 @@ Future<void> _initHadithFeature() async {
       getHadithById: sl(),
       getHadithOfTheDay: sl(),
       toggleHadithBookmark: sl(),
+    ),
+  );
+}
+
+/// Initialize Quran feature dependencies
+Future<void> _initQuranFeature() async {
+  // Register Hive box
+  await Hive.openBox(AppConstants.quranBoxName);
+
+  // Data sources
+  sl.registerLazySingleton<QuranLocalDataSource>(
+    () => QuranLocalDataSourceImpl(
+      quranBox: Hive.box(AppConstants.quranBoxName),
+      uuid: sl(),
+    ),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<QuranRepository>(
+    () => QuranRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => GetAllSurahs(sl()));
+  sl.registerLazySingleton(() => GetSurahById(sl()));
+  sl.registerLazySingleton(() => GetBookmarks(sl()));
+  sl.registerLazySingleton(() => AddBookmark(sl()));
+  sl.registerLazySingleton(() => RemoveBookmark(sl()));
+  sl.registerLazySingleton(() => GetReadingHistory(sl()));
+  sl.registerLazySingleton(() => AddReadingHistory(sl()));
+  sl.registerLazySingleton(() => GetLastReadPosition(sl()));
+  sl.registerLazySingleton(() => UpdateLastReadPosition(sl()));
+
+  // BLoC
+  sl.registerFactory(
+    () => QuranBloc(
+      getAllSurahs: sl(),
+      getSurahById: sl(),
+      getBookmarks: sl(),
+      addBookmark: sl(),
+      removeBookmark: sl(),
+      getReadingHistory: sl(),
+      addReadingHistory: sl(),
+      getLastReadPosition: sl(),
+      updateLastReadPosition: sl(),
     ),
   );
 }
