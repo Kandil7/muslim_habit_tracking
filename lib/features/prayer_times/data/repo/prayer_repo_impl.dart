@@ -170,7 +170,6 @@ class PrayerRepoImpl extends PrayerRepo {
       (item as dynamic).isPrayerPassed = remainingTime.isNegative;
     }
   }
-  }
 
   // List<String> getPrayersList() {
   //   DateTime now = DateTime.now();
@@ -248,4 +247,4 @@ class PrayerRepoImpl extends PrayerRepo {
 
     return prayerList;
   }
-}
+

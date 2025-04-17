@@ -69,13 +69,9 @@ class PrayerCubit extends Cubit<PrayerState> {
 
   Future<void> setLocation() async {
     try {
-      final locationResult = await _locationService.getLocation();
-      if (locationResult != null) {
-        getPrayerTimes();
-        emit(SetLocationSuccess());
-      } else {
-        emit(SetLocationError('Failed to get location'));
-      }
+      await _locationService.getLocation();
+      getPrayerTimes();
+      emit(SetLocationSuccess());
     } catch (e) {
       emit(SetLocationError('Error getting location: ${e.toString()}'));
     }
