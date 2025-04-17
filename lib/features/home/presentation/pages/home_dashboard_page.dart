@@ -278,65 +278,71 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
   }
 
   void _showReorderDialog(BuildContext context, HomeDashboardLoaded state) {
+    // Get the HomeDashboardBloc instance from the current context
+    final homeDashboardBloc = context.read<HomeDashboardBloc>();
+
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            title: Text(context.tr.translate('home.reorderCards')),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: ReorderableListView.builder(
-                shrinkWrap: true,
-                itemCount: state.dashboardCards.length,
-                itemBuilder: (context, index) {
-                  final card = state.dashboardCards[index];
-                  return ListTile(
-                    key: Key(card.id),
-                    leading: Icon(card.icon),
-                    title: Text(card.title),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Switch(
-                          value: card.isVisible,
-                          onChanged: (value) {
-                            Navigator.pop(context);
-                            _toggleCardVisibility(context, card.id);
-                          },
-                        ),
-                        const Icon(Icons.drag_handle),
-                      ],
-                    ),
-                  );
-                },
-                onReorder: (oldIndex, newIndex) {
-                  if (oldIndex < newIndex) {
-                    newIndex -= 1;
-                  }
+          (context) => BlocProvider<HomeDashboardBloc>.value(
+            value: homeDashboardBloc,
+            child: AlertDialog(
+              title: Text(context.tr.translate('home.reorderCards')),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ReorderableListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.dashboardCards.length,
+                  itemBuilder: (context, index) {
+                    final card = state.dashboardCards[index];
+                    return ListTile(
+                      key: Key(card.id),
+                      leading: Icon(card.icon),
+                      title: Text(card.title),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Switch(
+                            value: card.isVisible,
+                            onChanged: (value) {
+                              Navigator.pop(context);
+                              _toggleCardVisibility(context, card.id);
+                            },
+                          ),
+                          const Icon(Icons.drag_handle),
+                        ],
+                      ),
+                    );
+                  },
+                  onReorder: (oldIndex, newIndex) {
+                    if (oldIndex < newIndex) {
+                      newIndex -= 1;
+                    }
 
-                  // Create new order
-                  final List<String> newOrder =
-                      state.dashboardCards.map((card) => card.id).toList();
+                    // Create new order
+                    final List<String> newOrder =
+                        state.dashboardCards.map((card) => card.id).toList();
 
-                  // Reorder
-                  final String item = newOrder.removeAt(oldIndex);
-                  newOrder.insert(newIndex, item);
+                    // Reorder
+                    final String item = newOrder.removeAt(oldIndex);
+                    newOrder.insert(newIndex, item);
 
-                  // Update order
-                  context.read<HomeDashboardBloc>().add(
-                    ReorderDashboardCardsEvent(newOrder: newOrder),
-                  );
-                },
+                    // Update order
+                    context.read<HomeDashboardBloc>().add(
+                      ReorderDashboardCardsEvent(newOrder: newOrder),
+                    );
+                  },
+                ),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(context.tr.translate('home.close')),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(context.tr.translate('home.close')),
-              ),
-            ],
           ),
     );
   }

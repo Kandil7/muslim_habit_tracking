@@ -20,18 +20,16 @@ class CustomizableQuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final enabledActions = quickActions.where((action) => action.enabled).toList();
-    
+    final enabledActions =
+        quickActions.where((action) => action.enabled).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Quick Actions',
-              style: AppTextStyles.headingSmall,
-            ),
+            Text('Quick Actions', style: AppTextStyles.headingSmall),
             if (isEditable)
               TextButton.icon(
                 icon: const Icon(Icons.edit, size: 16),
@@ -44,17 +42,16 @@ class CustomizableQuickActions extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         enabledActions.isEmpty
-            ? const Center(
-                child: Text('No quick actions enabled'),
-              )
+            ? const Center(child: Text('No quick actions enabled'))
             : Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.spaceAround,
-                children: enabledActions
-                    .map((action) => _buildQuickActionItem(context, action))
-                    .toList(),
-              ),
+              spacing: 16,
+              runSpacing: 16,
+              alignment: WrapAlignment.spaceAround,
+              children:
+                  enabledActions
+                      .map((action) => _buildQuickActionItem(context, action))
+                      .toList(),
+            ),
       ],
     );
   }
@@ -74,16 +71,10 @@ class CustomizableQuickActions extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                action.icon,
-                color: AppColors.primary,
-              ),
+              child: Icon(action.icon, color: AppColors.primary),
             ),
             const SizedBox(height: 8),
-            Text(
-              action.label,
-              style: AppTextStyles.bodySmall,
-            ),
+            Text(action.label, style: AppTextStyles.bodySmall),
           ],
         ),
       ),
@@ -91,11 +82,16 @@ class CustomizableQuickActions extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context) {
+    // Get the HomeDashboardBloc instance from the current context
+    final homeDashboardBloc = context.read<HomeDashboardBloc>();
+
     showDialog(
       context: context,
-      builder: (context) => _QuickActionsEditDialog(
-        quickActions: quickActions,
-      ),
+      builder:
+          (context) => BlocProvider<HomeDashboardBloc>.value(
+            value: homeDashboardBloc,
+            child: _QuickActionsEditDialog(quickActions: quickActions),
+          ),
     );
   }
 }
@@ -104,12 +100,11 @@ class CustomizableQuickActions extends StatelessWidget {
 class _QuickActionsEditDialog extends StatefulWidget {
   final List<QuickActionModel> quickActions;
 
-  const _QuickActionsEditDialog({
-    required this.quickActions,
-  });
+  const _QuickActionsEditDialog({required this.quickActions});
 
   @override
-  State<_QuickActionsEditDialog> createState() => _QuickActionsEditDialogState();
+  State<_QuickActionsEditDialog> createState() =>
+      _QuickActionsEditDialogState();
 }
 
 class _QuickActionsEditDialogState extends State<_QuickActionsEditDialog> {
@@ -173,8 +168,8 @@ class _QuickActionsEditDialogState extends State<_QuickActionsEditDialog> {
         ElevatedButton(
           onPressed: () {
             context.read<HomeDashboardBloc>().add(
-                  UpdateQuickActionsEvent(quickActions: _actions),
-                );
+              UpdateQuickActionsEvent(quickActions: _actions),
+            );
             Navigator.of(context).pop();
           },
           child: const Text('Save'),
