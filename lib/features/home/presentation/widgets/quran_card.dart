@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../features/quran/presentation/pages/quran_page.dart';
 import 'dashboard_card.dart';
 
 /// Card widget for Quran reading
@@ -14,8 +15,9 @@ class QuranCard extends StatelessWidget {
       iconColor: AppColors.secondary,
       onTap: () {
         // Navigate to Quran page
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Quran feature coming soon!')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const QuranPage()),
         );
       },
       child: Column(
@@ -87,10 +89,10 @@ class QuranCard extends StatelessWidget {
                 icon: Icons.search,
                 label: 'Search',
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Search feature coming soon!'),
-                    ),
+                  // Navigate to Quran page with search tab
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const QuranPage()),
                   );
                 },
               ),
@@ -99,9 +101,14 @@ class QuranCard extends StatelessWidget {
                 icon: Icons.bookmark,
                 label: 'Bookmarks',
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Bookmarks feature coming soon!'),
+                  // Navigate to Quran page with bookmarks tab
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QuranPage(),
+                      settings: const RouteSettings(
+                        arguments: {'initialTab': 1},
+                      ),
                     ),
                   );
                 },
@@ -111,9 +118,14 @@ class QuranCard extends StatelessWidget {
                 icon: Icons.history,
                 label: 'History',
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('History feature coming soon!'),
+                  // Navigate to Quran page with history tab
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QuranPage(),
+                      settings: const RouteSettings(
+                        arguments: {'initialTab': 2},
+                      ),
                     ),
                   );
                 },
