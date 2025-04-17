@@ -23,6 +23,7 @@ import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 
 import '../../../home/presentation/pages/home_dashboard_page.dart';
 import '../../../prayer_times/presentation/views/prayer_view.dart';
+import '../../../quran/presentation/pages/quran_page.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
 import '../bloc/habit_bloc.dart';
@@ -50,6 +51,7 @@ class _HomePageState extends State<HomePage> {
     ),
     const HabitDashboardPage(),
     const PrayerView(),
+    const QuranPage(),
     const DuaDhikrPage(),
     const AnalyticsPage(),
     const SettingsPage(),
@@ -85,6 +87,11 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(AppIcons.prayerOutlined),
             activeIcon: Icon(AppIcons.prayer),
             label: 'Prayer',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_outlined),
+            activeIcon: Icon(Icons.menu_book),
+            label: 'Quran',
           ),
           BottomNavigationBarItem(
             icon: Icon(AppIcons.duaOutlined),
