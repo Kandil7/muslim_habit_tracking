@@ -18,8 +18,10 @@ import 'features/prayer_times/data/repo/prayer_repo_impl.dart';
 import 'features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
+import 'features/dua_dhikr/domain/entities/dhikr.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
+import 'features/dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
 import 'features/habit_tracking/presentation/pages/home_page.dart';
@@ -35,8 +37,6 @@ void main() async {
 
   // Initialize dependencies
   await di.init();
-
-
 
   // Initialize cache manager
   final cacheManager = CacheManager();
@@ -70,8 +70,11 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
           create: (context) => di.sl<HabitBloc>()..add(GetHabitsEvent()),
         ),
         BlocProvider<PrayerCubit>(
-          create: (context) => PrayerCubit(
-    di.sl<PrayerRepoImpl>(), di.sl<LocationService>()),
+          create:
+              (context) => PrayerCubit(
+                di.sl<PrayerRepoImpl>(),
+                di.sl<LocationService>(),
+              ),
         ),
         BlocProvider<DuaDhikrBloc>(
           create: (context) => di.sl<DuaDhikrBloc>()..add(GetAllDhikrsEvent()),
@@ -104,11 +107,25 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                 // RTL support based on the current locale
                 builder: (context, child) {
                   return Directionality(
-                    textDirection: languageState.isRtl ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection:
+                        languageState.isRtl
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
                     child: child!,
                   );
                 },
                 home: const SplashPage(),
+                onGenerateRoute: (settings) {
+                  // Handle named routes
+                  if (settings.name == '/dhikr-counter') {
+                    // Extract the Dhikr argument
+                    final dhikr = settings.arguments as Dhikr;
+                    return MaterialPageRoute(
+                      builder: (context) => DhikrCounterPage(dhikr: dhikr),
+                    );
+                  }
+                  return null;
+                },
               );
             },
           );
