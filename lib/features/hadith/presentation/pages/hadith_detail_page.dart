@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 import '../../domain/entities/hadith.dart';
 import '../bloc/hadith_bloc.dart';
 import '../bloc/hadith_event.dart';
@@ -18,7 +19,7 @@ class HadithDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hadith Detail'),
+        title: Text(context.tr.translate('hadith.title')),
         actions: [
           IconButton(
             icon: Icon(
@@ -27,15 +28,18 @@ class HadithDetailPage extends StatelessWidget {
             ),
             onPressed: () {
               context.read<HadithBloc>().add(
-                    ToggleHadithBookmarkEvent(id: hadith.id),
-                  );
+                ToggleHadithBookmarkEvent(id: hadith.id),
+              );
             },
-            tooltip: hadith.isBookmarked ? 'Remove bookmark' : 'Add bookmark',
+            tooltip:
+                hadith.isBookmarked
+                    ? context.tr.translate('hadith.hadithRemoved')
+                    : context.tr.translate('hadith.hadithSaved'),
           ),
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () => _shareHadith(context),
-            tooltip: 'Share hadith',
+            tooltip: context.tr.translate('hadith.share'),
           ),
         ],
       ),
@@ -49,7 +53,7 @@ class HadithDetailPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: AppColors.secondary.withOpacity(0.1),
+                color: AppColors.secondary.withAlpha(25),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Column(
@@ -85,33 +89,34 @@ class HadithDetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Hadith details
             _buildDetailItem('Source', hadith.source),
             _buildDetailItem('Book', hadith.book),
             _buildDetailItem('Number', hadith.number),
             _buildDetailItem('Grade', hadith.grade),
-            
+
             const SizedBox(height: 16),
-            
+
             // Tags
             if (hadith.tags.isNotEmpty) ...[
-              const Text(
-                'Tags',
+              Text(
+                context.tr.translate('hadith.tags'),
                 style: AppTextStyles.headingSmall,
               ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: hadith.tags.map((tag) {
-                  return Chip(
-                    label: Text(tag),
-                    backgroundColor: AppColors.secondary.withOpacity(0.1),
-                  );
-                }).toList(),
+                children:
+                    hadith.tags.map((tag) {
+                      return Chip(
+                        label: Text(tag),
+                        backgroundColor: AppColors.secondary.withAlpha(25),
+                      );
+                    }).toList(),
               ),
             ],
           ],
@@ -136,12 +141,7 @@ class HadithDetailPage extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ),
+          Expanded(child: Text(value, style: AppTextStyles.bodyMedium)),
         ],
       ),
     );

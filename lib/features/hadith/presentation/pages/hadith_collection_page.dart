@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 import '../../domain/entities/hadith.dart';
 import '../bloc/hadith_bloc.dart';
 import '../bloc/hadith_event.dart';
@@ -28,7 +29,7 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    
+
     // Load all hadiths
     context.read<HadithBloc>().add(const GetAllHadithsEvent());
   }
@@ -44,13 +45,13 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hadith Collection'),
+        title: Text(context.tr.translate('hadith.title')),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Categories'),
-            Tab(text: 'Bookmarks'),
+          tabs: [
+            Tab(text: context.tr.translate('hadith.all')),
+            Tab(text: context.tr.translate('hadith.categories')),
+            Tab(text: context.tr.translate('hadith.bookmarks')),
           ],
         ),
       ),
@@ -62,7 +63,7 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search hadiths...',
+                hintText: context.tr.translate('hadith.search'),
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -76,7 +77,7 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
               },
             ),
           ),
-          
+
           // Tab content
           Expanded(
             child: TabBarView(
@@ -100,20 +101,23 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
           return const Center(child: CircularProgressIndicator());
         } else if (state is AllHadithsLoaded) {
           final hadiths = state.hadiths;
-          
+
           // Filter hadiths based on search query
-          final filteredHadiths = _searchQuery.isEmpty
-              ? hadiths
-              : hadiths.where((hadith) {
-                  return hadith.text.toLowerCase().contains(_searchQuery) ||
-                      hadith.narrator.toLowerCase().contains(_searchQuery) ||
-                      hadith.source.toLowerCase().contains(_searchQuery);
-                }).toList();
-          
+          final filteredHadiths =
+              _searchQuery.isEmpty
+                  ? hadiths
+                  : hadiths.where((hadith) {
+                    return hadith.text.toLowerCase().contains(_searchQuery) ||
+                        hadith.narrator.toLowerCase().contains(_searchQuery) ||
+                        hadith.source.toLowerCase().contains(_searchQuery);
+                  }).toList();
+
           if (filteredHadiths.isEmpty) {
-            return const Center(child: Text('No hadiths found'));
+            return Center(
+              child: Text(context.tr.translate('hadith.noHadithsFound')),
+            );
           }
-          
+
           return ListView.builder(
             itemCount: filteredHadiths.length,
             itemBuilder: (context, index) {
@@ -136,7 +140,7 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
                   onPressed: () {
                     context.read<HadithBloc>().add(const GetAllHadithsEvent());
                   },
-                  child: const Text('Retry'),
+                  child: Text(context.tr.translate('home.retry')),
                 ),
               ],
             ),
@@ -161,7 +165,7 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
       'Intention',
       'Safety',
     ];
-    
+
     return ListView.builder(
       itemCount: categories.length,
       itemBuilder: (context, index) {
@@ -187,20 +191,20 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
   Widget _buildBookmarksTab() {
     // Load bookmarked hadiths when tab is selected
     context.read<HadithBloc>().add(const GetBookmarkedHadithsEvent());
-    
+
     return BlocBuilder<HadithBloc, HadithState>(
       builder: (context, state) {
         if (state is HadithLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is BookmarkedHadithsLoaded) {
           final hadiths = state.hadiths;
-          
+
           if (hadiths.isEmpty) {
-            return const Center(
-              child: Text('No bookmarked hadiths yet'),
+            return Center(
+              child: Text(context.tr.translate('hadith.noBookmarkedHadiths')),
             );
           }
-          
+
           return ListView.builder(
             itemCount: hadiths.length,
             itemBuilder: (context, index) {
@@ -222,9 +226,7 @@ class _HadithCollectionPageState extends State<HadithCollectionPage>
   void _navigateToHadithDetail(Hadith hadith) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => HadithDetailPage(hadith: hadith),
-      ),
+      MaterialPageRoute(builder: (context) => HadithDetailPage(hadith: hadith)),
     );
   }
 
@@ -243,7 +245,7 @@ class _CategoryHadithsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$category Hadiths'),
+        title: Text('${context.tr.translate('hadith.categories')}: $category'),
       ),
       body: BlocBuilder<HadithBloc, HadithState>(
         builder: (context, state) {
@@ -251,13 +253,15 @@ class _CategoryHadithsPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is HadithsByTagLoaded && state.tag == category) {
             final hadiths = state.hadiths;
-            
+
             if (hadiths.isEmpty) {
               return Center(
-                child: Text('No hadiths found in $category category'),
+                child: Text(
+                  '${context.tr.translate('hadith.noHadithsFound')} - $category',
+                ),
               );
             }
-            
+
             return ListView.builder(
               itemCount: hadiths.length,
               itemBuilder: (context, index) {

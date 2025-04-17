@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 import '../../domain/entities/hadith.dart';
 
 /// Widget for displaying a hadith in a list
 class HadithListItem extends StatelessWidget {
   /// The hadith to display
   final Hadith hadith;
-  
+
   /// Callback when the item is tapped
   final VoidCallback onTap;
-  
+
   /// Callback when the bookmark button is tapped
   final VoidCallback onBookmarkToggle;
 
@@ -52,9 +53,10 @@ class HadithListItem extends StatelessWidget {
                       color: hadith.isBookmarked ? AppColors.primary : null,
                     ),
                     onPressed: onBookmarkToggle,
-                    tooltip: hadith.isBookmarked
-                        ? 'Remove bookmark'
-                        : 'Add bookmark',
+                    tooltip:
+                        hadith.isBookmarked
+                            ? context.tr.translate('hadith.hadithRemoved')
+                            : context.tr.translate('hadith.hadithSaved'),
                   ),
                 ],
               ),
@@ -81,21 +83,25 @@ class HadithListItem extends StatelessWidget {
                 Wrap(
                   spacing: 4.0,
                   runSpacing: 4.0,
-                  children: hadith.tags.map((tag) {
-                    return Chip(
-                      label: Text(
-                        tag,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      backgroundColor: AppColors.secondary.withOpacity(0.1),
-                    );
-                  }).toList(),
+                  children:
+                      hadith.tags.map((tag) {
+                        return Chip(
+                          label: Text(
+                            tag,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              fontSize: 10.0,
+                            ),
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                          ),
+                          backgroundColor: AppColors.secondary.withAlpha(25),
+                        );
+                      }).toList(),
                 ),
               ],
             ],
