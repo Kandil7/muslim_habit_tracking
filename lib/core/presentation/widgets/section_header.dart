@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ramadan_habit_tracking/core/theme/app_theme.dart';
+import 'package:muslim_habbit/core/theme/app_theme.dart';
 
 /// A reusable section header widget used throughout the app
 class SectionHeader extends StatelessWidget {

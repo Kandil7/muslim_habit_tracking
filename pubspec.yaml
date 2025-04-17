@@ -1,5 +1,5 @@
-name: ramadan_habit_tracking
-description: "SunnahTrack - A Muslim Habit Tracker App"
+name: muslim_habbit
+description: "Muslim Habbit - A Muslim Habit Tracker App"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -49,6 +49,9 @@ dependencies:
   http: ^1.2.0
   internet_connection_checker: ^1.0.0+1
 
+  # Notifications
+  flutter_local_notifications: ^19.1.0
+  timezone: ^0.10.0
   # UI
   fl_chart: ^0.66.2
   flutter_svg: ^2.0.10+1
@@ -57,10 +60,14 @@ dependencies:
   shimmer: ^3.0.0
   iconly: ^1.0.1
 
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+  flutter_gen: ^5.4.0
+
   # Utilities
   dartz: ^0.10.1
   get_it: ^7.6.7
-  timezone: ^0.9.2
   shared_preferences: ^2.2.2
   logger: ^2.0.2+1
   uuid: ^4.3.3
@@ -69,6 +76,19 @@ dependencies:
   share_plus: ^7.2.1
   crypto: ^3.0.3
 #  awesome_notifications: ^0.10.0
+
+  # Prayer Times
+  pray_times: ^0.0.1
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
+  flutter_compass: ^0.8.0
+  location: ^8.0.0
+  sqflite: ^2.4.2
+#  worker_manager: ^7.2.3
+  hijri: ^3.0.0
+  cached_network_image: ^3.4.1
+  flutter_image_slideshow: ^0.1.6
+  flutter_timezone: ^4.1.0
 
 dev_dependencies:
   flutter_test:
@@ -92,11 +112,15 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Generate localization files
+  generate: true
+
   # Assets for the application
   assets:
     - assets/images/
-    - assets/icons/
+    - assets/json/
     - assets/fonts/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

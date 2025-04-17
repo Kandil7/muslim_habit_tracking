@@ -39,3 +39,13 @@ class PermissionFailure extends Failure {
 class AppFailure extends Failure {
   const AppFailure({required String message}) : super(message: message);
 }
+
+/// Location failures (e.g., location services not enabled)
+class LocationFailure extends Failure {
+  const LocationFailure({required String message}) : super(message: message);
+}
+
+///Network failures (e.g., no internet connection)
+class NetworkFailure extends Failure {
+  const NetworkFailure({required String message}) : super(message: message);
+}

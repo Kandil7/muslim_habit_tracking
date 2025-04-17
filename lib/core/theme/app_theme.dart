@@ -13,6 +13,9 @@ class AppColors {
   static const Color secondaryLight = Color(0xFFFFDF64);
   static const Color secondaryDark = Color(0xFFA08000);
 
+  // Tertiary colors
+  static const Color tertiary = Color(0xFF9575CD);
+
   // Neutral colors (Light mode)
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
@@ -22,18 +25,30 @@ class AppColors {
   static const Color textPrimary = Color(0xFF212121);
   static const Color textSecondary = Color(0xFF757575);
   static const Color textHint = Color(0xFF9E9E9E);
+  static const Color textTertiary = Color(0xFFBDBDBD);
+  static const Color lightGrey = Color(0xFFD3D3D3);
 
   // Dark mode colors
-  static const Color darkBackground = Color(0xFF121212);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkSurfaceVariant = Color(0xFF2C2C2C);
-  static const Color darkPrimary = Color(0xFF4CAF8D); // Using primaryLight for better visibility
-  static const Color darkSecondary = Color(0xFFFFDF64); // Using secondaryLight for better visibility
+  static const Color darkBackground = Color(0xFF192734);
+  static const Color darkSurface = Color(0xFF15202b);
+  static const Color darkSurfaceVariant = Color(0xFF22303c);
+  static const Color darkPrimary = Color(
+    0xFF4CAF8D,
+  ); // Using primaryLight for better visibility
+  static const Color darkSecondary = Color(
+    0xFFFFDF64,
+  ); // Using secondaryLight for better visibility
 
   // Dark mode text colors - improved for better readability
-  static const Color darkTextPrimary = Color(0xFFFFFFFF); // Pure white for primary text
-  static const Color darkTextSecondary = Color(0xFFE0E0E0); // Lighter gray for better contrast
-  static const Color darkTextTertiary = Color(0xFFBDBDBD); // Medium gray for less important text
+  static const Color darkTextPrimary = Color(
+    0xFFFFFFFF,
+  ); // Pure white for primary text
+  static const Color darkTextSecondary = Color(
+    0xFFE0E0E0,
+  ); // Lighter gray for better contrast
+  static const Color darkTextTertiary = Color(
+    0xFFBDBDBD,
+  ); // Medium gray for less important text
   static const Color darkTextHint = Color(0xFF9E9E9E); // Brighter hint text
   static const Color darkTextDisabled = Color(0xFF757575); // For disabled text
 
@@ -104,7 +119,7 @@ class AppTextStyles {
   // Arabic text style for dark mode
   static TextStyle get arabicTextDark => GoogleFonts.scheherazadeNew(
     fontSize: 22,
-    color: AppColors.darkTextPrimary,
+    // color: AppColors.darkTextPrimary,
     height: 1.5,
     letterSpacing: 0.5,
     fontWeight: FontWeight.w500,
@@ -136,24 +151,24 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.headingMedium.copyWith(color: Colors.white),
+        titleTextStyle: AppTextStyles.headingMedium.copyWith(
+          color: Colors.white,
+        ),
       ),
       cardTheme: CardTheme(
         color: AppColors.surface,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.bold,
           ),
-          textStyle: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -167,9 +182,7 @@ class AppTheme {
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.primary),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: AppTextStyles.bodyMedium,
         ),
       ),
@@ -192,7 +205,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textHint),
       ),
       textTheme: TextTheme(
@@ -232,15 +248,15 @@ class AppTheme {
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.headingMedium.copyWith(color: AppColors.darkTextPrimary),
+        titleTextStyle: AppTextStyles.headingMedium.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
         iconTheme: IconThemeData(color: AppColors.darkPrimary),
       ),
       cardTheme: CardTheme(
         color: AppColors.darkCardBackground,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         shadowColor: Colors.black.withOpacity(0.3),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -248,10 +264,10 @@ class AppTheme {
           backgroundColor: AppColors.darkPrimary,
           foregroundColor: Colors.black,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.bold,
           ),
-          textStyle: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
           elevation: 2,
           shadowColor: AppColors.darkPrimary.withOpacity(0.3),
         ),
@@ -267,9 +283,7 @@ class AppTheme {
           foregroundColor: AppColors.darkPrimary,
           side: BorderSide(color: AppColors.darkPrimary),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: AppTextStyles.bodyMedium,
         ),
       ),
@@ -292,7 +306,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: GoogleFonts.lato(
           fontSize: 16,
           color: AppColors.darkTextHint,
@@ -391,10 +408,7 @@ class AppTheme {
         thickness: 1,
         space: 1,
       ),
-      iconTheme: IconThemeData(
-        color: AppColors.darkTextPrimary,
-        size: 24,
-      ),
+      iconTheme: IconThemeData(color: AppColors.darkTextPrimary, size: 24),
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.selected)) {
@@ -430,8 +444,14 @@ class AppTheme {
         backgroundColor: AppColors.darkSurface,
         selectedItemColor: AppColors.darkPrimary,
         unselectedItemColor: AppColors.darkTextSecondary,
-        selectedIconTheme: IconThemeData(color: AppColors.darkPrimary, size: 24),
-        unselectedIconTheme: IconThemeData(color: AppColors.darkTextSecondary, size: 24),
+        selectedIconTheme: IconThemeData(
+          color: AppColors.darkPrimary,
+          size: 24,
+        ),
+        unselectedIconTheme: IconThemeData(
+          color: AppColors.darkTextSecondary,
+          size: 24,
+        ),
         showSelectedLabels: true,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,

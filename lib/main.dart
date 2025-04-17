@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/di/injection_container.dart' as di;
+import 'core/localization/app_localizations.dart';
+import 'core/localization/bloc/language_bloc_exports.dart';
 import 'core/services/cache_manager.dart';
-import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/bloc/theme_bloc_exports.dart';
-import 'features/onboarding/presentation/pages/onboarding_page.dart';
+import 'core/utils/services/location_service.dart';
+import 'features/prayer_times/data/repo/prayer_repo_impl.dart';
+import 'features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
+import 'features/dua_dhikr/domain/entities/dhikr.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
+import 'features/dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
-import 'features/habit_tracking/presentation/pages/home_page.dart';
-import 'features/prayer_times/presentation/bloc/prayer_time_bloc.dart';
-import 'features/prayer_times/presentation/bloc/prayer_time_event.dart';
+import 'features/habit_tracking/presentation/pages/add_habit_page.dart';
+import 'features/hadith/presentation/bloc/hadith_bloc.dart';
+import 'features/hadith/presentation/bloc/hadith_event.dart';
+import 'features/hadith/presentation/pages/hadith_collection_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,16 +37,17 @@ void main() async {
   // Initialize dependencies
   await di.init();
 
-  // Initialize notification service
-  final notificationService = NotificationService();
-  await notificationService.init();
-  await notificationService.requestPermissions();
-
   // Initialize cache manager
   final cacheManager = CacheManager();
   await cacheManager.init();
 
-  runApp(const SunnahTrackApp());
+  // Run the app with the language cubit from the DI container
+  runApp(
+    BlocProvider<LanguageCubit>(
+      create: (context) => di.sl<LanguageCubit>(),
+      child: const SunnahTrackApp(),
+    ),
+  );
 }
 
 class SunnahTrackApp extends StatefulWidget {
@@ -62,8 +68,12 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
         BlocProvider<HabitBloc>(
           create: (context) => di.sl<HabitBloc>()..add(GetHabitsEvent()),
         ),
-        BlocProvider<PrayerTimeBloc>(
-          create: (context) => di.sl<PrayerTimeBloc>()..add(GetPrayerTimeByDateEvent(date: DateTime.now())),
+        BlocProvider<PrayerCubit>(
+          create:
+              (context) => PrayerCubit(
+                di.sl<PrayerRepoImpl>(),
+                di.sl<LocationService>(),
+              ),
         ),
         BlocProvider<DuaDhikrBloc>(
           create: (context) => di.sl<DuaDhikrBloc>()..add(GetAllDhikrsEvent()),
@@ -71,16 +81,65 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
         BlocProvider<AnalyticsBloc>(
           create: (context) => di.sl<AnalyticsBloc>(),
         ),
+        BlocProvider<HadithBloc>(
+          create:
+              (context) =>
+                  di.sl<HadithBloc>()..add(const GetHadithOfTheDayEvent()),
+        ),
       ],
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, themeState) {
-          return MaterialApp(
-            title: 'SunnahTrack',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeState.themeMode,
-            home: const SplashPage(),
+      child: BlocBuilder<LanguageCubit, LanguageState>(
+        builder: (context, languageState) {
+          return BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, themeState) {
+              return MaterialApp(
+                title: 'Muslim Habbit',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeState.themeMode,
+                locale: languageState.locale,
+                supportedLocales: const [
+                  Locale('en', ''), // English
+                  Locale('ar', ''), // Arabic
+                ],
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                // RTL support based on the current locale
+                builder: (context, child) {
+                  return Directionality(
+                    textDirection:
+                        languageState.isRtl
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                    child: child!,
+                  );
+                },
+                home: const SplashPage(),
+                onGenerateRoute: (settings) {
+                  // Handle named routes
+                  if (settings.name == '/dhikr-counter') {
+                    // Extract the Dhikr argument
+                    final dhikr = settings.arguments as Dhikr;
+                    return MaterialPageRoute(
+                      builder: (context) => DhikrCounterPage(dhikr: dhikr),
+                    );
+                  } else if (settings.name == '/add-habit') {
+                    return MaterialPageRoute(
+                      builder: (context) => const AddHabitPage(),
+                    );
+                  } else if (settings.name == '/hadith-collection') {
+                    return MaterialPageRoute(
+                      builder: (context) => const HadithCollectionPage(),
+                    );
+                  }
+                  return null;
+                },
+              );
+            },
           );
         },
       ),

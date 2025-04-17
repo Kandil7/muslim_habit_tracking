@@ -1,10 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/date_utils.dart';
+import '../../domain/entities/habit.dart';
+import '../../domain/entities/habit_log.dart';
 import '../../domain/usecases/create_habit.dart';
 import '../../domain/usecases/create_habit_log.dart';
 import '../../domain/usecases/delete_habit.dart';
 import '../../domain/usecases/get_habit_logs_by_date_range.dart';
 import '../../domain/usecases/get_habits.dart';
 import '../../domain/usecases/update_habit.dart';
+import '../../domain/utils/streak_calculator.dart';
 import 'habit_event.dart';
 import 'habit_state.dart';
 
@@ -31,6 +35,8 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     on<DeleteHabitEvent>(_onDeleteHabit);
     on<GetHabitLogsByDateRangeEvent>(_onGetHabitLogsByDateRange);
     on<CreateHabitLogEvent>(_onCreateHabitLog);
+    on<UpdateStreakEvent>(_onUpdateStreak);
+    on<CheckStreaksEvent>(_onCheckStreaks);
   }
 
   /// Handle GetHabitsEvent
@@ -127,7 +133,99 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
 
     result.fold(
       (failure) => emit(HabitError(message: failure.message)),
-      (habitLog) => emit(HabitLogCreated(habitLog: habitLog)),
+      (habitLog) {
+        // After creating a log, update the streak information
+        add(UpdateStreakEvent(
+          habitId: habitLog.habitId,
+          logDate: habitLog.date,
+        ));
+        emit(HabitLogCreated(habitLog: habitLog));
+      },
+    );
+  }
+
+  /// Handle UpdateStreakEvent
+  Future<void> _onUpdateStreak(
+    UpdateStreakEvent event,
+    Emitter<HabitState> emit,
+  ) async {
+    // Get the habit
+    final habitResult = await getHabits();
+
+    await habitResult.fold(
+      (failure) async {
+        emit(HabitError(message: failure.message));
+      },
+      (habits) async {
+        // Find the habit by ID
+        final habit = habits.firstWhere(
+          (h) => h.id == event.habitId,
+          orElse: () => throw Exception('Habit not found'),
+        );
+
+        // Get all logs for this habit
+        final logsResult = await getHabitLogsByDateRange(
+          GetHabitLogsByDateRangeParams(
+            habitId: event.habitId,
+            startDate: DateTime(2000), // Far in the past
+            endDate: DateTime.now().add(const Duration(days: 1)), // Include today
+          ),
+        );
+
+        await logsResult.fold(
+          (failure) async {
+            emit(HabitError(message: failure.message));
+          },
+          (logs) async {
+            // Update streak information
+            final updatedHabit = StreakCalculator.updateStreakInfo(
+              habit,
+              logs,
+              event.logDate,
+            );
+
+            // Save the updated habit
+            final updateResult = await updateHabit(
+              UpdateHabitParams(habit: updatedHabit),
+            );
+
+            updateResult.fold(
+              (failure) => emit(HabitError(message: failure.message)),
+              (updatedHabit) => emit(HabitUpdated(habit: updatedHabit)),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// Handle CheckStreaksEvent
+  Future<void> _onCheckStreaks(
+    CheckStreaksEvent event,
+    Emitter<HabitState> emit,
+  ) async {
+    // Get all habits
+    final habitsResult = await getHabits();
+
+    await habitsResult.fold(
+      (failure) async {
+        emit(HabitError(message: failure.message));
+      },
+      (habits) async {
+        // Check each habit for broken streaks
+        for (final habit in habits) {
+          if (StreakCalculator.isStreakBroken(habit)) {
+            // Reset the streak
+            final updatedHabit = StreakCalculator.resetBrokenStreak(habit);
+
+            // Save the updated habit
+            await updateHabit(UpdateHabitParams(habit: updatedHabit));
+          }
+        }
+
+        // Reload habits after updates
+        add(GetHabitsEvent());
+      },
     );
   }
 }

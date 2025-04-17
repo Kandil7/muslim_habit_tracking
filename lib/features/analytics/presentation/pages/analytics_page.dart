@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ramadan_habit_tracking/core/presentation/widgets/widgets.dart';
-import 'package:ramadan_habit_tracking/core/theme/app_theme.dart';
-import 'package:ramadan_habit_tracking/core/utils/date_utils.dart';
-import 'package:ramadan_habit_tracking/features/analytics/domain/entities/habit_stats.dart';
-import 'package:ramadan_habit_tracking/features/analytics/presentation/bloc/analytics_bloc.dart';
-import 'package:ramadan_habit_tracking/features/analytics/presentation/bloc/analytics_event.dart';
-import 'package:ramadan_habit_tracking/features/analytics/presentation/bloc/analytics_state.dart';
-import 'package:ramadan_habit_tracking/features/analytics/presentation/pages/habit_stats_detail_page.dart';
+import 'package:muslim_habbit/core/utils/date_utils.dart';
+import 'package:muslim_habbit/core/presentation/widgets/widgets.dart';
+import 'package:muslim_habbit/core/theme/app_theme.dart';
+import 'package:muslim_habbit/core/utils/date_utils.dart';
+import 'package:muslim_habbit/features/analytics/domain/entities/habit_stats.dart';
+import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_bloc.dart';
+import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_event.dart';
+import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_state.dart';
+import 'package:muslim_habbit/features/analytics/presentation/pages/habit_stats_detail_page.dart';
 
 /// Analytics page with granular BlocBuilder widgets
 class AnalyticsPage extends StatefulWidget {

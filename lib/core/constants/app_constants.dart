@@ -10,9 +10,11 @@ class AppConstants {
   // Local storage keys
   static const String habitsBoxName = 'habits';
   static const String habitLogsBoxName = 'habit_logs';
+  static const String categoriesBoxName = 'habit_categories';
   static const String prayerTimesBoxName = 'prayerTimes';
   static const String settingsBoxName = 'settings';
   static const String duaDhikrBoxName = 'duaDhikr';
+  static const String hadithBoxName = 'hadith';
 
   // Default settings
   static const int defaultNotificationTime = 15; // minutes before prayer

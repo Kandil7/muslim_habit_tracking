@@ -14,7 +14,12 @@ class Habit extends Equatable {
   final bool isActive;
   final DateTime createdAt;
   final DateTime? updatedAt;
-  
+  final int currentStreak;
+  final int longestStreak;
+  final DateTime? lastCompletedDate;
+  final String? categoryId;
+  final List<String> tags;
+
   const Habit({
     required this.id,
     required this.name,
@@ -28,8 +33,13 @@ class Habit extends Equatable {
     required this.isActive,
     required this.createdAt,
     this.updatedAt,
+    this.currentStreak = 0,
+    this.longestStreak = 0,
+    this.lastCompletedDate,
+    this.categoryId,
+    this.tags = const [],
   });
-  
+
   @override
   List<Object?> get props => [
     id,
@@ -44,8 +54,13 @@ class Habit extends Equatable {
     isActive,
     createdAt,
     updatedAt,
+    currentStreak,
+    longestStreak,
+    lastCompletedDate,
+    categoryId,
+    tags,
   ];
-  
+
   /// Create a copy of this Habit with the given fields replaced with the new values
   Habit copyWith({
     String? id,
@@ -60,6 +75,12 @@ class Habit extends Equatable {
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? currentStreak,
+    int? longestStreak,
+    DateTime? lastCompletedDate,
+    bool clearLastCompletedDate = false,
+    String? categoryId,
+    List<String>? tags,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -74,6 +95,11 @@ class Habit extends Equatable {
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      lastCompletedDate: clearLastCompletedDate ? null : (lastCompletedDate ?? this.lastCompletedDate),
+      categoryId: categoryId ?? this.categoryId,
+      tags: tags ?? this.tags,
     );
   }
 }

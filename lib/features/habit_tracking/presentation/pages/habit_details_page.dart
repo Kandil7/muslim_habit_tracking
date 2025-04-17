@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
+import '../../domain/utils/streak_calculator.dart';
 import '../bloc/habit_bloc.dart';
 import '../bloc/habit_event.dart';
 import '../bloc/habit_state.dart';
@@ -108,6 +108,10 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                 backgroundColor: AppColors.success,
               ),
             );
+          } else if (state is HabitUpdated) {
+            setState(() {
+              _habit = state.habit;
+            });
           } else if (state is HabitError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -221,8 +225,12 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
 
   Widget _buildProgressSection() {
     final today = DateTimeUtils.today;
-    final bool completedToday = _logs.any((log) => DateTimeUtils.isSameDay(log.date, today));
-    final int currentStreak = _calculateCurrentStreak();
+    final bool completedToday = _logs.any((log) => DateTimeUtils.isSameDay(log.date, today)) ||
+                               (_habit.lastCompletedDate != null && DateTimeUtils.isSameDay(_habit.lastCompletedDate!, today));
+
+    // Use the streak from the habit entity if available, otherwise calculate it
+    final int currentStreak = _habit.currentStreak > 0 ? _habit.currentStreak : StreakCalculator.calculateCurrentStreak(_logs, _habit.lastCompletedDate);
+    final int longestStreak = _habit.longestStreak > 0 ? _habit.longestStreak : StreakCalculator.calculateLongestStreak(_logs);
 
     return Card(
       child: Padding(
@@ -230,9 +238,33 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Progress',
-              style: AppTextStyles.headingSmall,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Progress',
+                  style: AppTextStyles.headingSmall,
+                ),
+                if (currentStreak > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.local_fire_department, color: AppColors.secondary, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$currentStreak day streak!',
+                          style: AppTextStyles.bodySmall.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 16),
             Row(
@@ -251,12 +283,26 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                   AppColors.secondary,
                 ),
                 _buildProgressItem(
-                  'This Month',
-                  '${_logs.length} days',
-                  Icons.calendar_month,
-                  AppColors.primary,
+                  'Longest Streak',
+                  '$longestStreak days',
+                  Icons.emoji_events,
+                  AppColors.textTertiary,
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            LinearProgressIndicator(
+              value: _logs.length / 30, // Progress for the month
+              backgroundColor: AppColors.lightGrey,
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${_logs.length} days completed this month',
+              style: AppTextStyles.bodySmall,
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -448,51 +494,33 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
 
   void _trackProgress() {
     final value = int.tryParse(_valueController.text) ?? _habit.goal;
+    final now = DateTime.now();
 
     final habitLog = HabitLog(
       id: const Uuid().v4(),
       habitId: _habit.id,
-      date: DateTime.now(),
+      date: now,
       value: value,
       notes: _notesController.text,
-      createdAt: DateTime.now(),
+      createdAt: now,
     );
 
+    // Create the habit log
     context.read<HabitBloc>().add(CreateHabitLogEvent(habitLog: habitLog));
+
+    // Update streak information
+    context.read<HabitBloc>().add(UpdateStreakEvent(
+      habitId: _habit.id,
+      logDate: now,
+    ));
 
     // Clear the notes field
     _notesController.clear();
   }
 
+  // This method is kept for backward compatibility but now uses StreakCalculator
   int _calculateCurrentStreak() {
-    if (_logs.isEmpty) {
-      return 0;
-    }
-
-    // Sort logs by date (newest first)
-    _logs.sort((a, b) => b.date.compareTo(a.date));
-
-    int streak = 0;
-    DateTime currentDate = DateTime.now();
-
-    // Check if there's a log for today
-    if (_logs.any((log) => DateTimeUtils.isSameDay(log.date, currentDate))) {
-      streak = 1;
-
-      // Check consecutive days
-      for (int i = 1; i < 365; i++) {
-        final previousDate = currentDate.subtract(Duration(days: i));
-        final hasLogForPreviousDate = _logs.any((log) => DateTimeUtils.isSameDay(log.date, previousDate));
-
-        if (hasLogForPreviousDate) {
-          streak++;
-        } else {
-          break;
-        }
-      }
-    }
-
-    return streak;
+    return StreakCalculator.calculateCurrentStreak(_logs, _habit.lastCompletedDate);
   }
 
   void _showDeleteConfirmation() {
@@ -578,14 +606,8 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  ///TODO: Schedule the reminder
                   // Schedule the reminder
-                  final notificationService = NotificationService();
-                  notificationService.scheduleHabitReminder(
-                    habitId: _habit.id,
-                    habitName: _habit.name,
-                    reminderTime: selectedTime,
-                    daysOfWeek: _habit.daysOfWeek,
-                  );
 
                   Navigator.pop(context);
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ramadan_habit_tracking/core/presentation/widgets/custom_button.dart';
+import 'package:muslim_habbit/core/presentation/widgets/custom_button.dart';
 
 /// A reusable empty state widget
 class EmptyState extends StatelessWidget {
