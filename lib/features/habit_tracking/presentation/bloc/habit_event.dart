@@ -6,7 +6,7 @@ import '../../domain/entities/habit_log.dart';
 /// Events for the habit feature
 abstract class HabitEvent extends Equatable {
   const HabitEvent();
-  
+
   @override
   List<Object?> get props => [];
 }
@@ -17,9 +17,9 @@ class GetHabitsEvent extends HabitEvent {}
 /// Event to get a habit by ID
 class GetHabitByIdEvent extends HabitEvent {
   final String id;
-  
+
   const GetHabitByIdEvent({required this.id});
-  
+
   @override
   List<Object?> get props => [id];
 }
@@ -27,9 +27,9 @@ class GetHabitByIdEvent extends HabitEvent {
 /// Event to create a habit
 class CreateHabitEvent extends HabitEvent {
   final Habit habit;
-  
+
   const CreateHabitEvent({required this.habit});
-  
+
   @override
   List<Object?> get props => [habit];
 }
@@ -37,9 +37,9 @@ class CreateHabitEvent extends HabitEvent {
 /// Event to update a habit
 class UpdateHabitEvent extends HabitEvent {
   final Habit habit;
-  
+
   const UpdateHabitEvent({required this.habit});
-  
+
   @override
   List<Object?> get props => [habit];
 }
@@ -47,9 +47,9 @@ class UpdateHabitEvent extends HabitEvent {
 /// Event to delete a habit
 class DeleteHabitEvent extends HabitEvent {
   final String id;
-  
+
   const DeleteHabitEvent({required this.id});
-  
+
   @override
   List<Object?> get props => [id];
 }
@@ -57,9 +57,9 @@ class DeleteHabitEvent extends HabitEvent {
 /// Event to get all logs for a habit
 class GetHabitLogsEvent extends HabitEvent {
   final String habitId;
-  
+
   const GetHabitLogsEvent({required this.habitId});
-  
+
   @override
   List<Object?> get props => [habitId];
 }
@@ -69,13 +69,13 @@ class GetHabitLogsByDateRangeEvent extends HabitEvent {
   final String habitId;
   final DateTime startDate;
   final DateTime endDate;
-  
+
   const GetHabitLogsByDateRangeEvent({
     required this.habitId,
     required this.startDate,
     required this.endDate,
   });
-  
+
   @override
   List<Object?> get props => [habitId, startDate, endDate];
 }
@@ -83,9 +83,9 @@ class GetHabitLogsByDateRangeEvent extends HabitEvent {
 /// Event to create a habit log
 class CreateHabitLogEvent extends HabitEvent {
   final HabitLog habitLog;
-  
+
   const CreateHabitLogEvent({required this.habitLog});
-  
+
   @override
   List<Object?> get props => [habitLog];
 }
@@ -93,9 +93,9 @@ class CreateHabitLogEvent extends HabitEvent {
 /// Event to update a habit log
 class UpdateHabitLogEvent extends HabitEvent {
   final HabitLog habitLog;
-  
+
   const UpdateHabitLogEvent({required this.habitLog});
-  
+
   @override
   List<Object?> get props => [habitLog];
 }
@@ -103,9 +103,26 @@ class UpdateHabitLogEvent extends HabitEvent {
 /// Event to delete a habit log
 class DeleteHabitLogEvent extends HabitEvent {
   final String id;
-  
+
   const DeleteHabitLogEvent({required this.id});
-  
+
   @override
   List<Object?> get props => [id];
 }
+
+/// Event to update streak information for a habit
+class UpdateStreakEvent extends HabitEvent {
+  final String habitId;
+  final DateTime logDate;
+
+  const UpdateStreakEvent({
+    required this.habitId,
+    required this.logDate,
+  });
+
+  @override
+  List<Object?> get props => [habitId, logDate];
+}
+
+/// Event to check and reset broken streaks
+class CheckStreaksEvent extends HabitEvent {}
