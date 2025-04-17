@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
+import '../../../../core/theme/bloc/theme_bloc_exports.dart';
 import '../../../habit_tracking/presentation/bloc/habit_bloc.dart';
 import '../../../habit_tracking/presentation/bloc/habit_event.dart';
 import '../../../habit_tracking/presentation/bloc/habit_state.dart';
@@ -89,6 +90,21 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> with SingleTicker
               });
             },
             tooltip: _isEditMode ? 'Save changes' : 'Edit dashboard',
+          ),
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Icon(
+                  state.themeMode == ThemeMode.dark
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  context.read<ThemeBloc>().add(ToggleThemeEvent());
+                },
+                tooltip: 'Toggle Theme',
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.notifications_outlined),

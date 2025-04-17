@@ -7,14 +7,14 @@ class QuickActionModel {
   final String label;
   final IconData icon;
   final bool enabled;
-  
+
   QuickActionModel({
     required this.id,
     required this.label,
     required this.icon,
     this.enabled = true,
   });
-  
+
   /// Create a copy of this QuickActionModel with the given fields replaced with the new values
   QuickActionModel copyWith({
     String? id,
@@ -29,7 +29,7 @@ class QuickActionModel {
       enabled: enabled ?? this.enabled,
     );
   }
-  
+
   /// Create a QuickActionModel from a JSON map
   factory QuickActionModel.fromJson(Map<String, dynamic> json) {
     return QuickActionModel(
@@ -39,7 +39,7 @@ class QuickActionModel {
       enabled: json['enabled'] ?? true,
     );
   }
-  
+
   /// Convert this QuickActionModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -49,12 +49,12 @@ class QuickActionModel {
       'enabled': enabled,
     };
   }
-  
+
   /// Get the icon data from a string identifier
   static IconData _getIconFromString(String iconName) {
     switch (iconName) {
       case 'habit':
-        return AppIcons.habit;
+        return AppIcons.home; // Using home icon for habit
       case 'prayer':
         return AppIcons.prayer;
       case 'quran':
@@ -73,10 +73,10 @@ class QuickActionModel {
         return Icons.star;
     }
   }
-  
+
   /// Get a string identifier from an icon
   static String _getStringFromIcon(IconData icon) {
-    if (icon == AppIcons.habit) return 'habit';
+    if (icon == AppIcons.home) return 'habit';
     if (icon == AppIcons.prayer) return 'prayer';
     if (icon == Icons.menu_book) return 'quran';
     if (icon == AppIcons.dua) return 'dua';
