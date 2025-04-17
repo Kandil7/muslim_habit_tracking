@@ -31,15 +31,18 @@ class HabitNotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        // Handle notification taps here
+        print('Habit notification tapped: ${response.payload}');
+      },
     );
   }
 
   Future<bool> requestPermissions() async {
     // Request permissions for iOS
-    final DarwinFlutterLocalNotificationsPlugin? iOSImplementation =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            DarwinFlutterLocalNotificationsPlugin>();
-
+final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
+    _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
     if (iOSImplementation != null) {
       await iOSImplementation.requestPermissions(
         alert: true,

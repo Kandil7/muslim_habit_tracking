@@ -32,14 +32,18 @@ class PrayerNotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        // Handle notification taps here
+        print('Notification tapped: ${response.payload}');
+      },
     );
   }
 
   Future<bool> requestPermissions() async {
     // Request permissions for iOS
-    final DarwinFlutterLocalNotificationsPlugin? iOSImplementation =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            DarwinFlutterLocalNotificationsPlugin>();
+final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
+    _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
 
     if (iOSImplementation != null) {
       await iOSImplementation.requestPermissions(
@@ -104,10 +108,9 @@ class PrayerNotificationService {
         '${prayer.enName} prayer time in $minutesBefore minutes',
         scheduledDate,
         platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+
         matchDateTimeComponents: DateTimeComponents.time,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }
   }
