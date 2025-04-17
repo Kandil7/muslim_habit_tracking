@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'core/localization/app_localizations.dart';
-import 'core/localization/bloc/language_bloc_exports.dart';
 
 import 'core/di/injection_container.dart' as di;
+import 'core/localization/app_localizations.dart';
+import 'core/localization/bloc/language_bloc_exports.dart';
 import 'core/services/cache_manager.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/bloc/theme_bloc_exports.dart';
 import 'core/utils/services/location_service.dart';
-import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/prayer_times/data/repo/prayer_repo_impl.dart';
 import 'features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
@@ -25,7 +21,9 @@ import 'features/dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
 import 'features/habit_tracking/presentation/pages/add_habit_page.dart';
-import 'features/habit_tracking/presentation/pages/home_page.dart'; // Used in the app's home
+import 'features/hadith/presentation/bloc/hadith_bloc.dart';
+import 'features/hadith/presentation/bloc/hadith_event.dart';
+import 'features/hadith/presentation/pages/hadith_collection_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +81,11 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
         BlocProvider<AnalyticsBloc>(
           create: (context) => di.sl<AnalyticsBloc>(),
         ),
+        BlocProvider<HadithBloc>(
+          create:
+              (context) =>
+                  di.sl<HadithBloc>()..add(const GetHadithOfTheDayEvent()),
+        ),
       ],
       child: BlocBuilder<LanguageCubit, LanguageState>(
         builder: (context, languageState) {
@@ -127,6 +130,10 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                   } else if (settings.name == '/add-habit') {
                     return MaterialPageRoute(
                       builder: (context) => const AddHabitPage(),
+                    );
+                  } else if (settings.name == '/hadith-collection') {
+                    return MaterialPageRoute(
+                      builder: (context) => const HadithCollectionPage(),
                     );
                   }
                   return null;
