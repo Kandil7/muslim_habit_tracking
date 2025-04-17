@@ -9,6 +9,9 @@ import '../../../habit_tracking/presentation/bloc/habit_bloc.dart';
 import '../../../habit_tracking/presentation/bloc/habit_event.dart';
 import '../../../habit_tracking/presentation/bloc/habit_state.dart';
 import '../../../prayer_times/presentation/manager/prayer/prayer_cubit.dart';
+import '../../../hadith/presentation/bloc/hadith_bloc.dart';
+import '../../../hadith/presentation/bloc/hadith_event.dart';
+import '../../../hadith/presentation/widgets/hadith_of_the_day_card.dart';
 import '../../domain/models/dashboard_card_model.dart';
 import '../bloc/home_dashboard_bloc.dart';
 import '../bloc/home_dashboard_event.dart';
@@ -16,7 +19,7 @@ import '../bloc/home_dashboard_state.dart';
 import '../widgets/animated_dashboard_card.dart';
 import '../widgets/customizable_quick_actions.dart';
 import '../widgets/dhikr_card.dart';
-import '../widgets/hadith_card.dart';
+// import '../widgets/hadith_card.dart'; // Using the new HadithOfTheDayCard instead
 import '../widgets/habits_summary_card.dart';
 import '../widgets/islamic_calendar_card.dart';
 import '../widgets/prayer_times_card.dart';
@@ -53,6 +56,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
 
     // Load prayer times
     context.read<PrayerCubit>().getPrayerTimes();
+
+    // Load hadith of the day
+    context.read<HadithBloc>().add(const GetHadithOfTheDayEvent());
   }
 
   @override
@@ -259,7 +265,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
       case 'hadith':
         return Column(
           children: [
-            HadithCard(
+            HadithOfTheDayCard(
               isReorderable: _isEditMode,
               onReorder: () => _showReorderDialog(context, state),
               onVisibilityToggle:
