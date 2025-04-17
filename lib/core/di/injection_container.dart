@@ -3,10 +3,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:muslim_habbit/core/utils/services/notification_service.dart';
+import 'package:muslim_habbit/core/utils/services/shared_pref_service.dart';
 import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../features/notification/data/repo/notification_repo_impl.dart';
 import '../../features/notification/presentation/manager/notification/notification_cubit.dart';
@@ -42,6 +44,13 @@ import '../../features/analytics/domain/usecases/get_habit_stats.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats_by_date_range.dart';
 import '../../features/analytics/presentation/bloc/analytics_bloc.dart';
 import '../utils/services/location_service.dart';
+
+import '../../features/habit_tracking/data/models/habit_category_model.dart';
+import '../../features/habit_tracking/data/models/habit_reminder_model.dart';
+import '../../features/habit_tracking/data/repositories/habit_reminder_repository_impl.dart';
+import '../../features/habit_tracking/data/services/habit_notification_service.dart';
+import '../../features/habit_tracking/domain/repositories/habit_reminder_repository.dart';
+import '../../features/habit_tracking/domain/utils/streak_calculator.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -95,15 +104,30 @@ Future<void> _initCore() async {
 
   // Cache Manager
   sl.registerLazySingleton(() => CacheManager());
+
+  // Initialize SharedPrefService
+  await SharedPrefService.init();
+
+  // Register SharedPrefService
+  sl.registerLazySingleton<SharedPrefService>(() => SharedPrefService());
 }
 
 /// Initialize habit tracking feature dependencies
 Future<void> _initHabitTrackingFeature() async {
+  // Register Hive boxes
+  await Hive.openBox(AppConstants.categoriesBoxName);
+
+  // Services
+  sl.registerLazySingleton<HabitNotificationService>(
+    () => HabitNotificationService(),
+  );
+
   // Data sources
   sl.registerLazySingleton<HabitLocalDataSource>(
     () => HabitLocalDataSourceImpl(
       habitsBox: Hive.box(AppConstants.habitsBoxName),
       habitLogsBox: Hive.box(AppConstants.habitLogsBoxName),
+      categoriesBox: Hive.box(AppConstants.categoriesBoxName),
       uuid: sl(),
     ),
   );
@@ -113,6 +137,13 @@ Future<void> _initHabitTrackingFeature() async {
     () => HabitRepositoryImpl(
       localDataSource: sl(),
       networkInfo: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<HabitReminderRepository>(
+    () => HabitReminderRepositoryImpl(
+      sharedPreferences: sl(),
+      notificationService: sl(),
     ),
   );
 

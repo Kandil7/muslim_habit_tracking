@@ -10,6 +10,7 @@ class AppConstants {
   // Local storage keys
   static const String habitsBoxName = 'habits';
   static const String habitLogsBoxName = 'habit_logs';
+  static const String categoriesBoxName = 'habit_categories';
   static const String prayerTimesBoxName = 'prayerTimes';
   static const String settingsBoxName = 'settings';
   static const String duaDhikrBoxName = 'duaDhikr';
