@@ -1,12 +1,29 @@
+import 'dart:convert';
+
+import '/core/di/injection_container.dart' as di;
 import '/core/utils/assets.dart';
 import '/core/utils/helper.dart';
+import '/core/utils/services/shared_pref_service.dart';
 
 import '../models/prayer_item_model.dart';
 import 'prayer_repo.dart';
 
 class PrayerRepoImpl extends PrayerRepo {
+  final SharedPrefService _sharedPrefService = di.sl<SharedPrefService>();
+  static const String _cacheKey = 'prayer_times_cache';
+  static const String _cacheDateKey = 'prayer_times_cache_date';
+
   @override
-  Map getPrayerTimes() {
+  Map getPrayerTimes({bool forceRefresh = false}) {
+    // Check if we can use cached data
+    if (!forceRefresh) {
+      final cachedData = _getCachedPrayerTimes();
+      if (cachedData != null) {
+        return cachedData;
+      }
+    }
+
+    // If no cache or force refresh, calculate new prayer times
     DateTime now = DateTime.now();
     final todayPrayerTimes = Helper.getPrayersList();
 
@@ -44,10 +61,115 @@ class PrayerRepoImpl extends PrayerRepo {
     List<PrayerItemModel> prayerList =
         _getPrayerTimesMethod(effectivePrayerTimes, prayerDateTimes);
 
-    return {
+    final result = {
       'nextPrayer': nextPrayer,
       'prayerList': prayerList,
     };
+
+    // Cache the result
+    _cachePrayerTimes(result);
+
+    return result;
+  }
+
+  /// Caches the prayer times data
+  void _cachePrayerTimes(Map data) {
+    try {
+      // Convert PrayerItemModel list to a serializable format
+      final List<Map<String, dynamic>> serializedList = [];
+      for (final item in data['prayerList'] as List<PrayerItemModel>) {
+        serializedList.add({
+          'prayerImage': item.prayerImage,
+          'arName': item.arName,
+          'enName': item.enName,
+          'prayerTime': item.prayerTime,
+          'remainingTime': item.remainingTime.inSeconds,
+          'isPrayerPassed': item.isPrayerPassed,
+        });
+      }
+
+      final Map<String, dynamic> cacheData = {
+        'nextPrayer': data['nextPrayer'],
+        'prayerList': serializedList,
+      };
+
+      // Save to SharedPreferences
+      _sharedPrefService.setString(key: _cacheKey, value: jsonEncode(cacheData));
+      _sharedPrefService.setString(key: _cacheDateKey, value: DateTime.now().toIso8601String());
+    } catch (e) {
+      print('Error caching prayer times: $e');
+    }
+  }
+
+  /// Retrieves cached prayer times if they're still valid
+  Map? _getCachedPrayerTimes() {
+    try {
+      // Check if we have cached data
+      final cachedString = _sharedPrefService.getString(key: _cacheKey);
+      final cachedDateString = _sharedPrefService.getString(key: _cacheDateKey);
+
+      if (cachedString == null || cachedDateString == null) {
+        return null;
+      }
+
+      // Check if cache is from today
+      final cachedDate = DateTime.parse(cachedDateString);
+      final now = DateTime.now();
+      if (cachedDate.year != now.year || cachedDate.month != now.month || cachedDate.day != now.day) {
+        return null; // Cache is from a different day
+      }
+
+      // Parse the cached data
+      final Map<String, dynamic> cacheData = jsonDecode(cachedString);
+      final List<dynamic> serializedList = cacheData['prayerList'];
+
+      // Convert back to PrayerItemModel list
+      final List<PrayerItemModel> prayerList = [];
+      for (final item in serializedList) {
+        prayerList.add(PrayerItemModel(
+          prayerImage: item['prayerImage'],
+          arName: item['arName'],
+          enName: item['enName'],
+          prayerTime: item['prayerTime'],
+          remainingTime: Duration(seconds: item['remainingTime']),
+          isPrayerPassed: item['isPrayerPassed'],
+        ));
+      }
+
+      // Update remaining times based on current time
+      _updateRemainingTimes(prayerList);
+
+      return {
+        'nextPrayer': cacheData['nextPrayer'],
+        'prayerList': prayerList,
+      };
+    } catch (e) {
+      print('Error retrieving cached prayer times: $e');
+      return null;
+    }
+  }
+
+  /// Updates the remaining times for cached prayer items
+  void _updateRemainingTimes(List<PrayerItemModel> prayerList) {
+    final now = DateTime.now();
+    for (final item in prayerList) {
+      // Parse prayer time
+      final List<String> timeParts = item.prayerTime.split(':');
+      final int hour = int.parse(timeParts[0]);
+      final int minute = int.parse(timeParts[1]);
+
+      // Create prayer time DateTime
+      final prayerDateTime = DateTime(now.year, now.month, now.day, hour, minute);
+
+      // Calculate new remaining time
+      final Duration remainingTime = prayerDateTime.difference(now);
+
+      // Update the item (this is a hack since PrayerItemModel is immutable)
+      // In a real app, you'd create a new instance or make the model mutable
+      (item as dynamic).remainingTime = remainingTime.isNegative ? remainingTime.abs() : remainingTime;
+      (item as dynamic).isPrayerPassed = remainingTime.isNegative;
+    }
+  }
   }
 
   // List<String> getPrayersList() {

@@ -19,7 +19,7 @@ class PrayerView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              context.read<PrayerCubit>().getPrayerTimes();
+              context.read<PrayerCubit>().getPrayerTimes(forceRefresh: true);
             },
           ),
           IconButton(

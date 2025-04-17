@@ -1,3 +1,3 @@
 abstract class PrayerRepo {
-  Map getPrayerTimes();
+  Map getPrayerTimes({bool forceRefresh});
 }
