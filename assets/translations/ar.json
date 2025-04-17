@@ -155,7 +155,17 @@
     "play": "تشغيل",
     "pause": "إيقاف مؤقت",
     "stop": "إيقاف",
-    "reciter": "القارئ"
+    "reciter": "القارئ",
+    "noResults": "لا توجد نتائج",
+    "noBookmarks": "لا توجد إشارات مرجعية بعد",
+    "noHistory": "لا يوجد سجل قراءة بعد",
+    "bookmarkAdded": "تمت إضافة الإشارة المرجعية",
+    "bookmarkRemoved": "تمت إزالة الإشارة المرجعية",
+    "shareComingSoon": "ميزة المشاركة قادمة قريباً",
+    "settingsComingSoon": "ميزة الإعدادات قادمة قريباً",
+    "history": "السجل",
+    "settings": "الإعدادات",
+    "share": "مشاركة"
   },
   "dhikr": {
     "title": "عداد الأذكار",

@@ -155,7 +155,17 @@
     "play": "Play",
     "pause": "Pause",
     "stop": "Stop",
-    "reciter": "Reciter"
+    "reciter": "Reciter",
+    "noResults": "No results found",
+    "noBookmarks": "No bookmarks yet",
+    "noHistory": "No reading history yet",
+    "bookmarkAdded": "Bookmark added",
+    "bookmarkRemoved": "Bookmark removed",
+    "shareComingSoon": "Share feature coming soon",
+    "settingsComingSoon": "Settings feature coming soon",
+    "history": "History",
+    "settings": "Settings",
+    "share": "Share"
   },
   "dhikr": {
     "title": "Dhikr Counter",
