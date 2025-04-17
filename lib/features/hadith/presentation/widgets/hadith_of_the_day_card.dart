@@ -53,11 +53,12 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HadithDetailPage(
-                    hadith: state.hadith,
-                  ),
+                  builder: (context) => HadithDetailPage(hadith: state.hadith),
                 ),
               );
+            } else {
+              // Navigate to hadith collection page
+              Navigator.pushNamed(context, '/hadith-collection');
             }
           },
           child: _buildCardContent(context, state),
@@ -70,9 +71,7 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
     if (state is HadithLoading) {
       return const SizedBox(
         height: 150,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     } else if (state is HadithOfTheDayLoaded) {
       return _buildHadithContent(context, state.hadith);
@@ -87,7 +86,9 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () {
-                  context.read<HadithBloc>().add(const GetHadithOfTheDayEvent());
+                  context.read<HadithBloc>().add(
+                    const GetHadithOfTheDayEvent(),
+                  );
                 },
                 child: const Text('Retry'),
               ),
@@ -100,9 +101,7 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
       context.read<HadithBloc>().add(const GetHadithOfTheDayEvent());
       return const SizedBox(
         height: 150,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
   }
@@ -115,7 +114,7 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.secondary.withOpacity(0.1),
+            color: AppColors.secondary.withAlpha(25),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -148,10 +147,7 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
                         color: AppColors.secondary,
                       ),
                     ),
-                    Text(
-                      hadith.narrator,
-                      style: AppTextStyles.bodySmall,
-                    ),
+                    Text(hadith.narrator, style: AppTextStyles.bodySmall),
                   ],
                 ),
               ),
@@ -168,8 +164,8 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
               label: 'Save',
               onTap: () {
                 context.read<HadithBloc>().add(
-                      ToggleHadithBookmarkEvent(id: hadith.id),
-                    );
+                  ToggleHadithBookmarkEvent(id: hadith.id),
+                );
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -188,9 +184,7 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
               label: 'Share',
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Share feature coming soon!'),
-                  ),
+                  const SnackBar(content: Text('Share feature coming soon!')),
                 );
               },
             ),
@@ -199,11 +193,11 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
               icon: Icons.refresh,
               label: 'New Hadith',
               onTap: () {
-                context.read<HadithBloc>().add(const RefreshHadithOfTheDayEvent());
+                context.read<HadithBloc>().add(
+                  const RefreshHadithOfTheDayEvent(),
+                );
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('New hadith loaded!'),
-                  ),
+                  const SnackBar(content: Text('New hadith loaded!')),
                 );
               },
             ),
@@ -226,15 +220,9 @@ class _HadithOfTheDayCardState extends State<HadithOfTheDayCard> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: AppColors.secondary,
-            ),
+            Icon(icon, color: AppColors.secondary),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTextStyles.bodySmall,
-            ),
+            Text(label, style: AppTextStyles.bodySmall),
           ],
         ),
       ),
