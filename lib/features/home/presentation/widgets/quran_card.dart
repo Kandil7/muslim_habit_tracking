@@ -15,9 +15,7 @@ class QuranCard extends StatelessWidget {
       onTap: () {
         // Navigate to Quran page
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Quran feature coming soon!'),
-          ),
+          const SnackBar(content: Text('Quran feature coming soon!')),
         );
       },
       child: Column(
@@ -49,10 +47,11 @@ class QuranCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 5,
                     children: [
                       const Text(
                         'Continue Reading',
@@ -62,15 +61,10 @@ class QuranCard extends StatelessWidget {
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 8),
                       const Text(
                         'Surah Al-Baqarah',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
-                      const SizedBox(height: 4),
                       Text(
                         'Verse 255 (Ayatul Kursi)',
                         style: TextStyle(
@@ -144,15 +138,9 @@ class QuranCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: AppColors.secondary,
-            ),
+            Icon(icon, color: AppColors.secondary),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTextStyles.bodySmall,
-            ),
+            Text(label, style: AppTextStyles.bodySmall),
           ],
         ),
       ),

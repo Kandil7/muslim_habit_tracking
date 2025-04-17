@@ -26,9 +26,7 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: backgroundColor,
       child: InkWell(
         onTap: onTap,
@@ -43,15 +41,9 @@ class DashboardCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        icon,
-                        color: iconColor ?? AppColors.primary,
-                      ),
+                      Icon(icon, color: iconColor ?? AppColors.primary),
                       const SizedBox(width: 8),
-                      Text(
-                        title,
-                        style: AppTextStyles.headingSmall,
-                      ),
+                      Text(title, style: AppTextStyles.headingSmall),
                     ],
                   ),
                   if (onTap != null)

@@ -53,7 +53,7 @@ class AppColors {
   static const Color darkTextDisabled = Color(0xFF757575); // For disabled text
 
   static const Color darkDivider = Color(0xFF2C2C2C);
-  static const Color darkCardBackground = Color(0xFF252525);
+  static const Color darkCardBackground = Color(0xFF15202b);
 
   // Status colors
   static const Color success = Color(0xFF4CAF50);

@@ -75,16 +75,13 @@ class _PrayerTimesItemState extends State<PrayerTimesItem>
       height: 64,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: widget.isNextPrayer ? AppColors.primaryColor2 : null,
+        color: widget.isNextPrayer ? Color(0xFF227c9d) : null,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             blurRadius: widget.isNextPrayer ? 8 : 0,
             spreadRadius: widget.isNextPrayer ? 2 : 0,
-            color:
-                widget.isNextPrayer
-                    ? AppColors.primaryColor2
-                    : Colors.teal.shade100,
+            color: widget.isNextPrayer ? Color(0xFF227c9d) : Color(0xFF1b4965),
           ),
         ],
       ),
