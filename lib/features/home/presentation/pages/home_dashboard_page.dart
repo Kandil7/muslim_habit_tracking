@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/prayer_times/presentation/views/prayer_view.dart';
+import 'package:muslim_habbit/features/quran/presentation/views/quran_view.dart';
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
@@ -372,10 +374,16 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
         break;
       case 'prayer_times':
         // Switch to prayer tab
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PrayerView()),
+        );
         break;
       case 'read_quran':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.tr.translate('home.quranSoon'))),
+        // Switch to read Quran tab
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const QuranView()),
         );
         break;
       case 'dhikr_counter':

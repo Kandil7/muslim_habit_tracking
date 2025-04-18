@@ -21,9 +21,10 @@ class SuraViewBody extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           children: [
             QuranLibraryScreen(
-              // useDefaultAppBar: false,
-              backgroundColor: Color(0xffFEFFDD),
+              backgroundColor: Theme.of(context).colorScheme.background,
+              isDark: Theme.of(context).brightness == Brightness.dark,
 
+              useDefaultAppBar: false,
               onPageChanged: (index) {
                 sura.getPage(index + 1);
               },
