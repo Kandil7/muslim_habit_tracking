@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:muslim_habbit/features/quran/presentation/views/quran_view.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../features/quran/presentation/pages/quran_page.dart';
 import 'dashboard_card.dart';
 
 /// Card widget for Quran reading
@@ -17,7 +17,7 @@ class QuranCard extends StatelessWidget {
         // Navigate to Quran page
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const QuranPage()),
+          MaterialPageRoute(builder: (context) => const QuranView()),
         );
       },
       child: Column(
@@ -92,7 +92,7 @@ class QuranCard extends StatelessWidget {
                   // Navigate to Quran page with search tab
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const QuranPage()),
+                    MaterialPageRoute(builder: (context) => const QuranView()),
                   );
                 },
               ),
@@ -105,7 +105,7 @@ class QuranCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const QuranPage(),
+                      builder: (context) => const QuranView(),
                       settings: const RouteSettings(
                         arguments: {'initialTab': 1},
                       ),
@@ -122,7 +122,7 @@ class QuranCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const QuranPage(),
+                      builder: (context) => const QuranView(),
                       settings: const RouteSettings(
                         arguments: {'initialTab': 2},
                       ),

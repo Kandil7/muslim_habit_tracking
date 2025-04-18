@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim_habbit/core/utils/constants.dart';
+import '/core/utils/constants.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../../core/utils/services/shared_pref_service.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-
+import 'package:muslim_habbit/core/presentation/widgets/customSvg.dart';
 import '/core/utils/assets.dart';
 
 class SuraViewMarker extends StatelessWidget {
@@ -13,14 +12,5 @@ class SuraViewMarker extends StatelessWidget {
       left: 64,
       child: SafeArea(child: CustomSvg(svg: Assets.imagesMarker)),
     );
-  }
-}
-
-class CustomSvg extends StatelessWidget {
-  const CustomSvg({super.key, required this.svg});
-  final String svg;
-  @override
-  Widget build(BuildContext context) {
-    return SvgPicture.asset(svg, width: 30, height: 30);
   }
 }

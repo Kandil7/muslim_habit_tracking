@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:muslim_habbit/core/theme/bloc/theme_bloc_exports.dart';
+import 'package:muslim_habbit/features/quran/presentation/views/quran_view.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/di/injection_container.dart' as di;
@@ -11,8 +12,6 @@ import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/utils/date_utils.dart';
-import '../../../../core/services/cache_manager.dart';
 import '../../../analytics/presentation/pages/analytics_page.dart';
 import '../../../dua_dhikr/domain/entities/dua.dart';
 import '../../../dua_dhikr/domain/entities/dhikr.dart';
@@ -23,7 +22,6 @@ import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 
 import '../../../home/presentation/pages/home_dashboard_page.dart';
 import '../../../prayer_times/presentation/views/prayer_view.dart';
-import '../../../quran/presentation/pages/quran_page.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
 import '../bloc/habit_bloc.dart';
@@ -51,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     ),
     const HabitDashboardPage(),
     const PrayerView(),
-    const QuranPage(),
+    const QuranView(),
     const DuaDhikrPage(),
     const AnalyticsPage(),
     const SettingsPage(),

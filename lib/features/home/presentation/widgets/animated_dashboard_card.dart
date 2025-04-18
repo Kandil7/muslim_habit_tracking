@@ -119,6 +119,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    spacing: 5,
                     children: [
                       Row(
                         children: [
@@ -126,7 +127,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                             widget.icon,
                             color: widget.iconColor ?? AppColors.primary,
                           ),
-                          const SizedBox(width: 8),
+
                           Text(widget.title, style: AppTextStyles.headingSmall),
                         ],
                       ),
@@ -165,7 +166,7 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+
                   widget.child,
                 ],
               ),

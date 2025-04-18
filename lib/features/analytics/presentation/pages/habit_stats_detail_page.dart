@@ -15,21 +15,22 @@ class HabitStatsDetailPage extends StatefulWidget {
   State<HabitStatsDetailPage> createState() => _HabitStatsDetailPageState();
 }
 
-class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with SingleTickerProviderStateMixin {
+class _HabitStatsDetailPageState extends State<HabitStatsDetailPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -59,30 +60,28 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       },
     );
   }
-  
+
   Widget _buildOverviewTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Summary card
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(8),
               child: Column(
+                spacing: 8,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Summary',
-                    style: AppTextStyles.headingSmall,
-                  ),
-                  const SizedBox(height: 16),
+                  Text('Summary', style: AppTextStyles.headingSmall),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       _buildStatItem(
-                        'Completion Rate',
+                        'Completion\n Rate',
                         '${widget.habitStats.completionRate.toStringAsFixed(1)}%',
                         Icons.percent,
                         AppColors.primary,
@@ -101,7 +100,6 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
                   LinearProgressIndicator(
                     value: widget.habitStats.completionRate / 100,
                     minHeight: 10,
@@ -110,7 +108,6 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
                       _getCompletionColor(widget.habitStats.completionRate),
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Text(
                     'Completed ${widget.habitStats.completionCount} out of ${widget.habitStats.totalDays} days',
                     style: AppTextStyles.bodySmall,
@@ -121,7 +118,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Completion by day of week
           Card(
             child: Padding(
@@ -134,16 +131,13 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
                     style: AppTextStyles.headingSmall,
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: _buildDayOfWeekChart(),
-                  ),
+                  SizedBox(height: 200, child: _buildDayOfWeekChart()),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Insights
           Card(
             child: Padding(
@@ -151,10 +145,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Insights',
-                    style: AppTextStyles.headingSmall,
-                  ),
+                  Text('Insights', style: AppTextStyles.headingSmall),
                   const SizedBox(height: 16),
                   _buildInsightItem(
                     'Best Day',
@@ -184,7 +175,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildWeeklyTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -198,21 +189,15 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'This Week',
-                    style: AppTextStyles.headingSmall,
-                  ),
+                  Text('This Week', style: AppTextStyles.headingSmall),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: _buildWeeklyProgressChart(),
-                  ),
+                  SizedBox(height: 200, child: _buildWeeklyProgressChart()),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Day by day breakdown
           Card(
             child: Padding(
@@ -225,7 +210,9 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
                     style: AppTextStyles.headingSmall,
                   ),
                   const SizedBox(height: 16),
-                  ...DateTimeUtils.daysOfWeek.map((day) => _buildDayProgressItem(day)).toList(),
+                  ...DateTimeUtils.daysOfWeek
+                      .map((day) => _buildDayProgressItem(day))
+                      .toList(),
                 ],
               ),
             ),
@@ -234,7 +221,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildTrendsTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -248,21 +235,15 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Monthly Trend',
-                    style: AppTextStyles.headingSmall,
-                  ),
+                  Text('Monthly Trend', style: AppTextStyles.headingSmall),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: _buildMonthlyTrendChart(),
-                  ),
+                  SizedBox(height: 200, child: _buildMonthlyTrendChart()),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Streak history
           Card(
             child: Padding(
@@ -270,10 +251,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Streak History',
-                    style: AppTextStyles.headingSmall,
-                  ),
+                  Text('Streak History', style: AppTextStyles.headingSmall),
                   const SizedBox(height: 16),
                   ListTile(
                     leading: const CircleAvatar(
@@ -288,12 +266,17 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
                   ListTile(
                     leading: const CircleAvatar(
                       backgroundColor: AppColors.primary,
-                      child: Icon(Icons.local_fire_department, color: Colors.white),
+                      child: Icon(
+                        Icons.local_fire_department,
+                        color: Colors.white,
+                      ),
                     ),
                     title: const Text('Current Streak'),
                     subtitle: Text('${widget.habitStats.currentStreak} days'),
                     trailing: Text(
-                      widget.habitStats.currentStreak > 0 ? 'Keep it up!' : 'Start today!',
+                      widget.habitStats.currentStreak > 0
+                          ? 'Keep it up!'
+                          : 'Start today!',
                     ),
                   ),
                   const Divider(),
@@ -311,7 +294,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Recommendations
           Card(
             child: Padding(
@@ -319,10 +302,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Recommendations',
-                    style: AppTextStyles.headingSmall,
-                  ),
+                  Text('Recommendations', style: AppTextStyles.headingSmall),
                   const SizedBox(height: 16),
                   _buildRecommendationItem(
                     'Set a reminder',
@@ -349,17 +329,19 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
         CircleAvatar(
           radius: 25,
           backgroundColor: color.withOpacity(0.2),
-          child: Icon(
-            icon,
-            color: color,
-          ),
+          child: Icon(icon, color: color),
         ),
         const SizedBox(height: 8),
         Text(
@@ -367,15 +349,17 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
           style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppTextStyles.bodySmall,
-        ),
+        Text(label, style: AppTextStyles.bodySmall),
       ],
     );
   }
-  
-  Widget _buildInsightItem(String title, String content, IconData icon, Color color) {
+
+  Widget _buildInsightItem(
+    String title,
+    String content,
+    IconData icon,
+    Color color,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -383,11 +367,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
           CircleAvatar(
             radius: 20,
             backgroundColor: color.withOpacity(0.2),
-            child: Icon(
-              icon,
-              color: color,
-              size: 20,
-            ),
+            child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -396,12 +376,11 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               children: [
                 Text(
                   title,
-                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Text(
-                  content,
-                  style: AppTextStyles.bodySmall,
-                ),
+                Text(content, style: AppTextStyles.bodySmall),
               ],
             ),
           ),
@@ -409,11 +388,11 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildDayProgressItem(String day) {
     final count = widget.habitStats.weekdayCompletion[day] ?? 0;
     final isToday = day == DateTimeUtils.formatDayOfWeek(DateTime.now());
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -442,7 +421,9 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               children: [
                 Text(
                   day,
-                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 LinearProgressIndicator(
@@ -467,7 +448,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildRecommendationItem(String title, String content, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -476,11 +457,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
           CircleAvatar(
             radius: 20,
             backgroundColor: AppColors.primary.withOpacity(0.2),
-            child: Icon(
-              icon,
-              color: AppColors.primary,
-              size: 20,
-            ),
+            child: Icon(icon, color: AppColors.primary, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -489,12 +466,11 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
               children: [
                 Text(
                   title,
-                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Text(
-                  content,
-                  style: AppTextStyles.bodySmall,
-                ),
+                Text(content, style: AppTextStyles.bodySmall),
               ],
             ),
           ),
@@ -502,15 +478,27 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildDayOfWeekChart() {
     final weekdayCompletion = widget.habitStats.weekdayCompletion;
-    final daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
+    final daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
+
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: weekdayCompletion.values.isEmpty ? 1 : weekdayCompletion.values.reduce((a, b) => a > b ? a : b) * 1.2,
+        maxY:
+            weekdayCompletion.values.isEmpty
+                ? 1
+                : weekdayCompletion.values.reduce((a, b) => a > b ? a : b) *
+                    1.2,
         barTouchData: BarTouchData(enabled: false),
         titlesData: FlTitlesData(
           show: true,
@@ -551,10 +539,8 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
         gridData: FlGridData(
           show: true,
           horizontalInterval: 1,
-          getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.grey[300]!,
-            strokeWidth: 1,
-          ),
+          getDrawingHorizontalLine:
+              (value) => FlLine(color: Colors.grey[300]!, strokeWidth: 1),
           drawVerticalLine: false,
         ),
         borderData: FlBorderData(show: false),
@@ -578,21 +564,19 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildWeeklyProgressChart() {
     // Simulated data for weekly progress
     final weekData = [0.8, 0.6, 1.0, 0.7, 0.9, 0.5, 0.0];
-    
+
     return LineChart(
       LineChartData(
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
           horizontalInterval: 0.2,
-          getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.grey[300]!,
-            strokeWidth: 1,
-          ),
+          getDrawingHorizontalLine:
+              (value) => FlLine(color: Colors.grey[300]!, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           show: true,
@@ -657,21 +641,19 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Widget _buildMonthlyTrendChart() {
     // Simulated data for monthly trend
     final monthData = [0.4, 0.6, 0.5, 0.8, 0.7, 0.9];
-    
+
     return LineChart(
       LineChartData(
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
           horizontalInterval: 0.2,
-          getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.grey[300]!,
-            strokeWidth: 1,
-          ),
+          getDrawingHorizontalLine:
+              (value) => FlLine(color: Colors.grey[300]!, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           show: true,
@@ -739,7 +721,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       ),
     );
   }
-  
+
   Color _getDayColor(String day) {
     if (day == 'Friday') {
       return AppColors.primary;
@@ -749,7 +731,7 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       return AppColors.primaryLight;
     }
   }
-  
+
   Color _getCompletionColor(double rate) {
     if (rate >= 80) {
       return AppColors.success;
@@ -761,44 +743,44 @@ class _HabitStatsDetailPageState extends State<HabitStatsDetailPage> with Single
       return AppColors.error;
     }
   }
-  
+
   String _getBestDay() {
     final weekdayCompletion = widget.habitStats.weekdayCompletion;
     if (weekdayCompletion.isEmpty) return 'Not enough data';
-    
+
     String bestDay = weekdayCompletion.keys.first;
     int maxCount = weekdayCompletion.values.first;
-    
+
     weekdayCompletion.forEach((day, count) {
       if (count > maxCount) {
         bestDay = day;
         maxCount = count;
       }
     });
-    
+
     return bestDay;
   }
-  
+
   String _getWorstDay() {
     final weekdayCompletion = widget.habitStats.weekdayCompletion;
     if (weekdayCompletion.isEmpty) return 'Not enough data';
-    
+
     String worstDay = weekdayCompletion.keys.first;
     int minCount = weekdayCompletion.values.first;
-    
+
     weekdayCompletion.forEach((day, count) {
       if (count < minCount) {
         worstDay = day;
         minCount = count;
       }
     });
-    
+
     return worstDay;
   }
-  
+
   String _getCurrentStatus() {
     final completionRate = widget.habitStats.completionRate;
-    
+
     if (completionRate >= 80) {
       return 'Excellent! Keep up the good work.';
     } else if (completionRate >= 60) {

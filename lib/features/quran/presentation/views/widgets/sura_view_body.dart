@@ -4,6 +4,7 @@ import 'package:quran_library/quran_library.dart';
 
 import '../../manager/sura/sura_cubit.dart';
 import 'sura_save_and_go_mark_widget.dart';
+import 'sura_view_header.dart';
 import 'sura_view_marker.dart';
 
 class SuraViewBody extends StatelessWidget {
@@ -20,7 +21,7 @@ class SuraViewBody extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           children: [
             QuranLibraryScreen(
-              useDefaultAppBar: false,
+              // useDefaultAppBar: false,
               backgroundColor: Color(0xffFEFFDD),
 
               onPageChanged: (index) {

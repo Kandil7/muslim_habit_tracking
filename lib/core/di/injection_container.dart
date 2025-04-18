@@ -5,6 +5,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:muslim_habbit/core/utils/services/notification_service.dart';
 import 'package:muslim_habbit/core/utils/services/shared_pref_service.dart';
 import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
+import 'package:muslim_habbit/features/quran/presentation/manager/sura/sura_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -38,8 +39,12 @@ import '../../features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import '../../features/analytics/data/datasources/analytics_data_source.dart';
 import '../../features/analytics/data/repositories/analytics_repository_impl.dart';
 import '../../features/analytics/domain/repositories/analytics_repository.dart';
+import '../../features/analytics/domain/usecases/get_all_habit_stats.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats_by_date_range.dart';
+import '../../features/analytics/domain/usecases/get_least_consistent_habit.dart';
+import '../../features/analytics/domain/usecases/get_most_consistent_habit.dart';
+import '../../features/analytics/domain/usecases/get_overall_completion_rate.dart';
 import '../../features/analytics/presentation/bloc/analytics_bloc.dart';
 import '../utils/services/location_service.dart';
 
@@ -56,19 +61,6 @@ import '../../features/hadith/domain/usecases/get_hadith_by_id.dart';
 import '../../features/hadith/domain/usecases/get_hadith_of_the_day.dart';
 import '../../features/hadith/domain/usecases/toggle_hadith_bookmark.dart';
 import '../../features/hadith/presentation/bloc/hadith_bloc.dart';
-import '../../features/quran/data/datasources/quran_local_data_source.dart';
-import '../../features/quran/data/repositories/quran_repository_impl.dart';
-import '../../features/quran/domain/repositories/quran_repository.dart';
-import '../../features/quran/domain/usecases/add_bookmark.dart';
-import '../../features/quran/domain/usecases/add_reading_history.dart';
-import '../../features/quran/domain/usecases/get_all_surahs.dart';
-import '../../features/quran/domain/usecases/get_bookmarks.dart';
-import '../../features/quran/domain/usecases/get_last_read_position.dart';
-import '../../features/quran/domain/usecases/get_reading_history.dart';
-import '../../features/quran/domain/usecases/get_surah_by_id.dart';
-import '../../features/quran/domain/usecases/remove_bookmark.dart';
-import '../../features/quran/domain/usecases/update_last_read_position.dart';
-import '../../features/quran/presentation/bloc/quran_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -244,12 +236,23 @@ Future<void> _initAnalyticsFeature() async {
   );
 
   // Use cases
+  sl.registerLazySingleton(() => GetAllHabitStats(sl()));
   sl.registerLazySingleton(() => GetHabitStats(sl()));
   sl.registerLazySingleton(() => GetHabitStatsByDateRange(sl()));
+  sl.registerLazySingleton(() => GetOverallCompletionRate(sl()));
+  sl.registerLazySingleton(() => GetMostConsistentHabit(sl()));
+  sl.registerLazySingleton(() => GetLeastConsistentHabit(sl()));
 
   // BLoC
   sl.registerFactory(
-    () => AnalyticsBloc(getHabitStats: sl(), getHabitStatsByDateRange: sl()),
+    () => AnalyticsBloc(
+      getAllHabitStats: sl(),
+      getHabitStats: sl(),
+      getHabitStatsByDateRange: sl(),
+      getOverallCompletionRate: sl(),
+      getMostConsistentHabit: sl(),
+      getLeastConsistentHabit: sl(),
+    ),
   );
 }
 
@@ -306,45 +309,6 @@ Future<void> _initHadithFeature() async {
 
 /// Initialize Quran feature dependencies
 Future<void> _initQuranFeature() async {
-  // Register Hive box
-  await Hive.openBox(AppConstants.quranBoxName);
-
-  // Data sources
-  sl.registerLazySingleton<QuranLocalDataSource>(
-    () => QuranLocalDataSourceImpl(
-      quranBox: Hive.box(AppConstants.quranBoxName),
-      uuid: sl(),
-    ),
-  );
-
-  // Repositories
-  sl.registerLazySingleton<QuranRepository>(
-    () => QuranRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
-  );
-
-  // Use cases
-  sl.registerLazySingleton(() => GetAllSurahs(sl()));
-  sl.registerLazySingleton(() => GetSurahById(sl()));
-  sl.registerLazySingleton(() => GetBookmarks(sl()));
-  sl.registerLazySingleton(() => AddBookmark(sl()));
-  sl.registerLazySingleton(() => RemoveBookmark(sl()));
-  sl.registerLazySingleton(() => GetReadingHistory(sl()));
-  sl.registerLazySingleton(() => AddReadingHistory(sl()));
-  sl.registerLazySingleton(() => GetLastReadPosition(sl()));
-  sl.registerLazySingleton(() => UpdateLastReadPosition(sl()));
-
-  // BLoC
-  sl.registerFactory(
-    () => QuranBloc(
-      getAllSurahs: sl(),
-      getSurahById: sl(),
-      getBookmarks: sl(),
-      addBookmark: sl(),
-      removeBookmark: sl(),
-      getReadingHistory: sl(),
-      addReadingHistory: sl(),
-      getLastReadPosition: sl(),
-      updateLastReadPosition: sl(),
-    ),
-  );
+  // Cubit
+  sl.registerFactory(() => SuraCubit(sl()));
 }

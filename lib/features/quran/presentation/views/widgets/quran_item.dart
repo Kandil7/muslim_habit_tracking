@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim_habbit/core/localization/bloc/language_cubit.dart';
+import 'package:muslim_habbit/core/localization/bloc/language_bloc_exports.dart';
 
 import '../../../data/models/quran_item_model.dart';
 import 'quran_item_leading.dart';
@@ -18,8 +18,7 @@ class QuranItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final local =
-        context.read<LanguageCubit>().state.locale.languageCode == 'ar';
+    final local = context.read<LanguageCubit>().state.locale == 'ar';
     return ListTile(
       horizontalTitleGap: 20,
       leading: QuranItemLeading(local: local, index: index),
