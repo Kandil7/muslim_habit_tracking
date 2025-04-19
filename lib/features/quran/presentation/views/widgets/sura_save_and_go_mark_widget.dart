@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../manager/sura/sura_cubit.dart';
+import '../../bloc/quran_bloc.dart';
+import '../../bloc/quran_event.dart';
 import 'save_and_go_mark_item.dart';
 
 class SuraSaveAndGoMarkWidget extends StatelessWidget {
@@ -12,7 +13,7 @@ class SuraSaveAndGoMarkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sura = context.read<SuraCubit>();
+    final quranBloc = context.read<QuranBloc>();
 
     return Container(
       height: 65,
@@ -23,19 +24,24 @@ class SuraSaveAndGoMarkWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SaveAndGoMarkItem(
-                text: "حفظ علامة",
-                onTap: () async {
-                  await sura.saveMarker(index);
-                }),
+              text: "حفظ علامة",
+              onTap: () {
+                quranBloc.add(SaveQuranMarkerEvent(position: index));
+              },
+            ),
             const SizedBox(width: 10),
             SaveAndGoMarkItem(
-                text: "انتقل الي العلامة",
-                onTap: () {
-                  sura.defaultViewState();
-                  if (sura.index != null && sura.index! > 0) {
-                    sura.pageController.jumpToPage(sura.index! - 1);
-                  }
-                })
+              text: "انتقل الي العلامة",
+              onTap: () {
+                quranBloc.add(const ResetQuranViewStateEvent());
+                if (quranBloc.markerIndex != null &&
+                    quranBloc.markerIndex! > 0) {
+                  quranBloc.pageController.jumpToPage(
+                    quranBloc.markerIndex! - 1,
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),

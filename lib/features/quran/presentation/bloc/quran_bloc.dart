@@ -1,0 +1,339 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quran_library/quran_library.dart' as quran;
+import 'package:quran_library/quran_library.dart' show QuranCtrl;
+import 'package:wakelock_plus/wakelock_plus.dart';
+
+import '../../../../core/usecases/usecase.dart';
+import '../../../../core/utils/constants.dart';
+import '../../../../core/utils/services/shared_pref_service.dart';
+import '../../domain/entities/quran_bookmark.dart';
+import '../../domain/entities/quran_reading_history.dart';
+import '../../domain/usecases/add_bookmark.dart';
+import '../../domain/usecases/add_reading_history.dart';
+import '../../domain/usecases/clear_reading_history.dart';
+import '../../domain/usecases/get_all_bookmarks.dart';
+import '../../domain/usecases/get_last_read_position.dart';
+import '../../domain/usecases/get_reading_history.dart';
+import '../../domain/usecases/remove_bookmark.dart';
+import '../../domain/usecases/update_bookmark.dart';
+import '../../domain/usecases/update_last_read_position.dart';
+import 'quran_event.dart';
+import 'quran_state.dart';
+
+/// BLoC for the Quran feature
+class QuranBloc extends Bloc<QuranEvent, QuranState> {
+  final quran.QuranLibrary quranLibrary;
+  final GetAllBookmarks getAllBookmarks;
+  final AddBookmark addBookmark;
+  final UpdateBookmark updateBookmark;
+  final RemoveBookmark removeBookmark;
+  final GetReadingHistory getReadingHistory;
+  final AddReadingHistory addReadingHistory;
+  final ClearReadingHistory clearReadingHistory;
+  final GetLastReadPosition getLastReadPosition;
+  final UpdateLastReadPosition updateLastReadPosition;
+  final SharedPrefService sharedPrefService;
+
+  // Properties from SuraCubit
+  PageController? _pageController;
+  PageController get pageController => _pageController!;
+  bool isClick = false;
+  int? markerIndex;
+  int? currentPage;
+
+  QuranBloc({
+    required this.quranLibrary,
+    required this.getAllBookmarks,
+    required this.addBookmark,
+    required this.updateBookmark,
+    required this.removeBookmark,
+    required this.getReadingHistory,
+    required this.addReadingHistory,
+    required this.clearReadingHistory,
+    required this.getLastReadPosition,
+    required this.updateLastReadPosition,
+    required this.sharedPrefService,
+  }) : super(QuranInitial()) {
+    on<GetAllSurahsEvent>(_onGetAllSurahs);
+    on<GetSurahByIdEvent>(_onGetSurahById);
+    on<GetBookmarksEvent>(_onGetBookmarks);
+    on<AddBookmarkEvent>(_onAddBookmark);
+    on<UpdateBookmarkEvent>(_onUpdateBookmark);
+    on<RemoveBookmarkEvent>(_onRemoveBookmark);
+    on<GetReadingHistoryEvent>(_onGetReadingHistory);
+    on<AddReadingHistoryEvent>(_onAddReadingHistory);
+    on<ClearReadingHistoryEvent>(_onClearReadingHistory);
+    on<GetLastReadPositionEvent>(_onGetLastReadPosition);
+    on<UpdateLastReadPositionEvent>(_onUpdateLastReadPosition);
+
+    // Register handlers for SuraCubit events
+    on<InitQuranPageControllerEvent>(_onInitPageController);
+    on<ToggleQuranViewStateEvent>(_onToggleViewState);
+    on<ResetQuranViewStateEvent>(_onResetViewState);
+    on<SaveQuranMarkerEvent>(_onSaveMarker);
+    on<GetQuranMarkerEvent>(_onGetMarker);
+    on<UpdateQuranPageEvent>(_onUpdatePage);
+    on<JumpToQuranPageEvent>(_onJumpToPage);
+
+    // Initialize marker
+    add(const GetQuranMarkerEvent());
+  }
+
+  /// Handle GetAllSurahsEvent
+  Future<void> _onGetAllSurahs(
+    GetAllSurahsEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    try {
+      final surahs = quranLibrary.getAllSurahs();
+      emit(AllSurahsLoaded(surahs: surahs));
+    } catch (e) {
+      emit(QuranError(message: e.toString()));
+    }
+  }
+
+  /// Handle GetSurahByIdEvent
+  Future<void> _onGetSurahById(
+    GetSurahByIdEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    try {
+      final surah = quran.QuranLibrary().getSurahInfo(
+        surahNumber: event.surahId,
+      );
+      emit(SurahLoaded(surah: surah));
+    } catch (e) {
+      emit(QuranError(message: e.toString()));
+    }
+  }
+
+  /// Handle GetBookmarksEvent
+  Future<void> _onGetBookmarks(
+    GetBookmarksEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await getAllBookmarks(NoParams());
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (bookmarks) => emit(BookmarksLoaded(bookmarks: bookmarks)),
+    );
+  }
+
+  /// Handle AddBookmarkEvent
+  Future<void> _onAddBookmark(
+    AddBookmarkEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await addBookmark(
+      AddBookmarkParams(bookmark: event.bookmark),
+    );
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (bookmark) => emit(BookmarkAdded(bookmark: bookmark)),
+    );
+  }
+
+  /// Handle UpdateBookmarkEvent
+  Future<void> _onUpdateBookmark(
+    UpdateBookmarkEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await updateBookmark(
+      UpdateBookmarkParams(bookmark: event.bookmark),
+    );
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (bookmark) => emit(BookmarkUpdated(bookmark: bookmark)),
+    );
+  }
+
+  /// Handle RemoveBookmarkEvent
+  Future<void> _onRemoveBookmark(
+    RemoveBookmarkEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await removeBookmark(RemoveBookmarkParams(id: event.id));
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (_) => emit(BookmarkRemoved()),
+    );
+  }
+
+  /// Handle GetReadingHistoryEvent
+  Future<void> _onGetReadingHistory(
+    GetReadingHistoryEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await getReadingHistory(NoParams());
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (history) => emit(ReadingHistoryLoaded(history: history)),
+    );
+  }
+
+  /// Handle AddReadingHistoryEvent
+  Future<void> _onAddReadingHistory(
+    AddReadingHistoryEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await addReadingHistory(
+      AddReadingHistoryParams(history: event.history),
+    );
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (history) => emit(LastReadPositionUpdated(lastPosition: history)),
+    );
+  }
+
+  /// Handle ClearReadingHistoryEvent
+  Future<void> _onClearReadingHistory(
+    ClearReadingHistoryEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await clearReadingHistory(NoParams());
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (_) => emit(ReadingHistoryCleared()),
+    );
+  }
+
+  /// Handle GetLastReadPositionEvent
+  Future<void> _onGetLastReadPosition(
+    GetLastReadPositionEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await getLastReadPosition(NoParams());
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (lastPosition) =>
+          emit(LastReadPositionLoaded(lastPosition: lastPosition)),
+    );
+  }
+
+  /// Handle UpdateLastReadPositionEvent
+  Future<void> _onUpdateLastReadPosition(
+    UpdateLastReadPositionEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    emit(QuranLoading());
+    final result = await updateLastReadPosition(
+      UpdateLastReadPositionParams(history: event.history),
+    );
+    result.fold(
+      (failure) => emit(QuranError(message: failure.message)),
+      (history) => emit(LastReadPositionUpdated(lastPosition: history)),
+    );
+  }
+
+  // Handlers for SuraCubit functionality
+
+  /// Initialize the page controller
+  void _onInitPageController(
+    InitQuranPageControllerEvent event,
+    Emitter<QuranState> emit,
+  ) {
+    // Initialize with the correct page (0-based index)
+    _pageController = PageController(initialPage: event.initialPage);
+    _initQuranView();
+
+    // Set the current page (1-based index)
+    currentPage = event.initialPage + 1;
+
+    // Set the page in QuranCtrl directly
+    QuranCtrl.instance.state.currentPageNumber.value = currentPage ?? 120;
+
+    // Emit the controller created event
+    emit(QuranPageControllerCreated(pageController: _pageController!));
+
+    // Also emit a page changed event to ensure UI is updated
+    emit(QuranPageChanged(pageNumber: currentPage!));
+  }
+
+  /// Toggle the view state (e.g., showing/hiding UI elements)
+  void _onToggleViewState(
+    ToggleQuranViewStateEvent event,
+    Emitter<QuranState> emit,
+  ) {
+    isClick = !isClick;
+    emit(QuranViewStateChanged(isClickActive: isClick));
+  }
+
+  /// Reset the view state to default
+  void _onResetViewState(
+    ResetQuranViewStateEvent event,
+    Emitter<QuranState> emit,
+  ) {
+    isClick = false;
+    emit(QuranViewStateChanged(isClickActive: isClick));
+  }
+
+  /// Save a marker at a specific position
+  Future<void> _onSaveMarker(
+    SaveQuranMarkerEvent event,
+    Emitter<QuranState> emit,
+  ) async {
+    await sharedPrefService.setInt(
+      key: Constants.marker,
+      value: event.position,
+    );
+    emit(QuranMarkerSaved(markerPosition: event.position));
+    add(const GetQuranMarkerEvent());
+  }
+
+  /// Get the saved marker
+  void _onGetMarker(GetQuranMarkerEvent event, Emitter<QuranState> emit) {
+    markerIndex = sharedPrefService.getInt(key: Constants.marker);
+    isClick = false;
+    emit(QuranMarkerLoaded(markerPosition: markerIndex));
+  }
+
+  /// Update the current page
+  void _onUpdatePage(UpdateQuranPageEvent event, Emitter<QuranState> emit) {
+    currentPage = event.pageNumber;
+    emit(QuranPageChanged(pageNumber: event.pageNumber));
+  }
+
+  /// Jump to a specific page
+  void _onJumpToPage(JumpToQuranPageEvent event, Emitter<QuranState> emit) {
+    // Convert from 1-based to 0-based index for the page controller
+    final pageIndex = event.pageNumber - 1;
+
+    // Jump to the page
+    if (_pageController != null && _pageController!.hasClients) {
+      _pageController!.jumpToPage(pageIndex);
+    }
+
+    // Update the current page
+    currentPage = event.pageNumber;
+    emit(QuranPageChanged(pageNumber: event.pageNumber));
+  }
+
+  /// Initialize the Quran view
+  void _initQuranView() {
+    WakelockPlus.enable();
+
+    _pageController?.addListener(() {
+      if (isClick && _pageController!.position.pixels != 0) {
+        add(const ResetQuranViewStateEvent());
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _pageController?.dispose();
+    WakelockPlus.disable();
+    return super.close();
+  }
+}

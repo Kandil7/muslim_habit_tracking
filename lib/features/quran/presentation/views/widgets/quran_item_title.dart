@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
-import '/core/utils/styles.dart';
-
-import '../../../data/models/quran_item_model.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:muslim_habbit/core/constants/app_constants.dart';
 
 class QuranItemTitle extends StatelessWidget {
-  const QuranItemTitle({
-    super.key,
-    required this.local,
-    required this.quranItemModel,
-  });
+  const QuranItemTitle({super.key, required this.index});
 
-  final bool local;
-  final QuranItemModel quranItemModel;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      local
-          ? "سورة ${quranItemModel.arName}"
-          : "Surah ${quranItemModel.enName}",
-      style: Styles.medium14,
+    return SvgPicture.asset(
+      AppConstants.assetSurahNames(index),
+      height: 80,
+      width: 250,
+      colorFilter: ColorFilter.mode(
+        // golden color
+        const Color.fromARGB(255, 196, 160, 15),
+        BlendMode.srcIn,
+      ),
     );
   }
 }

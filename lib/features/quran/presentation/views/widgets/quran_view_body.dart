@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:muslim_habbit/core/localization/bloc/language_cubit.dart';
+import 'package:muslim_habbit/core/presentation/widgets/customSvg.dart';
+import 'package:muslim_habbit/features/quran/presentation/views/widgets/sura_view_body.dart';
+import 'package:quran_library/quran.dart';
 import '/core/utils/constants.dart';
 import '/core/utils/navigation.dart';
 import '/features/quran/presentation/views/sura_view.dart';

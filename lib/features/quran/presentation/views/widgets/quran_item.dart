@@ -22,7 +22,7 @@ class QuranItem extends StatelessWidget {
     return ListTile(
       horizontalTitleGap: 20,
       leading: QuranItemLeading(local: local, index: index),
-      title: QuranItemTitle(local: local, quranItemModel: quranItemModel),
+      title: QuranItemTitle(index: index),
       subtitle: QuranItemSubTitle(local: local, quranItemModel: quranItemModel),
     );
   }

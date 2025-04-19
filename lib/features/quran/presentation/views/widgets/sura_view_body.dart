@@ -1,38 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quran_library/quran_library.dart';
+import 'package:quran_library/quran_library.dart' hide QuranState;
 
-import '../../manager/sura/sura_cubit.dart';
+import '../../bloc/quran_bloc.dart';
+import '../../bloc/quran_event.dart';
+import '../../bloc/quran_state.dart';
 import 'sura_save_and_go_mark_widget.dart';
-import 'sura_view_header.dart';
 import 'sura_view_marker.dart';
 
-class SuraViewBody extends StatelessWidget {
+class SuraViewBody extends StatefulWidget {
   const SuraViewBody({super.key, required this.initialPage});
   final int initialPage;
 
   @override
-  Widget build(BuildContext context) {
-    final sura = context.read<SuraCubit>();
+  State<SuraViewBody> createState() => _SuraViewBodyState();
+}
 
-    return BlocBuilder<SuraCubit, SuraState>(
+class _SuraViewBodyState extends State<SuraViewBody> {
+  late final QuranBloc quranBloc;
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      quranBloc = context.read<QuranBloc>();
+      _initialized = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<QuranBloc, QuranState>(
       builder: (context, state) {
+        final currentPage = quranBloc.currentPage ?? widget.initialPage;
         return Stack(
           alignment: Alignment.bottomCenter,
           children: [
             QuranLibraryScreen(
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               isDark: Theme.of(context).brightness == Brightness.dark,
-
               useDefaultAppBar: false,
               onPageChanged: (index) {
-                sura.getPage(index + 1);
+                quranBloc.add(UpdateQuranPageEvent(pageNumber: index + 1));
               },
+              pageIndex: widget.initialPage - 1, // Convert to 0-based
             ),
-            if (sura.index == (sura.page ?? initialPage))
+            if (state is QuranMarkerLoaded &&
+                state.markerPosition == currentPage)
               const SuraViewMarker(),
-            if (sura.isClick)
-              SuraSaveAndGoMarkWidget(index: sura.page ?? initialPage),
+            if ((state is QuranViewStateChanged && state.isClickActive) ||
+                quranBloc.isClick)
+              SuraSaveAndGoMarkWidget(index: currentPage),
           ],
         );
       },
