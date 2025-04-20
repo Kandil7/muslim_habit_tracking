@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/core/di/injection_container.dart' as di;
+import 'package:muslim_habbit/core/localization/app_localizations_extension.dart';
+import 'package:muslim_habbit/core/utils/navigation.dart';
 import 'package:quran_library/quran_library.dart' hide QuranState;
 
 import '../../domain/entities/quran_reading_history.dart';
 import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';
 import '../bloc/quran_state.dart';
+import '../pages/quran_bookmarks_page.dart';
+import '../pages/quran_reading_history_page.dart';
+import '../pages/quran_search_page.dart';
 import '../widgets/add_bookmark_dialog.dart';
 import 'widgets/sura_view_body.dart';
 
@@ -47,6 +52,22 @@ class SuraView extends StatelessWidget {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),
+              ),
+              centerTitle: true,
+              title: BlocBuilder<QuranBloc, QuranState>(
+                buildWhen: (previous, current) => current is QuranPageChanged,
+                builder: (context, state) {
+                  if (state is QuranPageChanged) {
+                    return Text(
+                      '${context.tr.translate('quran.page')} ${state.pageNumber}',
+                      style: const TextStyle(fontSize: 16),
+                    );
+                  }
+                  return Text(
+                    '${context.tr.translate('quran.page')} $initialPage',
+                    style: const TextStyle(fontSize: 16),
+                  );
+                },
               ),
               actions: [
                 IconButton(
@@ -104,6 +125,44 @@ class SuraView extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               },
             ),
+            bottomNavigationBar: BottomAppBar(
+              elevation: 8,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      tooltip: context.tr.translate('quran.search'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigation.push(context, const QuranSearchPage());
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.bookmark),
+                      tooltip: context.tr.translate('quran.bookmarks'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigation.push(context, const QuranBookmarksPage());
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.history),
+                      tooltip: context.tr.translate('quran.history'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigation.push(
+                          context,
+                          const QuranReadingHistoryPage(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         },
       ),
@@ -156,9 +215,9 @@ class SuraView extends StatelessWidget {
     );
 
     if (result == true && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Bookmark added')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.tr.translate('quran.bookmarkAdded'))),
+      );
 
       // Refresh bookmarks using the quranBloc instance
       quranBloc.add(const GetBookmarksEvent());
@@ -173,14 +232,14 @@ class SuraView extends StatelessWidget {
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title: const Text('Remove Bookmark'),
-            content: const Text(
-              'Are you sure you want to remove this bookmark?',
-            ),
+            title: Text(context.tr.translate('quran.bookmark')),
+            content: Text(context.tr.translate('quran.bookmarkRemoved')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('CANCEL'),
+                child: Text(
+                  context.tr.translate('common.cancel').toUpperCase(),
+                ),
               ),
               TextButton(
                 onPressed: () {
@@ -188,13 +247,19 @@ class SuraView extends StatelessWidget {
                   // Use the quranBloc instance we got from the parent context
                   quranBloc.add(RemoveBookmarkEvent(id: bookmarkId));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bookmark removed')),
+                    SnackBar(
+                      content: Text(
+                        context.tr.translate('quran.bookmarkRemoved'),
+                      ),
+                    ),
                   );
 
                   // Refresh bookmarks using the quranBloc instance
                   quranBloc.add(const GetBookmarksEvent());
                 },
-                child: const Text('REMOVE'),
+                child: Text(
+                  context.tr.translate('common.delete').toUpperCase(),
+                ),
               ),
             ],
           ),
