@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/quran_bookmarks_page.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/quran_reading_history_page.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/quran_search_page.dart';
 import 'package:muslim_habbit/features/quran/presentation/views/quran_view.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/navigation.dart';
 import 'dashboard_card.dart';
 
 /// Card widget for Quran reading
@@ -30,7 +34,7 @@ class QuranCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               gradient: LinearGradient(
                 colors: [
-                  AppColors.secondary.withOpacity(0.7),
+                  AppColors.secondary.withValues(alpha: 179),
                   AppColors.secondary,
                 ],
                 begin: Alignment.topLeft,
@@ -45,7 +49,7 @@ class QuranCard extends StatelessWidget {
                   child: Icon(
                     Icons.menu_book,
                     size: 60,
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 51),
                   ),
                 ),
                 Padding(
@@ -70,7 +74,7 @@ class QuranCard extends StatelessWidget {
                       Text(
                         'Verse 255 (Ayatul Kursi)',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 204),
                           fontSize: 12,
                         ),
                       ),
@@ -89,10 +93,12 @@ class QuranCard extends StatelessWidget {
                 icon: Icons.search,
                 label: 'Search',
                 onTap: () {
-                  // Navigate to Quran page with search tab
+                  // Navigate to Quran search page
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const QuranView()),
+                    MaterialPageRoute(
+                      builder: (context) => const QuranSearchPage(),
+                    ),
                   );
                 },
               ),
@@ -101,14 +107,11 @@ class QuranCard extends StatelessWidget {
                 icon: Icons.bookmark,
                 label: 'Bookmarks',
                 onTap: () {
-                  // Navigate to Quran page with bookmarks tab
+                  // Navigate to Quran bookmarks page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const QuranView(),
-                      settings: const RouteSettings(
-                        arguments: {'initialTab': 1},
-                      ),
+                      builder: (context) => const QuranBookmarksPage(),
                     ),
                   );
                 },
@@ -118,14 +121,11 @@ class QuranCard extends StatelessWidget {
                 icon: Icons.history,
                 label: 'History',
                 onTap: () {
-                  // Navigate to Quran page with history tab
+                  // Navigate to Quran reading history page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const QuranView(),
-                      settings: const RouteSettings(
-                        arguments: {'initialTab': 2},
-                      ),
+                      builder: (context) => const QuranReadingHistoryPage(),
                     ),
                   );
                 },
