@@ -11,11 +11,36 @@ import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';
 import '../bloc/quran_state.dart';
 import '../views/sura_view.dart';
+import '../widgets/bookmark_filter_chip.dart';
 
 /// Page to display Quran bookmarks
-class QuranBookmarksPage extends StatelessWidget {
+class QuranBookmarksPage extends StatefulWidget {
   /// Constructor
   const QuranBookmarksPage({super.key});
+
+  @override
+  State<QuranBookmarksPage> createState() => _QuranBookmarksPageState();
+}
+
+/// Sort options for bookmarks
+enum BookmarkSortOption {
+  /// Sort by name
+  name,
+
+  /// Sort by date added (id)
+  dateAdded,
+
+  /// Sort by surah
+  surah,
+
+  /// Sort by page number
+  page,
+}
+
+class _QuranBookmarksPageState extends State<QuranBookmarksPage> {
+  BookmarkSortOption _sortOption = BookmarkSortOption.dateAdded;
+  String? _filterSurah;
+  bool _showFilters = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +53,25 @@ class QuranBookmarksPage extends StatelessWidget {
             BlocBuilder<QuranBloc, QuranState>(
               builder: (context, state) {
                 if (state is BookmarksLoaded && state.bookmarks.isNotEmpty) {
-                  return IconButton(
-                    icon: const Icon(Icons.sort),
-                    tooltip: 'Sort bookmarks',
-                    onPressed: () {
-                      _showSortOptions(context);
-                    },
+                  return Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.filter_list),
+                        tooltip: 'Filter bookmarks',
+                        onPressed: () {
+                          setState(() {
+                            _showFilters = !_showFilters;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.sort),
+                        tooltip: 'Sort bookmarks',
+                        onPressed: () {
+                          _showSortOptions(context);
+                        },
+                      ),
+                    ],
                   );
                 }
                 return const SizedBox.shrink();
@@ -41,38 +79,126 @@ class QuranBookmarksPage extends StatelessWidget {
             ),
           ],
         ),
-        body: BlocBuilder<QuranBloc, QuranState>(
-          builder: (context, state) {
-            if (state is QuranLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is BookmarksLoaded) {
-              return _buildBookmarksList(context, state.bookmarks);
-            } else if (state is QuranError) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        color: Colors.red,
-                        size: 48,
+        body: Column(
+          children: [
+            // Filter chips
+            if (_showFilters)
+              BlocBuilder<QuranBloc, QuranState>(
+                builder: (context, state) {
+                  if (state is BookmarksLoaded && state.bookmarks.isNotEmpty) {
+                    // Get unique surah names
+                    final surahNames =
+                        state.bookmarks
+                            .map((b) => b.surahName)
+                            .where((name) => name != null)
+                            .toSet()
+                            .cast<String>();
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: Text(
+                              'Filter by Surah',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: Row(
+                              children: [
+                                BookmarkFilterChip(
+                                  label: 'All',
+                                  icon: Icons.book,
+                                  isSelected: _filterSurah == null,
+                                  onTap: () {
+                                    setState(() {
+                                      _filterSurah = null;
+                                    });
+                                  },
+                                ),
+                                ...surahNames.map(
+                                  (name) => BookmarkFilterChip(
+                                    label: name,
+                                    icon: Icons.bookmark,
+                                    isSelected: _filterSurah == name,
+                                    onTap: () {
+                                      setState(() {
+                                        _filterSurah = name;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error: ${state.message}',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium,
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+
+            // Bookmarks list
+            Expanded(
+              child: BlocBuilder<QuranBloc, QuranState>(
+                builder: (context, state) {
+                  if (state is QuranLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is BookmarksLoaded) {
+                    // Apply filtering
+                    var filteredBookmarks = state.bookmarks;
+                    if (_filterSurah != null) {
+                      filteredBookmarks =
+                          filteredBookmarks
+                              .where((b) => b.surahName == _filterSurah)
+                              .toList();
+                    }
+
+                    // Apply sorting
+                    filteredBookmarks = _sortBookmarks(filteredBookmarks);
+
+                    return _buildBookmarksList(context, filteredBookmarks);
+                  } else if (state is QuranError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Error: ${state.message}',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return const Center(child: Text('No bookmarks found'));
-            }
-          },
+                    );
+                  } else {
+                    return const Center(child: Text('No bookmarks found'));
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -178,6 +304,41 @@ class QuranBookmarksPage extends StatelessWidget {
     );
   }
 
+  /// Sort bookmarks based on the current sort option
+  List<QuranBookmark> _sortBookmarks(List<QuranBookmark> bookmarks) {
+    final sortedBookmarks = List<QuranBookmark>.from(bookmarks);
+
+    switch (_sortOption) {
+      case BookmarkSortOption.name:
+        sortedBookmarks.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case BookmarkSortOption.dateAdded:
+        // Sort by ID (assuming higher ID means more recent)
+        sortedBookmarks.sort((a, b) => b.id.compareTo(a.id));
+        break;
+      case BookmarkSortOption.surah:
+        // Sort by surah name, handling nulls
+        sortedBookmarks.sort((a, b) {
+          if (a.surahName == null && b.surahName == null) return 0;
+          if (a.surahName == null) return 1;
+          if (b.surahName == null) return -1;
+          return a.surahName!.compareTo(b.surahName!);
+        });
+        break;
+      case BookmarkSortOption.page:
+        // Sort by page number, handling nulls
+        sortedBookmarks.sort((a, b) {
+          if (a.page == null && b.page == null) return 0;
+          if (a.page == null) return 1;
+          if (b.page == null) return -1;
+          return a.page!.compareTo(b.page!);
+        });
+        break;
+    }
+
+    return sortedBookmarks;
+  }
+
   void _showSortOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -189,27 +350,69 @@ class QuranBookmarksPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Sort Bookmarks',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Divider(),
               ListTile(
                 title: const Text('Sort by Name'),
                 leading: const Icon(Icons.sort_by_alpha),
+                trailing:
+                    _sortOption == BookmarkSortOption.name
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
                 onTap: () {
-                  // Implement sorting by name
+                  setState(() {
+                    _sortOption = BookmarkSortOption.name;
+                  });
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: const Text('Sort by Date Added'),
                 leading: const Icon(Icons.access_time),
+                trailing:
+                    _sortOption == BookmarkSortOption.dateAdded
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
                 onTap: () {
-                  // Implement sorting by date
+                  setState(() {
+                    _sortOption = BookmarkSortOption.dateAdded;
+                  });
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: const Text('Sort by Surah'),
                 leading: const Icon(Icons.menu_book),
+                trailing:
+                    _sortOption == BookmarkSortOption.surah
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
                 onTap: () {
-                  // Implement sorting by surah
+                  setState(() {
+                    _sortOption = BookmarkSortOption.surah;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Sort by Page Number'),
+                leading: const Icon(Icons.numbers),
+                trailing:
+                    _sortOption == BookmarkSortOption.page
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
+                onTap: () {
+                  setState(() {
+                    _sortOption = BookmarkSortOption.page;
+                  });
                   Navigator.pop(context);
                 },
               ),
