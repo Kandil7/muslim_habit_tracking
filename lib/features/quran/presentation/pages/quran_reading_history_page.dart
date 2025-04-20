@@ -13,9 +13,26 @@ import '../bloc/quran_state.dart';
 import '../views/sura_view.dart';
 
 /// Page to display Quran reading history
-class QuranReadingHistoryPage extends StatelessWidget {
+class QuranReadingHistoryPage extends StatefulWidget {
   /// Constructor
   const QuranReadingHistoryPage({super.key});
+
+  @override
+  State<QuranReadingHistoryPage> createState() =>
+      _QuranReadingHistoryPageState();
+}
+
+/// Enum for history grouping options
+enum HistoryGroupOption {
+  /// Group by date
+  date,
+
+  /// Group by time of day (morning, afternoon, evening, night)
+  timeOfDay,
+}
+
+class _QuranReadingHistoryPageState extends State<QuranReadingHistoryPage> {
+  HistoryGroupOption _groupOption = HistoryGroupOption.date;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +45,29 @@ class QuranReadingHistoryPage extends StatelessWidget {
             BlocBuilder<QuranBloc, QuranState>(
               builder: (context, state) {
                 if (state is ReadingHistoryLoaded && state.history.isNotEmpty) {
-                  return IconButton(
-                    icon: const Icon(Icons.delete_sweep),
-                    onPressed: () {
-                      _showClearHistoryDialog(context);
-                    },
-                    tooltip: 'Clear History',
+                  return Row(
+                    children: [
+                      // Group by toggle
+                      IconButton(
+                        icon: Icon(
+                          _groupOption == HistoryGroupOption.date
+                              ? Icons.calendar_today
+                              : Icons.access_time,
+                        ),
+                        onPressed: () {
+                          _showGroupingOptions(context);
+                        },
+                        tooltip: 'Group by',
+                      ),
+                      // Clear history button
+                      IconButton(
+                        icon: const Icon(Icons.delete_sweep),
+                        onPressed: () {
+                          _showClearHistoryDialog(context);
+                        },
+                        tooltip: 'Clear History',
+                      ),
+                    ],
                   );
                 }
                 return const SizedBox.shrink();
@@ -78,6 +112,63 @@ class QuranReadingHistoryPage extends StatelessWidget {
     );
   }
 
+  /// Show options for grouping history entries
+  void _showGroupingOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Group Reading History By',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('Date'),
+                leading: const Icon(Icons.calendar_today),
+                trailing:
+                    _groupOption == HistoryGroupOption.date
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
+                onTap: () {
+                  setState(() {
+                    _groupOption = HistoryGroupOption.date;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Time of Day'),
+                leading: const Icon(Icons.access_time),
+                trailing:
+                    _groupOption == HistoryGroupOption.timeOfDay
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
+                onTap: () {
+                  setState(() {
+                    _groupOption = HistoryGroupOption.timeOfDay;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildHistoryList(
     BuildContext context,
     List<QuranReadingHistory> history,
@@ -92,24 +183,29 @@ class QuranReadingHistoryPage extends StatelessWidget {
       );
     }
 
-    // Group history by date
+    // Group history based on selected option
     final Map<String, List<QuranReadingHistory>> groupedHistory = {};
-    final dateFormat = DateFormat('MMMM d, yyyy');
 
     for (final entry in history) {
-      final dateString = dateFormat.format(entry.timestamp);
-      if (!groupedHistory.containsKey(dateString)) {
-        groupedHistory[dateString] = [];
+      final groupKey = _getGroupKey(entry);
+      if (!groupedHistory.containsKey(groupKey)) {
+        groupedHistory[groupKey] = [];
       }
-      groupedHistory[dateString]!.add(entry);
+      groupedHistory[groupKey]!.add(entry);
     }
+
+    // Sort the keys based on the grouping option
+    final sortedKeys = _sortGroupKeys(groupedHistory.keys.toList());
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      itemCount: groupedHistory.length,
+      itemCount: sortedKeys.length,
       itemBuilder: (context, index) {
-        final date = groupedHistory.keys.elementAt(index);
-        final entries = groupedHistory[date]!;
+        final groupKey = sortedKeys[index];
+        final entries = groupedHistory[groupKey]!;
+
+        // Sort entries within each group by timestamp (newest first)
+        entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +224,7 @@ class QuranReadingHistoryPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  date,
+                  _getGroupDisplayName(groupKey),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -233,6 +329,65 @@ class QuranReadingHistoryPage extends StatelessWidget {
     );
   }
 
+  /// Get the group key for a history entry based on the current grouping option
+  String _getGroupKey(QuranReadingHistory entry) {
+    switch (_groupOption) {
+      case HistoryGroupOption.date:
+        return DateFormat('yyyy-MM-dd').format(entry.timestamp);
+      case HistoryGroupOption.timeOfDay:
+        return _getTimeOfDayGroup(entry.timestamp);
+    }
+  }
+
+  /// Get the time of day group (Morning, Afternoon, Evening, Night) for a timestamp
+  String _getTimeOfDayGroup(DateTime timestamp) {
+    final hour = timestamp.hour;
+
+    if (hour >= 5 && hour < 12) {
+      return 'morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      return 'evening';
+    } else {
+      return 'night';
+    }
+  }
+
+  /// Sort group keys based on the current grouping option
+  List<String> _sortGroupKeys(List<String> keys) {
+    if (_groupOption == HistoryGroupOption.date) {
+      // Sort dates in descending order (newest first)
+      keys.sort((a, b) => b.compareTo(a));
+    } else {
+      // Sort time of day in chronological order
+      final timeOfDayOrder = {
+        'morning': 0,
+        'afternoon': 1,
+        'evening': 2,
+        'night': 3,
+      };
+
+      keys.sort(
+        (a, b) => (timeOfDayOrder[a] ?? 0).compareTo(timeOfDayOrder[b] ?? 0),
+      );
+    }
+
+    return keys;
+  }
+
+  /// Get a display name for a group key
+  String _getGroupDisplayName(String groupKey) {
+    if (_groupOption == HistoryGroupOption.date) {
+      // Convert yyyy-MM-dd to a readable date format
+      final date = DateTime.parse(groupKey);
+      return DateFormat('MMMM d, yyyy').format(date);
+    } else {
+      // Capitalize the time of day
+      return groupKey.substring(0, 1).toUpperCase() + groupKey.substring(1);
+    }
+  }
+
   Color _getColorForSurah(int? surahNumber) {
     if (surahNumber == null) return AppColors.primary;
 
@@ -269,15 +424,32 @@ class QuranReadingHistoryPage extends StatelessWidget {
       builder:
           (context) => AlertDialog(
             title: const Text('Clear Reading History'),
-            content: const Text(
-              'Are you sure you want to clear your reading history? This action cannot be undone.',
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.amber,
+                  size: 36,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Are you sure you want to clear your reading history?',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'This action cannot be undone and will remove all your reading history records.',
+                ),
+              ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('CANCEL'),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   context.read<QuranBloc>().add(
@@ -287,6 +459,10 @@ class QuranReadingHistoryPage extends StatelessWidget {
                     const SnackBar(content: Text('Reading history cleared')),
                   );
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('CLEAR'),
               ),
             ],
