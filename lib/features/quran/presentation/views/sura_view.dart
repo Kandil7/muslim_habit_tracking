@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/core/di/injection_container.dart' as di;
 import 'package:quran_library/quran_library.dart' hide QuranState;
 
+import '../../domain/entities/quran_reading_history.dart';
 import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';
 import '../bloc/quran_state.dart';
@@ -19,14 +20,24 @@ class SuraView extends StatelessWidget {
     QuranCtrl.instance.state.currentPageNumber.value = initialPage;
 
     return BlocProvider(
-      create:
-          (context) =>
-              di.sl<QuranBloc>()
-                ..add(const GetBookmarksEvent())
-                // Initialize with 0-based index for PageController
-                ..add(
-                  InitQuranPageControllerEvent(initialPage: initialPage - 1),
-                ),
+      create: (context) {
+        final quranBloc =
+            di.sl<QuranBloc>()
+              ..add(const GetBookmarksEvent())
+              // Initialize with 0-based index for PageController
+              ..add(InitQuranPageControllerEvent(initialPage: initialPage - 1));
+
+        // Save reading history
+        final timestamp = DateTime.now();
+        final history = QuranReadingHistory(
+          id: timestamp.millisecondsSinceEpoch,
+          pageNumber: initialPage,
+          timestamp: timestamp,
+        );
+        quranBloc.add(UpdateLastReadPositionEvent(history: history));
+
+        return quranBloc;
+      },
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -62,10 +73,23 @@ class SuraView extends StatelessWidget {
             ),
             body: BlocConsumer<QuranBloc, QuranState>(
               listenWhen:
-                  (previous, current) => current is QuranPageControllerCreated,
+                  (previous, current) =>
+                      current is QuranPageControllerCreated ||
+                      current is QuranPageChanged,
               listener: (context, state) {
-                // Do nothing, just ensure the controller is created
-                debugPrint('Listener Controller called');
+                // When page changes, update reading history
+                if (state is QuranPageChanged &&
+                    state.pageNumber != initialPage) {
+                  final timestamp = DateTime.now();
+                  final history = QuranReadingHistory(
+                    id: timestamp.millisecondsSinceEpoch,
+                    pageNumber: state.pageNumber,
+                    timestamp: timestamp,
+                  );
+                  context.read<QuranBloc>().add(
+                    UpdateLastReadPositionEvent(history: history),
+                  );
+                }
               },
               buildWhen:
                   (previous, current) =>
