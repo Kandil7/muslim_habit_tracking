@@ -243,22 +243,34 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     InitQuranPageControllerEvent event,
     Emitter<QuranState> emit,
   ) {
-    // Initialize with the correct page (0-based index)
-    _pageController = PageController(initialPage: event.initialPage);
-    _initQuranView();
+    try {
+      // Initialize with the correct page (0-based index)
+      _pageController = PageController(initialPage: event.initialPage);
+      _initQuranView();
 
-    // Set the current page (1-based index)
-    // Only update if not already set
-    currentPage ??= event.initialPage + 1;
+      // Set the current page (1-based index)
+      // Only update if not already set
+      currentPage ??= event.initialPage + 1;
 
-    // Set the page in QuranCtrl directly
-    QuranCtrl.instance.state.currentPageNumber.value = currentPage!;
+      // Set the page in QuranCtrl directly
+      try {
+        QuranCtrl.instance.state.currentPageNumber.value = currentPage!;
+      } catch (e) {
+        debugPrint('Error setting page in QuranCtrl: $e');
+      }
 
-    // Emit the controller created event
-    emit(QuranPageControllerCreated(pageController: _pageController!));
+      // Emit the controller created event
+      emit(QuranPageControllerCreated(pageController: _pageController!));
 
-    // Also emit a page changed event to ensure UI is updated
-    emit(QuranPageChanged(pageNumber: currentPage!));
+      // Also emit a page changed event to ensure UI is updated
+      emit(QuranPageChanged(pageNumber: currentPage!));
+    } catch (e) {
+      debugPrint('Error initializing page controller: $e');
+      // Still emit a page changed event to ensure UI is updated
+      if (currentPage != null) {
+        emit(QuranPageChanged(pageNumber: currentPage!));
+      }
+    }
   }
 
   /// Toggle the view state (e.g., showing/hiding UI elements)

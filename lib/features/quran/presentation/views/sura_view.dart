@@ -21,10 +21,8 @@ class SuraView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Set the current page in QuranCtrl immediately
     // Ensure the page number is within valid range (1-604)
     final validPage = initialPage.clamp(1, 604);
-    QuranCtrl.instance.state.currentPageNumber.value = validPage;
 
     return BlocProvider(
       create: (context) {
@@ -118,10 +116,7 @@ class SuraView extends StatelessWidget {
                   );
                 }
               },
-              buildWhen:
-                  (previous, current) =>
-                      current is QuranPageControllerCreated ||
-                      current is QuranInitial,
+
               builder: (context, state) {
                 // Only show loading indicator when we're in the initial state
                 // and haven't created the page controller yet
