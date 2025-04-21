@@ -11,15 +11,34 @@ import '../bloc/quran_state.dart';
 import '../views/sura_view.dart';
 
 /// Page for displaying Quran reading history
-class QuranReadingHistoryPage extends StatelessWidget {
+class QuranReadingHistoryPage extends StatefulWidget {
   /// Constructor
   const QuranReadingHistoryPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Trigger loading of reading history
-    context.read<QuranBloc>().add(const GetReadingHistoryEvent());
+  State<QuranReadingHistoryPage> createState() =>
+      _QuranReadingHistoryPageState();
+}
 
+class _QuranReadingHistoryPageState extends State<QuranReadingHistoryPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Trigger loading of reading history in initState instead of build
+    _loadReadingHistory();
+  }
+
+  void _loadReadingHistory() {
+    // Safely add the event with error handling
+    try {
+      context.read<QuranBloc>().add(const GetReadingHistoryEvent());
+    } catch (e) {
+      debugPrint('Error loading reading history: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.tr.translate('quran.history')),
@@ -73,10 +92,15 @@ class QuranReadingHistoryPage extends StatelessWidget {
                   Text(state.message),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed:
-                        () => context.read<QuranBloc>().add(
+                    onPressed: () {
+                      try {
+                        context.read<QuranBloc>().add(
                           const GetReadingHistoryEvent(),
-                        ),
+                        );
+                      } catch (e) {
+                        debugPrint('Error reloading reading history: $e');
+                      }
+                    },
                     child: Text(context.tr.translate('common.retry')),
                   ),
                 ],
@@ -237,7 +261,11 @@ class QuranReadingHistoryPage extends StatelessWidget {
             );
           } else {
             // If we're not in a loading or loaded state, trigger loading
-            context.read<QuranBloc>().add(const GetReadingHistoryEvent());
+            try {
+              context.read<QuranBloc>().add(const GetReadingHistoryEvent());
+            } catch (e) {
+              debugPrint('Error loading reading history: $e');
+            }
             return const Center(child: CircularProgressIndicator());
           }
         },
@@ -262,9 +290,13 @@ class QuranReadingHistoryPage extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
-                  context.read<QuranBloc>().add(
-                    const ClearReadingHistoryEvent(),
-                  );
+                  try {
+                    context.read<QuranBloc>().add(
+                      const ClearReadingHistoryEvent(),
+                    );
+                  } catch (e) {
+                    debugPrint('Error clearing reading history: $e');
+                  }
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
