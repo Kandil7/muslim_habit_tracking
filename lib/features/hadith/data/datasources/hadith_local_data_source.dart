@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:hive/hive.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/error/exceptions.dart';
 import '../models/hadith_model.dart';
 
 /// Interface for the local data source for Hadith feature

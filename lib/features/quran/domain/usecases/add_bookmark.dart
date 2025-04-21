@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:muslim_habbit/core/error/failures.dart';
 
-import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_bookmark.dart';
 import '../repositories/quran_bookmark_repository.dart';

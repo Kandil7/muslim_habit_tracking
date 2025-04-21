@@ -49,7 +49,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     final result = await getHabits();
 
     result.fold(
-      (failure) => emit(HabitError(message: failure.message)),
+      (failure) => emit(HabitError(message: failure.toString())),
       (habits) => emit(HabitsLoaded(habits: habits)),
     );
   }
@@ -64,7 +64,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     final result = await createHabit(CreateHabitParams(habit: event.habit));
 
     result.fold(
-      (failure) => emit(HabitError(message: failure.message)),
+      (failure) => emit(HabitError(message: failure.toString())),
       (habit) => emit(HabitCreated(habit: habit)),
     );
   }
@@ -79,7 +79,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     final result = await updateHabit(UpdateHabitParams(habit: event.habit));
 
     result.fold(
-      (failure) => emit(HabitError(message: failure.message)),
+      (failure) => emit(HabitError(message: failure.toString())),
       (habit) => emit(HabitUpdated(habit: habit)),
     );
   }
@@ -94,7 +94,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     final result = await deleteHabit(DeleteHabitParams(id: event.id));
 
     result.fold(
-      (failure) => emit(HabitError(message: failure.message)),
+      (failure) => emit(HabitError(message: failure.toString())),
       (_) => emit(HabitDeleted()),
     );
   }
@@ -115,7 +115,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
     );
 
     result.fold(
-      (failure) => emit(HabitError(message: failure.message)),
+      (failure) => emit(HabitError(message: failure.toString())),
       (habitLogs) => emit(HabitLogsLoaded(habitLogs: habitLogs)),
     );
   }
@@ -131,17 +131,13 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
       CreateHabitLogParams(habitLog: event.habitLog),
     );
 
-    result.fold(
-      (failure) => emit(HabitError(message: failure.message)),
-      (habitLog) {
-        // After creating a log, update the streak information
-        add(UpdateStreakEvent(
-          habitId: habitLog.habitId,
-          logDate: habitLog.date,
-        ));
-        emit(HabitLogCreated(habitLog: habitLog));
-      },
-    );
+    result.fold((failure) => emit(HabitError(message: failure.toString())), (
+      habitLog,
+    ) {
+      // After creating a log, update the streak information
+      add(UpdateStreakEvent(habitId: habitLog.habitId, logDate: habitLog.date));
+      emit(HabitLogCreated(habitLog: habitLog));
+    });
   }
 
   /// Handle UpdateStreakEvent
@@ -154,7 +150,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
 
     await habitResult.fold(
       (failure) async {
-        emit(HabitError(message: failure.message));
+        emit(HabitError(message: failure.toString()));
       },
       (habits) async {
         // Find the habit by ID
@@ -168,13 +164,15 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
           GetHabitLogsByDateRangeParams(
             habitId: event.habitId,
             startDate: DateTime(2000), // Far in the past
-            endDate: DateTime.now().add(const Duration(days: 1)), // Include today
+            endDate: DateTime.now().add(
+              const Duration(days: 1),
+            ), // Include today
           ),
         );
 
         await logsResult.fold(
           (failure) async {
-            emit(HabitError(message: failure.message));
+            emit(HabitError(message: failure.toString()));
           },
           (logs) async {
             // Update streak information
@@ -190,7 +188,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
             );
 
             updateResult.fold(
-              (failure) => emit(HabitError(message: failure.message)),
+              (failure) => emit(HabitError(message: failure.toString())),
               (updatedHabit) => emit(HabitUpdated(habit: updatedHabit)),
             );
           },
@@ -209,7 +207,7 @@ class HabitBloc extends Bloc<HabitEvent, HabitState> {
 
     await habitsResult.fold(
       (failure) async {
-        emit(HabitError(message: failure.message));
+        emit(HabitError(message: failure.toString()));
       },
       (habits) async {
         // Check each habit for broken streaks

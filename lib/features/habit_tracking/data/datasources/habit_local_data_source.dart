@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/error/exceptions.dart';
 import '../models/habit_category_model.dart';
 import '../models/habit_model.dart';
 import '../models/habit_log_model.dart';
@@ -63,7 +63,12 @@ abstract class HabitLocalDataSource {
   Future<List<HabitModel>> getHabitsByCategory(String categoryId);
 
   /// Update habit streak information
-  Future<HabitModel> updateHabitStreak(String habitId, int currentStreak, int longestStreak, DateTime? lastCompletedDate);
+  Future<HabitModel> updateHabitStreak(
+    String habitId,
+    int currentStreak,
+    int longestStreak,
+    DateTime? lastCompletedDate,
+  );
 }
 
 /// Implementation of HabitLocalDataSource using Hive
@@ -108,14 +113,8 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
   @override
   Future<HabitModel> createHabit(HabitModel habit) async {
     try {
-      final newHabit = habit.copyWith(
-        id: uuid.v4(),
-        createdAt: DateTime.now(),
-      );
-      await habitsBox.put(
-        newHabit.id,
-        json.encode(newHabit.toJson()),
-      );
+      final newHabit = habit.copyWith(id: uuid.v4(), createdAt: DateTime.now());
+      await habitsBox.put(newHabit.id, json.encode(newHabit.toJson()));
       return newHabit;
     } catch (e) {
       throw CacheException(message: 'Failed to create habit in local storage');
@@ -125,13 +124,8 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
   @override
   Future<HabitModel> updateHabit(HabitModel habit) async {
     try {
-      final updatedHabit = habit.copyWith(
-        updatedAt: DateTime.now(),
-      );
-      await habitsBox.put(
-        updatedHabit.id,
-        json.encode(updatedHabit.toJson()),
-      );
+      final updatedHabit = habit.copyWith(updatedAt: DateTime.now());
+      await habitsBox.put(updatedHabit.id, json.encode(updatedHabit.toJson()));
       return updatedHabit;
     } catch (e) {
       throw CacheException(message: 'Failed to update habit in local storage');
@@ -139,7 +133,12 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
   }
 
   @override
-  Future<HabitModel> updateHabitStreak(String habitId, int currentStreak, int longestStreak, DateTime? lastCompletedDate) async {
+  Future<HabitModel> updateHabitStreak(
+    String habitId,
+    int currentStreak,
+    int longestStreak,
+    DateTime? lastCompletedDate,
+  ) async {
     try {
       final habit = await getHabitById(habitId);
       final updatedHabit = habit.copyWith(
@@ -148,13 +147,12 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
         lastCompletedDate: lastCompletedDate,
         updatedAt: DateTime.now(),
       );
-      await habitsBox.put(
-        updatedHabit.id,
-        json.encode(updatedHabit.toJson()),
-      );
+      await habitsBox.put(updatedHabit.id, json.encode(updatedHabit.toJson()));
       return updatedHabit;
     } catch (e) {
-      throw CacheException(message: 'Failed to update habit streak in local storage');
+      throw CacheException(
+        message: 'Failed to update habit streak in local storage',
+      );
     }
   }
 
@@ -169,7 +167,9 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
         await habitLogsBox.delete(log.id);
       }
     } catch (e) {
-      throw CacheException(message: 'Failed to delete habit from local storage');
+      throw CacheException(
+        message: 'Failed to delete habit from local storage',
+      );
     }
   }
 
@@ -177,13 +177,16 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
   Future<List<HabitLogModel>> getHabitLogs(String habitId) async {
     try {
       final logsJson = habitLogsBox.values.toList();
-      final logs = logsJson
-          .map((logJson) => HabitLogModel.fromJson(json.decode(logJson)))
-          .where((log) => log.habitId == habitId)
-          .toList();
+      final logs =
+          logsJson
+              .map((logJson) => HabitLogModel.fromJson(json.decode(logJson)))
+              .where((log) => log.habitId == habitId)
+              .toList();
       return logs;
     } catch (e) {
-      throw CacheException(message: 'Failed to get habit logs from local storage');
+      throw CacheException(
+        message: 'Failed to get habit logs from local storage',
+      );
     }
   }
 
@@ -196,11 +199,16 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
     try {
       final logs = await getHabitLogs(habitId);
       return logs
-          .where((log) => log.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
-                          log.date.isBefore(endDate.add(const Duration(days: 1))))
+          .where(
+            (log) =>
+                log.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+                log.date.isBefore(endDate.add(const Duration(days: 1))),
+          )
           .toList();
     } catch (e) {
-      throw CacheException(message: 'Failed to get habit logs by date range from local storage');
+      throw CacheException(
+        message: 'Failed to get habit logs by date range from local storage',
+      );
     }
   }
 
@@ -211,26 +219,24 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
         id: uuid.v4(),
         createdAt: DateTime.now(),
       );
-      await habitLogsBox.put(
-        newLog.id,
-        json.encode(newLog.toJson()),
-      );
+      await habitLogsBox.put(newLog.id, json.encode(newLog.toJson()));
       return newLog;
     } catch (e) {
-      throw CacheException(message: 'Failed to create habit log in local storage');
+      throw CacheException(
+        message: 'Failed to create habit log in local storage',
+      );
     }
   }
 
   @override
   Future<HabitLogModel> updateHabitLog(HabitLogModel habitLog) async {
     try {
-      await habitLogsBox.put(
-        habitLog.id,
-        json.encode(habitLog.toJson()),
-      );
+      await habitLogsBox.put(habitLog.id, json.encode(habitLog.toJson()));
       return habitLog;
     } catch (e) {
-      throw CacheException(message: 'Failed to update habit log in local storage');
+      throw CacheException(
+        message: 'Failed to update habit log in local storage',
+      );
     }
   }
 
@@ -239,7 +245,9 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
     try {
       await habitLogsBox.delete(id);
     } catch (e) {
-      throw CacheException(message: 'Failed to delete habit log from local storage');
+      throw CacheException(
+        message: 'Failed to delete habit log from local storage',
+      );
     }
   }
 
@@ -248,10 +256,15 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
     try {
       final categoriesJson = categoriesBox.values.toList();
       return categoriesJson
-          .map((categoryJson) => HabitCategoryModel.fromJson(json.decode(categoryJson)))
+          .map(
+            (categoryJson) =>
+                HabitCategoryModel.fromJson(json.decode(categoryJson)),
+          )
           .toList();
     } catch (e) {
-      throw CacheException(message: 'Failed to get categories from local storage');
+      throw CacheException(
+        message: 'Failed to get categories from local storage',
+      );
     }
   }
 
@@ -264,7 +277,9 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
       }
       return HabitCategoryModel.fromJson(json.decode(categoryJson));
     } catch (e) {
-      throw CacheException(message: 'Failed to get category from local storage');
+      throw CacheException(
+        message: 'Failed to get category from local storage',
+      );
     }
   }
 
@@ -281,20 +296,21 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
       );
       return newCategory;
     } catch (e) {
-      throw CacheException(message: 'Failed to create category in local storage');
+      throw CacheException(
+        message: 'Failed to create category in local storage',
+      );
     }
   }
 
   @override
   Future<HabitCategoryModel> updateCategory(HabitCategoryModel category) async {
     try {
-      await categoriesBox.put(
-        category.id,
-        json.encode(category.toJson()),
-      );
+      await categoriesBox.put(category.id, json.encode(category.toJson()));
       return category;
     } catch (e) {
-      throw CacheException(message: 'Failed to update category in local storage');
+      throw CacheException(
+        message: 'Failed to update category in local storage',
+      );
     }
   }
 
@@ -312,7 +328,9 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
         }
       }
     } catch (e) {
-      throw CacheException(message: 'Failed to delete category from local storage');
+      throw CacheException(
+        message: 'Failed to delete category from local storage',
+      );
     }
   }
 
@@ -322,7 +340,9 @@ class HabitLocalDataSourceImpl implements HabitLocalDataSource {
       final habits = await getHabits();
       return habits.where((habit) => habit.categoryId == categoryId).toList();
     } catch (e) {
-      throw CacheException(message: 'Failed to get habits by category from local storage');
+      throw CacheException(
+        message: 'Failed to get habits by category from local storage',
+      );
     }
   }
 }

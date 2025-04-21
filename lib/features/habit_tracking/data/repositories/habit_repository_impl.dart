@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
@@ -14,12 +14,12 @@ import '../models/habit_log_model.dart';
 class HabitRepositoryImpl implements HabitRepository {
   final HabitLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
-  
+
   HabitRepositoryImpl({
     required this.localDataSource,
     required this.networkInfo,
   });
-  
+
   @override
   Future<Either<Failure, List<Habit>>> getHabits() async {
     try {
@@ -29,7 +29,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, Habit>> getHabitById(String id) async {
     try {
@@ -39,7 +39,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, Habit>> createHabit(Habit habit) async {
     try {
@@ -50,7 +50,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, Habit>> updateHabit(Habit habit) async {
     try {
@@ -61,7 +61,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, void>> deleteHabit(String id) async {
     try {
@@ -71,7 +71,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<HabitLog>>> getHabitLogs(String habitId) async {
     try {
@@ -81,7 +81,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<HabitLog>>> getHabitLogsByDateRange(
     String habitId,
@@ -99,7 +99,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, HabitLog>> createHabitLog(HabitLog habitLog) async {
     try {
@@ -110,7 +110,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, HabitLog>> updateHabitLog(HabitLog habitLog) async {
     try {
@@ -121,7 +121,7 @@ class HabitRepositoryImpl implements HabitRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, void>> deleteHabitLog(String id) async {
     try {

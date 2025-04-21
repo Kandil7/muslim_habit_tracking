@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../entities/dua.dart';
 import '../repositories/dua_dhikr_repository.dart';
 
@@ -12,7 +12,9 @@ class GetDuasByCategory {
   GetDuasByCategory(this.repository);
 
   /// Execute the use case
-  Future<Either<Failure, List<Dua>>> call(GetDuasByCategoryParams params) async {
+  Future<Either<Failure, List<Dua>>> call(
+    GetDuasByCategoryParams params,
+  ) async {
     return await repository.getDuasByCategory(params.category);
   }
 }

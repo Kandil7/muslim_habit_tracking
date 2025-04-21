@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/habit_stats.dart';
 import '../../domain/repositories/analytics_repository.dart';
 import '../datasources/analytics_data_source.dart';
@@ -9,11 +9,9 @@ import '../datasources/analytics_data_source.dart';
 /// Implementation of AnalyticsRepository
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
   final AnalyticsDataSource dataSource;
-  
-  AnalyticsRepositoryImpl({
-    required this.dataSource,
-  });
-  
+
+  AnalyticsRepositoryImpl({required this.dataSource});
+
   @override
   Future<Either<Failure, List<HabitStats>>> getAllHabitStats() async {
     try {
@@ -23,7 +21,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, HabitStats>> getHabitStats(String habitId) async {
     try {
@@ -33,7 +31,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<HabitStats>>> getHabitStatsByDateRange(
     DateTime startDate,
@@ -49,7 +47,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, double>> getOverallCompletionRate() async {
     try {
@@ -59,7 +57,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, HabitStats>> getMostConsistentHabit() async {
     try {
@@ -69,7 +67,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, HabitStats>> getLeastConsistentHabit() async {
     try {

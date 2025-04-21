@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/services/cache_manager.dart';
 import '../models/dua_model.dart';
 import '../models/dhikr_model.dart';
@@ -24,16 +24,25 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   Future<Either<Failure, List<Dua>>> getAllDuas() async {
     try {
       // Try to get from memory cache first
-      final cachedDuas = await cacheManager.getFromCache<List<dynamic>>('all_duas');
+      final cachedDuas = await cacheManager.getFromCache<List<dynamic>>(
+        'all_duas',
+      );
       if (cachedDuas != null) {
-        return Right(cachedDuas.map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>)).toList());
+        return Right(
+          cachedDuas
+              .map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>))
+              .toList(),
+        );
       }
 
       // Get from local data source
       final duas = await localDataSource.getAllDuas();
 
       // Save to memory cache
-      await cacheManager.saveToCache('all_duas', duas.map((dua) => dua.toJson()).toList());
+      await cacheManager.saveToCache(
+        'all_duas',
+        duas.map((dua) => dua.toJson()).toList(),
+      );
 
       return Right(duas);
     } on CacheException catch (e) {
@@ -46,16 +55,25 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
     try {
       // Try to get from memory cache first
       final cacheKey = 'duas_category_$category';
-      final cachedDuas = await cacheManager.getFromCache<List<dynamic>>(cacheKey);
+      final cachedDuas = await cacheManager.getFromCache<List<dynamic>>(
+        cacheKey,
+      );
       if (cachedDuas != null) {
-        return Right(cachedDuas.map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>)).toList());
+        return Right(
+          cachedDuas
+              .map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>))
+              .toList(),
+        );
       }
 
       // Get from local data source
       final duas = await localDataSource.getDuasByCategory(category);
 
       // Save to memory cache
-      await cacheManager.saveToCache(cacheKey, duas.map((dua) => dua.toJson()).toList());
+      await cacheManager.saveToCache(
+        cacheKey,
+        duas.map((dua) => dua.toJson()).toList(),
+      );
 
       return Right(duas);
     } on CacheException catch (e) {
@@ -87,16 +105,27 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   Future<Either<Failure, List<Dhikr>>> getAllDhikrs() async {
     try {
       // Try to get from memory cache first
-      final cachedDhikrs = await cacheManager.getFromCache<List<dynamic>>('all_dhikrs');
+      final cachedDhikrs = await cacheManager.getFromCache<List<dynamic>>(
+        'all_dhikrs',
+      );
       if (cachedDhikrs != null) {
-        return Right(cachedDhikrs.map((dhikr) => DhikrModel.fromJson(dhikr as Map<String, dynamic>)).toList());
+        return Right(
+          cachedDhikrs
+              .map(
+                (dhikr) => DhikrModel.fromJson(dhikr as Map<String, dynamic>),
+              )
+              .toList(),
+        );
       }
 
       // Get from local data source
       final dhikrs = await localDataSource.getAllDhikrs();
 
       // Save to memory cache
-      await cacheManager.saveToCache('all_dhikrs', dhikrs.map((dhikr) => dhikr.toJson()).toList());
+      await cacheManager.saveToCache(
+        'all_dhikrs',
+        dhikrs.map((dhikr) => dhikr.toJson()).toList(),
+      );
 
       return Right(dhikrs);
     } on CacheException catch (e) {
@@ -128,9 +157,13 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   Future<Either<Failure, List<String>>> getDuaCategories() async {
     try {
       // Try to get from memory cache first
-      final cachedCategories = await cacheManager.getFromCache<List<dynamic>>('dua_categories');
+      final cachedCategories = await cacheManager.getFromCache<List<dynamic>>(
+        'dua_categories',
+      );
       if (cachedCategories != null) {
-        return Right(cachedCategories.map((category) => category.toString()).toList());
+        return Right(
+          cachedCategories.map((category) => category.toString()).toList(),
+        );
       }
 
       // Get from local data source

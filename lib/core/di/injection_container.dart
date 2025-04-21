@@ -5,7 +5,6 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:muslim_habbit/core/utils/services/notification_service.dart';
 import 'package:muslim_habbit/core/utils/services/shared_pref_service.dart';
 import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
-import 'package:muslim_habbit/features/quran/presentation/manager/sura/sura_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quran_library/quran_library.dart' hide QuranRepository;
 import 'package:shared_preferences/shared_preferences.dart';

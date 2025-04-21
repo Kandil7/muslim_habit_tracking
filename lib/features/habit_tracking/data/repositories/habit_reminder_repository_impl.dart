@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/habit_reminder.dart';
 import '../../domain/repositories/habit_reminder_repository.dart';
 import '../models/habit_reminder_model.dart';
@@ -19,29 +19,37 @@ class HabitReminderRepositoryImpl implements HabitReminderRepository {
   HabitReminderRepositoryImpl({
     required SharedPreferences sharedPreferences,
     required HabitNotificationService notificationService,
-  }) :
-    _sharedPreferences = sharedPreferences,
-    _notificationService = notificationService;
+  }) : _sharedPreferences = sharedPreferences,
+       _notificationService = notificationService;
 
   @override
-  Future<Either<Failure, List<HabitReminder>>> getRemindersForHabit(String habitId) async {
+  Future<Either<Failure, List<HabitReminder>>> getRemindersForHabit(
+    String habitId,
+  ) async {
     try {
       final reminders = _getRemindersFromPrefs();
-      final habitReminders = reminders.where((r) => r.habitId == habitId).toList();
+      final habitReminders =
+          reminders.where((r) => r.habitId == habitId).toList();
       return Right(habitReminders);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to get reminders: ${e.toString()}'));
+      return Left(
+        CacheFailure(message: 'Failed to get reminders: ${e.toString()}'),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, HabitReminder>> createReminder(HabitReminder reminder) async {
+  Future<Either<Failure, HabitReminder>> createReminder(
+    HabitReminder reminder,
+  ) async {
     try {
       final reminders = _getRemindersFromPrefs();
 
       // Check if a reminder with this ID already exists
       if (reminders.any((r) => r.id == reminder.id)) {
-        return Left(CacheFailure(message: 'A reminder with this ID already exists'));
+        return Left(
+          CacheFailure(message: 'A reminder with this ID already exists'),
+        );
       }
 
       // Add the new reminder
@@ -58,12 +66,16 @@ class HabitReminderRepositoryImpl implements HabitReminderRepository {
 
       return Right(reminder);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to create reminder: ${e.toString()}'));
+      return Left(
+        CacheFailure(message: 'Failed to create reminder: ${e.toString()}'),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, HabitReminder>> updateReminder(HabitReminder reminder) async {
+  Future<Either<Failure, HabitReminder>> updateReminder(
+    HabitReminder reminder,
+  ) async {
     try {
       final reminders = _getRemindersFromPrefs();
 
@@ -90,7 +102,9 @@ class HabitReminderRepositoryImpl implements HabitReminderRepository {
 
       return Right(reminder);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to update reminder: ${e.toString()}'));
+      return Left(
+        CacheFailure(message: 'Failed to update reminder: ${e.toString()}'),
+      );
     }
   }
 
@@ -116,12 +130,17 @@ class HabitReminderRepositoryImpl implements HabitReminderRepository {
 
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to delete reminder: ${e.toString()}'));
+      return Left(
+        CacheFailure(message: 'Failed to delete reminder: ${e.toString()}'),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, HabitReminder>> toggleReminder(String id, bool isEnabled) async {
+  Future<Either<Failure, HabitReminder>> toggleReminder(
+    String id,
+    bool isEnabled,
+  ) async {
     try {
       final reminders = _getRemindersFromPrefs();
 
@@ -148,7 +167,9 @@ class HabitReminderRepositoryImpl implements HabitReminderRepository {
 
       return Right(updatedReminder);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to toggle reminder: ${e.toString()}'));
+      return Left(
+        CacheFailure(message: 'Failed to toggle reminder: ${e.toString()}'),
+      );
     }
   }
 

@@ -1,6 +1,4 @@
-// import '../../features/quran/data/models/hizb_model.dart';
-
-import 'package:muslim_habbit/features/quran/data/models/hizb_model.dart';
+import 'package:equatable/equatable.dart';
 
 abstract class Constants {
   static const latitude = "latitude";
@@ -1645,4 +1643,14 @@ abstract class Constants {
     HizbModel(surah: 109, hizbQuarter: 240),
     HizbModel(surah: 112, hizbQuarter: 240),
   ];
+}
+
+class HizbModel extends Equatable {
+  final int surah;
+  final int hizbQuarter;
+
+  const HizbModel({required this.surah, required this.hizbQuarter});
+
+  @override
+  List<Object> get props => [surah, hizbQuarter];
 }

@@ -403,7 +403,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     try {
       if (_pageController != null) {
         _pageController!.dispose();
-        _pageController = null;
+        // _pageController = null;
       }
     } catch (e) {
       debugPrint('Error disposing page controller: $e');
@@ -421,7 +421,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
       debugPrint('Error disabling wakelock: $e');
     }
 
-    // Return the parent close method
+    //   // Return the parent close method
     return super.close();
   }
 }

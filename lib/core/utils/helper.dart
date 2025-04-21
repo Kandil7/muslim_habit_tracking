@@ -7,8 +7,6 @@ import '../di/injection_container.dart' as di;
 import '/core/utils/constants.dart';
 import 'package:pray_times/pray_times.dart';
 
-import 'constants.dart';
-import 'services/setup_locator_service.dart';
 import 'services/shared_pref_service.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 
@@ -57,7 +55,7 @@ abstract class Helper {
 
   static String gethizbText(int page) {
     final currentPage = Constants.quranPages[page - 1];
-    final hizb = currentPage.hizb;
+    final hizb = Constants.quranPages[page];
     switch (currentPage.hizbQuarter % 4) {
       case 1:
         return '¼ الحزب $hizb';

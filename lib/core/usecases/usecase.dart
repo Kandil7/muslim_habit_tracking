@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:muslim_habbit/core/errors/failures.dart';
+import 'package:muslim_habbit/core/error/failures.dart';
 
 abstract class UseCase<Type, Params> {
   Future<Either<Failure, Type>> call(Params params);

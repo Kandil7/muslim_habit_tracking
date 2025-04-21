@@ -24,15 +24,16 @@ class NotificationService {
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     await _notificationsPlugin.initialize(
       initializationSettings,
@@ -47,25 +48,17 @@ class NotificationService {
     if (!_isInitialized) await initialize();
 
     // Request permissions for iOS
-    final DarwinNotificationPermission? iosPermission =
-        await _notificationsPlugin
-            .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin>()
-            ?.requestPermissions(
-              alert: true,
-              badge: true,
-              sound: true,
-            );
+    final bool? iosPermission = await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
 
     // Request permissions for Android
-    final bool? androidPermission =
-        await _notificationsPlugin
-            .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestPermission();
+    // Android permissions are handled at the app level, no need to request here
+    final bool? androidPermission = true;
 
-    return iosPermission == DarwinNotificationPermission.authorized ||
-        androidPermission == true;
+    return iosPermission == true || androidPermission == true;
   }
 
   /// Show an immediate notification
@@ -79,20 +72,20 @@ class NotificationService {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'muslim_habbit_channel',
-      'Muslim Habbit Notifications',
-      channelDescription: 'Notifications for Muslim Habbit app',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
+          'muslim_habbit_channel',
+          'Muslim Habbit Notifications',
+          channelDescription: 'Notifications for Muslim Habbit app',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
         DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -122,20 +115,20 @@ class NotificationService {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'muslim_habbit_scheduled_channel',
-      'Muslim Habbit Scheduled Notifications',
-      channelDescription: 'Scheduled notifications for Muslim Habbit app',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
+          'muslim_habbit_scheduled_channel',
+          'Muslim Habbit Scheduled Notifications',
+          channelDescription: 'Scheduled notifications for Muslim Habbit app',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
         DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -162,8 +155,6 @@ class NotificationService {
         tz.TZDateTime.from(scheduledDate, tz.local),
         platformChannelSpecifics,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         payload: payload,
       );
     }
@@ -189,26 +180,27 @@ class NotificationService {
     );
 
     // If the time has already passed today, schedule for tomorrow
-    final effectiveDate = scheduledDate.isBefore(now)
-        ? scheduledDate.add(const Duration(days: 1))
-        : scheduledDate;
+    final effectiveDate =
+        scheduledDate.isBefore(now)
+            ? scheduledDate.add(const Duration(days: 1))
+            : scheduledDate;
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'muslim_habbit_daily_channel',
-      'Muslim Habbit Daily Notifications',
-      channelDescription: 'Daily notifications for Muslim Habbit app',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
+          'muslim_habbit_daily_channel',
+          'Muslim Habbit Daily Notifications',
+          channelDescription: 'Daily notifications for Muslim Habbit app',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
         DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -222,8 +214,6 @@ class NotificationService {
       _nextInstanceOfTime(timeOfDay),
       platformChannelSpecifics,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: payload,
     );
@@ -238,8 +228,9 @@ class NotificationService {
   }) async {
     if (!_isInitialized) await initialize();
 
-    final notificationTime =
-        prayerTime.subtract(Duration(minutes: minutesBefore));
+    final notificationTime = prayerTime.subtract(
+      Duration(minutes: minutesBefore),
+    );
 
     // Only schedule if the prayer time is in the future
     if (notificationTime.isAfter(DateTime.now())) {
@@ -285,7 +276,7 @@ class NotificationService {
     // Handle notification tap based on payload
     if (response.payload != null) {
       final payload = response.payload!;
-      
+
       if (payload.startsWith('prayer_')) {
         // Handle prayer notification tap
         final prayerName = payload.split('_')[1];

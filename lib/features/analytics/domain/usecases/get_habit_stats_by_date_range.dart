@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../entities/habit_stats.dart';
 import '../repositories/analytics_repository.dart';
 
@@ -12,7 +12,9 @@ class GetHabitStatsByDateRange {
   GetHabitStatsByDateRange(this.repository);
 
   /// Execute the use case
-  Future<Either<Failure, List<HabitStats>>> call(GetHabitStatsByDateRangeParams params) async {
+  Future<Either<Failure, List<HabitStats>>> call(
+    GetHabitStatsByDateRangeParams params,
+  ) async {
     return await repository.getHabitStatsByDateRange(
       params.startDate,
       params.endDate,
