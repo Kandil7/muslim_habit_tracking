@@ -1,35 +1,16 @@
+import '../../domain/entities/quran_item.dart';
+
 /// Model for a Quran item (surah)
-class QuranItemModel {
-  /// Surah number
-  final int number;
-
-  /// Surah name in Arabic
-  final String name;
-
-  /// Surah name in English
-  final String englishName;
-
-  /// English translation of the surah name
-  final String englishNameTranslation;
-
-  /// Number of ayahs in the surah
-  final int numberOfAyahs;
-
-  /// Type of revelation (Meccan or Medinan)
-  final String revelationType;
-
-  /// Starting page number
-  final int start;
-
+class QuranItemModel extends QuranItem {
   /// Constructor
   const QuranItemModel({
-    required this.number,
-    required this.name,
-    required this.englishName,
-    required this.englishNameTranslation,
-    required this.numberOfAyahs,
-    required this.revelationType,
-    required this.start,
+    required super.number,
+    required super.name,
+    required super.englishName,
+    required super.englishNameTranslation,
+    required super.numberOfAyahs,
+    required super.revelationType,
+    required super.start,
   });
 
   /// Create from JSON
@@ -56,5 +37,28 @@ class QuranItemModel {
       'revelationType': revelationType,
       'start': start,
     };
+  }
+
+  /// Create a copy with some fields replaced
+  @override
+  QuranItemModel copyWith({
+    int? number,
+    String? name,
+    String? englishName,
+    String? englishNameTranslation,
+    int? numberOfAyahs,
+    String? revelationType,
+    int? start,
+  }) {
+    return QuranItemModel(
+      number: number ?? this.number,
+      name: name ?? this.name,
+      englishName: englishName ?? this.englishName,
+      englishNameTranslation:
+          englishNameTranslation ?? this.englishNameTranslation,
+      numberOfAyahs: numberOfAyahs ?? this.numberOfAyahs,
+      revelationType: revelationType ?? this.revelationType,
+      start: start ?? this.start,
+    );
   }
 }
