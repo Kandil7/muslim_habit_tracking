@@ -22,7 +22,9 @@ class SuraView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Set the current page in QuranCtrl immediately
-    QuranCtrl.instance.state.currentPageNumber.value = initialPage;
+    // Ensure the page number is within valid range (1-604)
+    final validPage = initialPage.clamp(1, 604);
+    QuranCtrl.instance.state.currentPageNumber.value = validPage;
 
     return BlocProvider(
       create: (context) {
@@ -30,16 +32,21 @@ class SuraView extends StatelessWidget {
             di.sl<QuranBloc>()
               ..add(const GetBookmarksEvent())
               // Initialize with 0-based index for PageController
-              ..add(InitQuranPageControllerEvent(initialPage: initialPage - 1));
+              // Ensure the page index is within valid range (0-603)
+              ..add(
+                InitQuranPageControllerEvent(
+                  initialPage: (validPage - 1).clamp(0, 603),
+                ),
+              );
 
         // Set the current page directly in the bloc
-        quranBloc.currentPage = initialPage;
+        quranBloc.currentPage = validPage;
 
         // Save reading history
         final timestamp = DateTime.now();
         final history = QuranReadingHistory(
           id: timestamp.millisecondsSinceEpoch,
-          pageNumber: initialPage,
+          pageNumber: validPage,
           timestamp: timestamp,
         );
         quranBloc.add(UpdateLastReadPositionEvent(history: history));
@@ -67,7 +74,7 @@ class SuraView extends StatelessWidget {
                     );
                   }
                   return Text(
-                    '${context.tr.translate('quran.page')} $initialPage',
+                    '${context.tr.translate('quran.page')} $validPage',
                     style: const TextStyle(fontSize: 16),
                   );
                 },
@@ -80,7 +87,7 @@ class SuraView extends StatelessWidget {
                     builder: (context, state) {
                       if (state is BookmarksLoaded) {
                         final isBookmarked = state.bookmarks.any(
-                          (b) => b.page == initialPage,
+                          (b) => b.page == validPage,
                         );
                         return Icon(
                           isBookmarked ? Icons.bookmark : Icons.bookmark_border,
@@ -103,7 +110,7 @@ class SuraView extends StatelessWidget {
               listener: (context, state) {
                 // When page changes, update reading history
                 if (state is QuranPageChanged &&
-                    state.pageNumber != initialPage) {
+                    state.pageNumber != validPage) {
                   final timestamp = DateTime.now();
                   final history = QuranReadingHistory(
                     id: timestamp.millisecondsSinceEpoch,
@@ -131,7 +138,7 @@ class SuraView extends StatelessWidget {
                   );
                 }
                 // In all other cases, show the SuraViewBody
-                return SuraViewBody(initialPage: initialPage);
+                return SuraViewBody(initialPage: validPage);
               },
             ),
             bottomNavigationBar: BottomAppBar(
@@ -179,33 +186,37 @@ class SuraView extends StatelessWidget {
   }
 
   void _handleBookmarkAction(BuildContext context) async {
+    // Ensure the page number is within valid range (1-604)
+    final validPage = initialPage.clamp(1, 604);
+
     final quranBloc = context.read<QuranBloc>();
     final state = quranBloc.state;
 
     if (state is BookmarksLoaded) {
-      final isBookmarked = state.bookmarks.any((b) => b.page == initialPage);
+      final isBookmarked = state.bookmarks.any((b) => b.page == validPage);
 
       if (isBookmarked) {
         // Remove bookmark
-        final bookmark = state.bookmarks.firstWhere(
-          (b) => b.page == initialPage,
-        );
+        final bookmark = state.bookmarks.firstWhere((b) => b.page == validPage);
         _showRemoveBookmarkDialog(context, bookmark.id);
       } else {
         // Add bookmark
-        _showAddBookmarkDialog(context);
+        _showAddBookmarkDialog(context, validPage);
       }
     } else {
       // If state is not BookmarksLoaded, load bookmarks first
       quranBloc.add(const GetBookmarksEvent());
       // Then show add dialog
-      _showAddBookmarkDialog(context);
+      _showAddBookmarkDialog(context, validPage);
     }
   }
 
-  void _showAddBookmarkDialog(BuildContext context) async {
+  void _showAddBookmarkDialog(BuildContext context, [int? pageNumber]) async {
     // Get the QuranBloc from the current context before showing the dialog
     final quranBloc = context.read<QuranBloc>();
+
+    // Use the provided page number or fall back to initialPage
+    final validPage = (pageNumber ?? initialPage).clamp(1, 604);
 
     // We'll just use the page number for now
     // In a real app, you would get the surah name and ayah number from the Quran library
@@ -214,7 +225,7 @@ class SuraView extends StatelessWidget {
       context: context,
       builder:
           (dialogContext) => AddBookmarkDialog(
-            pageNumber: initialPage,
+            pageNumber: validPage,
             // We'll pass null for surahName and ayahNumber for now
             onBookmarkAdded: (bookmark) {
               // Use the quranBloc instance we got from the parent context
