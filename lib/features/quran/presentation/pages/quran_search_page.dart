@@ -102,24 +102,80 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
                       itemCount: _searchResults.length,
                       itemBuilder: (context, index) {
                         final ayah = _searchResults[index];
-                        return ListTile(
-                          title: Text(
-                            ayah.text,
-                            style: const TextStyle(
-                              fontFamily: 'Amiri',
-                              fontSize: 18,
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              Navigation.push(
+                                context,
+                                SuraView(initialPage: ayah.page),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    ayah.text,
+                                    style: const TextStyle(
+                                      fontFamily: 'Amiri',
+                                      fontSize: 20,
+                                      height: 1.5,
+                                    ),
+                                    textDirection: TextDirection.rtl,
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '${context.tr.translate('quran.surah')} ${ayah.surahNumber} - ${context.tr.translate('quran.ayah')} ${ayah.ayahNumber}',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(
+                                            context,
+                                          ).primaryColor.withAlpha(50),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '${context.tr.translate('quran.page')} ${ayah.page}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            textDirection: TextDirection.rtl,
                           ),
-                          subtitle: Text(
-                            'Surah ${ayah.surahNumber} - Ayah ${ayah.ayahNumber} - Page ${ayah.page}',
-                          ),
-                          onTap: () {
-                            Navigation.push(
-                              context,
-                              SuraView(initialPage: ayah.page),
-                            );
-                          },
                         );
                       },
                     ),
