@@ -32,6 +32,9 @@ class SuraView extends StatelessWidget {
               // Initialize with 0-based index for PageController
               ..add(InitQuranPageControllerEvent(initialPage: initialPage - 1));
 
+        // Set the current page directly in the bloc
+        quranBloc.currentPage = initialPage;
+
         // Save reading history
         final timestamp = DateTime.now();
         final history = QuranReadingHistory(

@@ -248,10 +248,11 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     _initQuranView();
 
     // Set the current page (1-based index)
-    currentPage = event.initialPage + 1;
+    // Only update if not already set
+    currentPage ??= event.initialPage + 1;
 
     // Set the page in QuranCtrl directly
-    QuranCtrl.instance.state.currentPageNumber.value = currentPage ?? 120;
+    QuranCtrl.instance.state.currentPageNumber.value = currentPage ?? 1;
 
     // Emit the controller created event
     emit(QuranPageControllerCreated(pageController: _pageController!));
