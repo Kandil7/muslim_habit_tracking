@@ -32,6 +32,7 @@ import 'features/quran/presentation/pages/quran_view.dart';
 import 'features/settings/presentation/pages/settings_page.dart';
 
 void main() async {
+  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set up BlocObserver for logging
@@ -50,16 +51,24 @@ void main() async {
   final cacheManager = CacheManager();
   await cacheManager.init();
 
-  // Initialize QuranLibrary
-  QuranLibrary().init();
-
-  // Run the app with the language cubit from the DI container
+  // Run the app immediately to improve startup time
+  // We'll initialize QuranLibrary in the background
   runApp(
     BlocProvider<LanguageCubit>(
       create: (context) => di.sl<LanguageCubit>(),
       child: const SunnahTrackApp(),
     ),
   );
+
+  // Initialize QuranLibrary after the app has started
+  // This prevents blocking the main thread during startup
+  Future.microtask(() {
+    try {
+      QuranLibrary().init();
+    } catch (e) {
+      debugPrint('Error initializing QuranLibrary: $e');
+    }
+  });
 }
 
 class SunnahTrackApp extends StatefulWidget {

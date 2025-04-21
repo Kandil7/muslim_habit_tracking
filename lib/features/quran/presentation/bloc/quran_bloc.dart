@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quran_library/quran_library.dart' as quran;
@@ -7,7 +9,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/services/shared_pref_service.dart';
-import '../../domain/entities/quran_bookmark.dart';
 import '../../domain/entities/quran_reading_history.dart';
 import '../../domain/usecases/add_bookmark.dart';
 import '../../domain/usecases/add_reading_history.dart';
@@ -361,42 +362,66 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
 
   /// Initialize the Quran view
   void _initQuranView() {
-    try {
-      WakelockPlus.enable();
-    } catch (e) {
-      debugPrint('Error enabling wakelock: $e');
-    }
+    // Enable wakelock in a safe way that won't block the main thread
+    Future.microtask(() {
+      try {
+        // Enable wakelock safely
+        WakelockPlus.enable().catchError((e) {
+          debugPrint('Error enabling wakelock: $e');
+        });
+      } catch (e) {
+        debugPrint('Error enabling wakelock: $e');
+      }
+    });
 
     try {
-      _pageController?.addListener(() {
-        if (_pageController != null &&
-            _pageController!.hasClients &&
-            isClick &&
-            _pageController!.position.pixels != 0) {
-          add(const ResetQuranViewStateEvent());
-        }
-      });
+      // Add listener to page controller with null checks
+      if (_pageController != null) {
+        _pageController!.addListener(() {
+          if (_pageController != null &&
+              _pageController!.hasClients &&
+              isClick &&
+              _pageController!.position.pixels != 0) {
+            try {
+              add(const ResetQuranViewStateEvent());
+            } catch (e) {
+              debugPrint('Error resetting view state: $e');
+              // Update state directly if event fails
+              isClick = false;
+            }
+          }
+        });
+      }
     } catch (e) {
       debugPrint('Error adding page controller listener: $e');
     }
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
+    // Dispose page controller safely
     try {
       if (_pageController != null) {
         _pageController!.dispose();
+        _pageController = null;
       }
     } catch (e) {
       debugPrint('Error disposing page controller: $e');
     }
 
+    // Disable wakelock safely without blocking
     try {
-      WakelockPlus.disable();
+      // Use a separate Future to avoid blocking the close method
+      unawaited(
+        WakelockPlus.disable().catchError((e) {
+          debugPrint('Error disabling wakelock: $e');
+        }),
+      );
     } catch (e) {
       debugPrint('Error disabling wakelock: $e');
     }
 
+    // Return the parent close method
     return super.close();
   }
 }

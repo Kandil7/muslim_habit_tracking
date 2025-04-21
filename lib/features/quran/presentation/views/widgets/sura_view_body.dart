@@ -55,7 +55,7 @@ class _SuraViewBodyState extends State<SuraViewBody> {
     return BlocConsumer<QuranBloc, QuranState>(
       listenWhen: (previous, current) => current is QuranPageChanged,
       listener: (context, state) {
-        if (state is QuranPageChanged) {
+        if (state is QuranPageChanged && mounted) {
           setState(() {
             _currentPage = state.pageNumber;
           });
@@ -70,23 +70,41 @@ class _SuraViewBodyState extends State<SuraViewBody> {
         return Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            QuranLibraryScreen(
-              withPageView: true,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              isDark: Theme.of(context).brightness == Brightness.dark,
-              useDefaultAppBar: false,
-              onPageChanged: (index) {
-                // Convert from 0-based to 1-based index
-                final newPage = index + 1;
-                if (newPage != _currentPage) {
-                  quranBloc.add(UpdateQuranPageEvent(pageNumber: newPage));
+            // Wrap QuranLibraryScreen with GestureDetector to handle gestures more efficiently
+            GestureDetector(
+              // Use a simple tap handler to prevent ANR issues with complex gesture detection
+              onTap: () {
+                try {
+                  quranBloc.add(ToggleQuranViewStateEvent());
+                } catch (e) {
+                  debugPrint('Error toggling view state: $e');
                 }
               },
-              // Directly use the converted page index
-              pageIndex: pageIndex,
-              onTap: (_) {
-                quranBloc.add(ToggleQuranViewStateEvent());
-              },
+              child: QuranLibraryScreen(
+                withPageView: true,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                isDark: Theme.of(context).brightness == Brightness.dark,
+                useDefaultAppBar: false,
+                onPageChanged: (index) {
+                  // Convert from 0-based to 1-based index
+                  final newPage = index + 1;
+                  if (newPage != _currentPage && mounted) {
+                    try {
+                      quranBloc.add(UpdateQuranPageEvent(pageNumber: newPage));
+                    } catch (e) {
+                      debugPrint('Error updating page: $e');
+                      // Update state directly if bloc event fails
+                      setState(() {
+                        _currentPage = newPage;
+                      });
+                    }
+                  }
+                },
+                // Directly use the converted page index
+                pageIndex: pageIndex,
+                // Set onPagePress to null since we're handling it with our own GestureDetector
+                onPagePress: null,
+              ),
             ),
             if (state is QuranMarkerLoaded &&
                 state.markerPosition == _currentPage)
@@ -98,5 +116,11 @@ class _SuraViewBodyState extends State<SuraViewBody> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    // Clean up any resources
+    super.dispose();
   }
 }
