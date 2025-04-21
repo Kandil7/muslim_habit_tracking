@@ -47,24 +47,23 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.tr.translate('settings.title')),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                _buildGeneralSection(context),
-                const Divider(),
-                _buildAppearanceSection(context),
-                const Divider(),
-                _buildNotificationsSection(context),
-                const Divider(),
-                _buildDataManagementSection(context),
-                const Divider(),
-                _buildAboutSection(context),
-              ],
-            ),
+      appBar: AppBar(title: Text(context.tr.translate('settings.title'))),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                children: [
+                  _buildGeneralSection(context),
+                  const Divider(),
+                  _buildAppearanceSection(context),
+                  const Divider(),
+                  _buildNotificationsSection(context),
+                  const Divider(),
+                  _buildDataManagementSection(context),
+                  const Divider(),
+                  _buildAboutSection(context),
+                ],
+              ),
     );
   }
 
@@ -73,9 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
       context,
       title: context.tr.translate('settings.general'),
       icon: Icons.settings,
-      children: [
-        _buildLanguageSelector(context),
-      ],
+      children: [_buildLanguageSelector(context)],
     );
   }
 
@@ -98,32 +95,33 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showLanguageDialog(BuildContext context, Locale currentLocale) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.tr.translate('settings.language')),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildLanguageOption(
-              context,
-              'English',
-              const Locale('en'),
-              currentLocale,
+      builder:
+          (context) => AlertDialog(
+            title: Text(context.tr.translate('settings.language')),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildLanguageOption(
+                  context,
+                  'English',
+                  const Locale('en'),
+                  currentLocale,
+                ),
+                _buildLanguageOption(
+                  context,
+                  'العربية',
+                  const Locale('ar'),
+                  currentLocale,
+                ),
+              ],
             ),
-            _buildLanguageOption(
-              context,
-              'العربية',
-              const Locale('ar'),
-              currentLocale,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.tr.translate('common.cancel')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(context.tr.translate('common.cancel')),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -137,9 +135,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return ListTile(
       title: Text(languageName),
-      leading: isSelected
-          ? const Icon(Icons.check_circle, color: AppColors.primary)
-          : const Icon(Icons.circle_outlined),
+      leading:
+          isSelected
+              ? const Icon(Icons.check_circle, color: AppColors.primary)
+              : const Icon(Icons.circle_outlined),
       onTap: () {
         if (!isSelected) {
           context.read<LanguageCubit>().changeLanguage(locale);
@@ -154,9 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
       context,
       title: context.tr.translate('settings.appearance'),
       icon: Icons.palette,
-      children: [
-        _buildThemeSelector(context),
-      ],
+      children: [_buildThemeSelector(context)],
     );
   }
 
@@ -168,16 +165,16 @@ class _SettingsPageState extends State<SettingsPage> {
             state.themeMode == ThemeMode.dark
                 ? Icons.dark_mode
                 : state.themeMode == ThemeMode.light
-                    ? Icons.light_mode
-                    : Icons.brightness_auto,
+                ? Icons.light_mode
+                : Icons.brightness_auto,
           ),
           title: Text(context.tr.translate('settings.theme')),
           subtitle: Text(
             state.themeMode == ThemeMode.dark
                 ? context.tr.translate('settings.darkMode')
                 : state.themeMode == ThemeMode.light
-                    ? context.tr.translate('settings.lightMode')
-                    : context.tr.translate('settings.systemMode'),
+                ? context.tr.translate('settings.lightMode')
+                : context.tr.translate('settings.systemMode'),
           ),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () => _showThemeDialog(context, state.themeMode),
@@ -189,41 +186,42 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showThemeDialog(BuildContext context, ThemeMode currentThemeMode) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.tr.translate('settings.theme')),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildThemeOption(
-              context,
-              context.tr.translate('settings.lightMode'),
-              Icons.light_mode,
-              ThemeMode.light,
-              currentThemeMode,
+      builder:
+          (context) => AlertDialog(
+            title: Text(context.tr.translate('settings.theme')),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildThemeOption(
+                  context,
+                  context.tr.translate('settings.lightMode'),
+                  Icons.light_mode,
+                  ThemeMode.light,
+                  currentThemeMode,
+                ),
+                _buildThemeOption(
+                  context,
+                  context.tr.translate('settings.darkMode'),
+                  Icons.dark_mode,
+                  ThemeMode.dark,
+                  currentThemeMode,
+                ),
+                _buildThemeOption(
+                  context,
+                  context.tr.translate('settings.systemMode'),
+                  Icons.brightness_auto,
+                  ThemeMode.system,
+                  currentThemeMode,
+                ),
+              ],
             ),
-            _buildThemeOption(
-              context,
-              context.tr.translate('settings.darkMode'),
-              Icons.dark_mode,
-              ThemeMode.dark,
-              currentThemeMode,
-            ),
-            _buildThemeOption(
-              context,
-              context.tr.translate('settings.systemMode'),
-              Icons.brightness_auto,
-              ThemeMode.system,
-              currentThemeMode,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.tr.translate('common.cancel')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(context.tr.translate('common.cancel')),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -239,12 +237,13 @@ class _SettingsPageState extends State<SettingsPage> {
     return ListTile(
       title: Text(themeName),
       leading: Icon(icon),
-      trailing: isSelected
-          ? const Icon(Icons.check_circle, color: AppColors.primary)
-          : null,
+      trailing:
+          isSelected
+              ? const Icon(Icons.check_circle, color: AppColors.primary)
+              : null,
       onTap: () {
         if (!isSelected) {
-          context.read<ThemeBloc>().add(ChangeThemeEvent(themeMode: themeMode));
+          context.read<ThemeBloc>().add(SetThemeModeEvent(themeMode));
         }
         Navigator.pop(context);
       },
@@ -259,17 +258,13 @@ class _SettingsPageState extends State<SettingsPage> {
       children: [
         SwitchListTile(
           title: Text(context.tr.translate('settings.notifications')),
-          subtitle: Text(
-            context.tr.translate('settings.enableNotifications'),
-          ),
+          subtitle: Text(context.tr.translate('settings.enableNotifications')),
           value: true, // This would be controlled by a state
           onChanged: (value) {
             // This would update a state
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Notification settings will be implemented soon',
-                ),
+                content: Text('Notification settings will be implemented soon'),
               ),
             );
           },
@@ -282,9 +277,7 @@ class _SettingsPageState extends State<SettingsPage> {
             // This would update a state
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Sound settings will be implemented soon',
-                ),
+                content: Text('Sound settings will be implemented soon'),
               ),
             );
           },
@@ -297,9 +290,7 @@ class _SettingsPageState extends State<SettingsPage> {
             // This would update a state
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Vibration settings will be implemented soon',
-                ),
+                content: Text('Vibration settings will be implemented soon'),
               ),
             );
           },
@@ -321,9 +312,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Export data feature will be implemented soon',
-                ),
+                content: Text('Export data feature will be implemented soon'),
               ),
             );
           },
@@ -334,9 +323,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Import data feature will be implemented soon',
-                ),
+                content: Text('Import data feature will be implemented soon'),
               ),
             );
           },
@@ -356,38 +343,37 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showDeleteDataDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          context.tr.translate('settings.deleteData'),
-          style: const TextStyle(color: Colors.red),
-        ),
-        content: Text(
-          context.tr.translate('settings.deleteDataConfirm'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.tr.translate('common.cancel')),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // This would actually delete the data
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Delete data feature will be implemented soon',
-                  ),
-                ),
-              );
-            },
-            child: Text(
-              context.tr.translate('common.delete'),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              context.tr.translate('settings.deleteData'),
               style: const TextStyle(color: Colors.red),
             ),
+            content: Text(context.tr.translate('settings.deleteDataConfirm')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(context.tr.translate('common.cancel')),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // This would actually delete the data
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Delete data feature will be implemented soon',
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  context.tr.translate('common.delete'),
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -423,9 +409,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Rate app feature will be implemented soon',
-                ),
+                content: Text('Rate app feature will be implemented soon'),
               ),
             );
           },
@@ -436,9 +420,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Share app feature will be implemented soon',
-                ),
+                content: Text('Share app feature will be implemented soon'),
               ),
             );
           },
@@ -458,9 +440,9 @@ class _SettingsPageState extends State<SettingsPage> {
       await launchUrl(uri);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not launch $url')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not launch $url')));
       }
     }
   }
