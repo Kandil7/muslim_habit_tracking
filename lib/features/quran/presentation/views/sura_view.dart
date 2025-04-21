@@ -115,14 +115,20 @@ class SuraView extends StatelessWidget {
               buildWhen:
                   (previous, current) =>
                       current is QuranPageControllerCreated ||
-                      current is QuranInitial ||
-                      current is QuranLoading,
+                      current is QuranInitial,
               builder: (context, state) {
-                if (state is QuranPageControllerCreated ||
-                    (state is! QuranInitial && state is! QuranLoading)) {
-                  return SuraViewBody(initialPage: initialPage);
+                // Only show loading indicator when we're in the initial state
+                // and haven't created the page controller yet
+                if (state is QuranInitial) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 }
-                return const Center(child: CircularProgressIndicator());
+                // In all other cases, show the SuraViewBody
+                return SuraViewBody(initialPage: initialPage);
               },
             ),
             bottomNavigationBar: BottomAppBar(

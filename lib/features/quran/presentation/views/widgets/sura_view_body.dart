@@ -32,6 +32,11 @@ class _SuraViewBodyState extends State<SuraViewBody> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<QuranBloc, QuranState>(
+      buildWhen:
+          (previous, current) =>
+              current is QuranMarkerLoaded ||
+              current is QuranViewStateChanged ||
+              current is QuranPageChanged,
       builder: (context, state) {
         final currentPage = quranBloc.currentPage ?? widget.initialPage;
         return Stack(
@@ -42,6 +47,7 @@ class _SuraViewBodyState extends State<SuraViewBody> {
               isDark: Theme.of(context).brightness == Brightness.dark,
               useDefaultAppBar: false,
               onPageChanged: (index) {
+                // Convert from 0-based to 1-based index
                 quranBloc.add(UpdateQuranPageEvent(pageNumber: index + 1));
               },
               pageIndex: widget.initialPage - 1, // Convert to 0-based

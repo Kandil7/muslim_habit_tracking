@@ -226,7 +226,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     UpdateLastReadPositionEvent event,
     Emitter<QuranState> emit,
   ) async {
-    emit(QuranLoading());
+    // Don't emit loading state for this operation as it's a background update
     final result = await updateLastReadPosition(
       UpdateLastReadPositionParams(history: event.history),
     );
@@ -300,8 +300,11 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
 
   /// Update the current page
   void _onUpdatePage(UpdateQuranPageEvent event, Emitter<QuranState> emit) {
-    currentPage = event.pageNumber;
-    emit(QuranPageChanged(pageNumber: event.pageNumber));
+    // Only emit state if the page has actually changed
+    if (currentPage != event.pageNumber) {
+      currentPage = event.pageNumber;
+      emit(QuranPageChanged(pageNumber: event.pageNumber));
+    }
   }
 
   /// Jump to a specific page
