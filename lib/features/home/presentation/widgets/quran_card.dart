@@ -21,9 +21,19 @@ class QuranCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) =>
-              context.read<QuranBloc>()..add(const GetLastReadPositionEvent()),
+      create: (context) {
+        // Get the QuranBloc instance
+        final quranBloc = context.read<QuranBloc>();
+
+        // Safely add the event with error handling
+        try {
+          quranBloc.add(const GetLastReadPositionEvent());
+        } catch (e) {
+          debugPrint('Error getting last read position: $e');
+        }
+
+        return quranBloc;
+      },
       child: BlocBuilder<QuranBloc, QuranState>(
         buildWhen:
             (previous, current) =>
