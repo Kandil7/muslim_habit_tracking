@@ -1,41 +1,46 @@
 /// Base class for all exceptions in the application
 class AppException implements Exception {
-  /// Error message
   final String message;
 
-  /// Constructor
-  const AppException({required this.message});
+  AppException({required this.message});
 
   @override
   String toString() => message;
 }
 
-/// Exception when a server operation fails
+/// Server exceptions (API errors, network issues)
 class ServerException extends AppException {
-  /// Constructor
-  const ServerException({required super.message});
+  ServerException({required String message}) : super(message: message);
 }
 
-/// Exception when a cache operation fails
+/// Cache exceptions (local storage issues)
 class CacheException extends AppException {
-  /// Constructor
-  const CacheException({required super.message});
+  CacheException({required String message}) : super(message: message);
 }
 
-/// Exception when a network operation fails
-class NetworkException extends AppException {
-  /// Constructor
-  const NetworkException({required super.message});
+/// Input validation exceptions
+class ValidationException extends AppException {
+  ValidationException({required String message}) : super(message: message);
 }
 
-/// Exception when data is not found
-class NotFoundException extends AppException {
-  /// Constructor
-  const NotFoundException({required super.message});
+/// Authentication exceptions
+class AuthException extends AppException {
+  AuthException({required String message}) : super(message: message);
 }
 
-/// Exception when an operation is not permitted
+/// Permission exceptions (e.g., notification permissions)
 class PermissionException extends AppException {
-  /// Constructor
-  const PermissionException({required super.message});
+  PermissionException({required String message}) : super(message: message);
+}
+
+/// Location exceptions (e.g., location services not enabled)
+
+class LocationException extends AppException {
+  LocationException({required String message}) : super(message: message);
+}
+
+/// Network exceptions (e.g., no internet connection)
+
+class NetworkException extends AppException {
+  NetworkException({required String message}) : super(message: message);
 }
