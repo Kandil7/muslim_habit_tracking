@@ -28,7 +28,7 @@ class QuranError extends QuranState {
   List<Object?> get props => [message];
 }
 
-/// State when all surahs have been loaded
+/// State when all surahs are loaded
 class AllSurahsLoaded extends QuranState {
   final List<dynamic> surahs;
 
@@ -38,7 +38,7 @@ class AllSurahsLoaded extends QuranState {
   List<Object?> get props => [surahs];
 }
 
-/// State when a specific surah has been loaded
+/// State when a single surah is loaded
 class SurahLoaded extends QuranState {
   final dynamic surah;
 
@@ -48,7 +48,7 @@ class SurahLoaded extends QuranState {
   List<Object?> get props => [surah];
 }
 
-/// State when bookmarks have been loaded
+/// State when bookmarks are loaded
 class BookmarksLoaded extends QuranState {
   final List<QuranBookmark> bookmarks;
 
@@ -58,7 +58,7 @@ class BookmarksLoaded extends QuranState {
   List<Object?> get props => [bookmarks];
 }
 
-/// State when a bookmark has been added
+/// State when a bookmark is added
 class BookmarkAdded extends QuranState {
   final QuranBookmark bookmark;
 
@@ -68,7 +68,7 @@ class BookmarkAdded extends QuranState {
   List<Object?> get props => [bookmark];
 }
 
-/// State when a bookmark has been updated
+/// State when a bookmark is updated
 class BookmarkUpdated extends QuranState {
   final QuranBookmark bookmark;
 
@@ -78,10 +78,10 @@ class BookmarkUpdated extends QuranState {
   List<Object?> get props => [bookmark];
 }
 
-/// State when a bookmark has been removed
+/// State when a bookmark is removed
 class BookmarkRemoved extends QuranState {}
 
-/// State when reading history has been loaded
+/// State when reading history is loaded
 class ReadingHistoryLoaded extends QuranState {
   final List<QuranReadingHistory> history;
 
@@ -91,10 +91,10 @@ class ReadingHistoryLoaded extends QuranState {
   List<Object?> get props => [history];
 }
 
-/// State when reading history has been cleared
+/// State when reading history is cleared
 class ReadingHistoryCleared extends QuranState {}
 
-/// State when last read position has been loaded
+/// State when last read position is loaded
 class LastReadPositionLoaded extends QuranState {
   final QuranReadingHistory? lastPosition;
 
@@ -104,7 +104,7 @@ class LastReadPositionLoaded extends QuranState {
   List<Object?> get props => [lastPosition];
 }
 
-/// State when last read position has been updated
+/// State when last read position is updated
 class LastReadPositionUpdated extends QuranState {
   final QuranReadingHistory lastPosition;
 
@@ -114,9 +114,7 @@ class LastReadPositionUpdated extends QuranState {
   List<Object?> get props => [lastPosition];
 }
 
-// States for Quran reading functionality (merged from SuraCubit)
-
-/// State when the page controller has been created
+/// State when the page controller is created
 class QuranPageControllerCreated extends QuranState {
   final PageController pageController;
 
@@ -126,7 +124,7 @@ class QuranPageControllerCreated extends QuranState {
   List<Object?> get props => [pageController];
 }
 
-/// State when the view state has changed (e.g., showing/hiding UI elements)
+/// State when the view state is changed
 class QuranViewStateChanged extends QuranState {
   final bool isClickActive;
 
@@ -136,7 +134,7 @@ class QuranViewStateChanged extends QuranState {
   List<Object?> get props => [isClickActive];
 }
 
-/// State when a marker has been saved
+/// State when a marker is saved
 class QuranMarkerSaved extends QuranState {
   final int markerPosition;
 
@@ -146,7 +144,7 @@ class QuranMarkerSaved extends QuranState {
   List<Object?> get props => [markerPosition];
 }
 
-/// State when a marker has been loaded
+/// State when a marker is loaded
 class QuranMarkerLoaded extends QuranState {
   final int? markerPosition;
 
@@ -156,7 +154,7 @@ class QuranMarkerLoaded extends QuranState {
   List<Object?> get props => [markerPosition];
 }
 
-/// State when the current page has changed
+/// State when the page is changed
 class QuranPageChanged extends QuranState {
   final int pageNumber;
 

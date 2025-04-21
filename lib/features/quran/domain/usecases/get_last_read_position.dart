@@ -1,18 +1,20 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_reading_history.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_reading_history_repository.dart';
 
-/// Use case to get the last read position in the Quran
+/// Use case for getting the last read position
 class GetLastReadPosition implements UseCase<QuranReadingHistory?, NoParams> {
-  final QuranRepository repository;
+  /// Repository instance
+  final QuranReadingHistoryRepository repository;
 
-  GetLastReadPosition(this.repository);
+  /// Constructor
+  const GetLastReadPosition(this.repository);
 
   @override
-  Future<Either<Failure, QuranReadingHistory?>> call(NoParams params) {
-    return repository.getLastReadPosition();
+  Future<Either<Failure, QuranReadingHistory?>> call(NoParams params) async {
+    return await repository.getLastReadPosition();
   }
 }

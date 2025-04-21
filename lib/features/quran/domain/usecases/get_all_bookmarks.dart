@@ -1,18 +1,20 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_bookmark.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_bookmark_repository.dart';
 
-/// Use case to get all Quran bookmarks
+/// Use case for getting all bookmarks
 class GetAllBookmarks implements UseCase<List<QuranBookmark>, NoParams> {
-  final QuranRepository repository;
+  /// Repository instance
+  final QuranBookmarkRepository repository;
 
-  GetAllBookmarks(this.repository);
+  /// Constructor
+  const GetAllBookmarks(this.repository);
 
   @override
-  Future<Either<Failure, List<QuranBookmark>>> call(NoParams params) {
-    return repository.getAllBookmarks();
+  Future<Either<Failure, List<QuranBookmark>>> call(NoParams params) async {
+    return await repository.getAllBookmarks();
   }
 }

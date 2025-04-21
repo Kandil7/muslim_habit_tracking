@@ -1,22 +1,60 @@
+/// Model for a Quran item (surah)
 class QuranItemModel {
-  final String arName, enName, arType, enType;
-  final int verses, start;
+  /// Surah number
+  final int number;
 
-  QuranItemModel(
-      {required this.arName,
-      required this.enName,
-      required this.arType,
-      required this.enType,
-      required this.verses,
-      required this.start});
+  /// Surah name in Arabic
+  final String name;
 
-  factory QuranItemModel.fromJson(json) {
+  /// Surah name in English
+  final String englishName;
+
+  /// English translation of the surah name
+  final String englishNameTranslation;
+
+  /// Number of ayahs in the surah
+  final int numberOfAyahs;
+
+  /// Type of revelation (Meccan or Medinan)
+  final String revelationType;
+
+  /// Starting page number
+  final int start;
+
+  /// Constructor
+  const QuranItemModel({
+    required this.number,
+    required this.name,
+    required this.englishName,
+    required this.englishNameTranslation,
+    required this.numberOfAyahs,
+    required this.revelationType,
+    required this.start,
+  });
+
+  /// Create from JSON
+  factory QuranItemModel.fromJson(Map<String, dynamic> json) {
     return QuranItemModel(
-        arName: json['arName'],
-        enName: json['enName'],
-        arType: json['arType'],
-        enType: json['enType'],
-        verses: json['verses'],
-        start: json['start']);
+      number: json['number'] as int,
+      name: json['name'] as String,
+      englishName: json['englishName'] as String,
+      englishNameTranslation: json['englishNameTranslation'] as String,
+      numberOfAyahs: json['numberOfAyahs'] as int,
+      revelationType: json['revelationType'] as String,
+      start: json['start'] as int,
+    );
+  }
+
+  /// Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'number': number,
+      'name': name,
+      'englishName': englishName,
+      'englishNameTranslation': englishNameTranslation,
+      'numberOfAyahs': numberOfAyahs,
+      'revelationType': revelationType,
+      'start': start,
+    };
   }
 }

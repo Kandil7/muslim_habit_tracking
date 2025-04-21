@@ -25,6 +25,8 @@ import 'features/habit_tracking/presentation/pages/add_habit_page.dart';
 import 'features/hadith/presentation/bloc/hadith_bloc.dart';
 import 'features/hadith/presentation/bloc/hadith_event.dart';
 import 'features/hadith/presentation/pages/hadith_collection_page.dart';
+import 'features/quran/presentation/bloc/quran_bloc.dart';
+import 'features/quran/presentation/pages/quran_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,6 +92,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
               (context) =>
                   di.sl<HadithBloc>()..add(const GetHadithOfTheDayEvent()),
         ),
+        BlocProvider<QuranBloc>(create: (context) => di.sl<QuranBloc>()),
       ],
       child: BlocBuilder<LanguageCubit, LanguageState>(
         builder: (context, languageState) {
@@ -138,6 +141,10 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                   } else if (settings.name == '/hadith-collection') {
                     return MaterialPageRoute(
                       builder: (context) => const HadithCollectionPage(),
+                    );
+                  } else if (settings.name == '/quran') {
+                    return MaterialPageRoute(
+                      builder: (context) => const QuranView(),
                     );
                   }
                   return null;

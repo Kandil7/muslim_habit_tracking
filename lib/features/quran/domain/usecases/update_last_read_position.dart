@@ -1,29 +1,29 @@
 import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_reading_history.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_reading_history_repository.dart';
 
-/// Use case to update the last read position in the Quran
-class UpdateLastReadPosition implements UseCase<QuranReadingHistory, UpdateLastReadPositionParams> {
-  final QuranRepository repository;
-
-  UpdateLastReadPosition(this.repository);
-
-  @override
-  Future<Either<Failure, QuranReadingHistory>> call(UpdateLastReadPositionParams params) {
-    return repository.updateLastReadPosition(params.history);
-  }
-}
-
-/// Parameters for the UpdateLastReadPosition use case
-class UpdateLastReadPositionParams extends Equatable {
+/// Parameters for updating the last read position
+class UpdateLastReadPositionParams {
+  /// Reading history entry to update
   final QuranReadingHistory history;
 
+  /// Constructor
   const UpdateLastReadPositionParams({required this.history});
+}
+
+/// Use case for updating the last read position
+class UpdateLastReadPosition implements UseCase<QuranReadingHistory, UpdateLastReadPositionParams> {
+  /// Repository instance
+  final QuranReadingHistoryRepository repository;
+
+  /// Constructor
+  const UpdateLastReadPosition(this.repository);
 
   @override
-  List<Object> get props => [history];
+  Future<Either<Failure, QuranReadingHistory>> call(UpdateLastReadPositionParams params) async {
+    return await repository.updateLastReadPosition(params.history);
+  }
 }

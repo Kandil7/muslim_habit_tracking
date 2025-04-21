@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uuid/uuid.dart';
+import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/error/exceptions.dart';
 import '../models/quran_bookmark_model.dart';
 import '../models/quran_reading_history_model.dart';
 
-/// Interface for the local data source for Quran feature
+/// Interface for local data source operations
 abstract class QuranLocalDataSource {
   /// Get all bookmarks
   Future<List<QuranBookmarkModel>> getAllBookmarks();
@@ -19,8 +19,8 @@ abstract class QuranLocalDataSource {
   /// Update a bookmark
   Future<QuranBookmarkModel> updateBookmark(QuranBookmarkModel bookmark);
 
-  /// Delete a bookmark
-  Future<void> deleteBookmark(int id);
+  /// Remove a bookmark
+  Future<void> removeBookmark(int id);
 
   /// Get all reading history entries
   Future<List<QuranReadingHistoryModel>> getReadingHistory();
@@ -30,7 +30,7 @@ abstract class QuranLocalDataSource {
     QuranReadingHistoryModel history,
   );
 
-  /// Clear reading history
+  /// Clear all reading history
   Future<void> clearReadingHistory();
 
   /// Get the last read position
@@ -42,34 +42,37 @@ abstract class QuranLocalDataSource {
   );
 }
 
-/// Implementation of the local data source for Quran feature using Hive
+/// Implementation of QuranLocalDataSource using Hive and SharedPreferences
 class QuranLocalDataSourceImpl implements QuranLocalDataSource {
-  final Box quranBox;
-  final Uuid uuid;
+  final Box _quranBox;
+  final SharedPreferences _sharedPreferences;
 
-  // Keys for different sections in the Hive box
-  static const String _bookmarksKey = 'bookmarks';
-  static const String _historyKey = 'history';
-  static const String _lastPositionKey = 'last_position';
+  /// Constructor
+  QuranLocalDataSourceImpl({
+    required Box quranBox,
+    required SharedPreferences sharedPreferences,
+  })  : _quranBox = quranBox,
+        _sharedPreferences = sharedPreferences;
 
-  QuranLocalDataSourceImpl({required this.quranBox, required this.uuid});
+  // Keys for SharedPreferences
+  static const String _bookmarksKey = 'quran_bookmarks';
+  static const String _readingHistoryKey = 'quran_reading_history';
+  static const String _lastReadPositionKey = 'quran_last_read_position';
 
   @override
   Future<List<QuranBookmarkModel>> getAllBookmarks() async {
     try {
-      final bookmarksJson = quranBox.get(_bookmarksKey);
+      final bookmarksJson = _sharedPreferences.getString(_bookmarksKey);
       if (bookmarksJson == null) {
         return [];
       }
 
       final List<dynamic> bookmarksList = json.decode(bookmarksJson);
       return bookmarksList
-          .map((bookmark) => QuranBookmarkModel.fromJson(bookmark))
+          .map((json) => QuranBookmarkModel.fromJson(json))
           .toList();
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to get bookmarks from local storage: $e',
-      );
+      throw CacheException(message: 'Failed to get bookmarks: $e');
     }
   }
 
@@ -77,40 +80,16 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
   Future<QuranBookmarkModel> addBookmark(QuranBookmarkModel bookmark) async {
     try {
       final bookmarks = await getAllBookmarks();
+      bookmarks.add(bookmark);
 
-      // Check if a bookmark for this page already exists
-      final existingBookmarkIndex = bookmarks.indexWhere(
-        (b) => b.page == bookmark.page,
-      );
-
-      // If a bookmark for this page already exists, remove it
-      if (existingBookmarkIndex != -1) {
-        bookmarks.removeAt(existingBookmarkIndex);
-      }
-
-      // Create new bookmark with a unique ID
-      final newBookmark = QuranBookmarkModel(
-        id: DateTime.now().millisecondsSinceEpoch,
-        surahName: bookmark.surahName,
-        ayahNumber: bookmark.ayahNumber,
-        ayahId: bookmark.ayahId,
-        page: bookmark.page,
-        colorCode: bookmark.colorCode,
-        name: bookmark.name,
-      );
-
-      // Add to list and save
-      bookmarks.add(newBookmark);
-      await quranBox.put(
+      await _sharedPreferences.setString(
         _bookmarksKey,
         json.encode(bookmarks.map((b) => b.toJson()).toList()),
       );
 
-      return newBookmark;
+      return bookmark;
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to add bookmark to local storage: $e',
-      );
+      throw CacheException(message: 'Failed to add bookmark: $e');
     }
   }
 
@@ -118,67 +97,54 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
   Future<QuranBookmarkModel> updateBookmark(QuranBookmarkModel bookmark) async {
     try {
       final bookmarks = await getAllBookmarks();
+      final index = bookmarks.indexWhere((b) => b.id == bookmark.id);
 
-      // Find the bookmark to update
-      final bookmarkIndex = bookmarks.indexWhere((b) => b.id == bookmark.id);
-
-      if (bookmarkIndex == -1) {
+      if (index == -1) {
         throw CacheException(message: 'Bookmark not found');
       }
 
-      // Update the bookmark
-      bookmarks[bookmarkIndex] = bookmark;
+      bookmarks[index] = bookmark;
 
-      // Save the updated list
-      await quranBox.put(
+      await _sharedPreferences.setString(
         _bookmarksKey,
         json.encode(bookmarks.map((b) => b.toJson()).toList()),
       );
 
       return bookmark;
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to update bookmark in local storage: $e',
-      );
+      throw CacheException(message: 'Failed to update bookmark: $e');
     }
   }
 
   @override
-  Future<void> deleteBookmark(int id) async {
+  Future<void> removeBookmark(int id) async {
     try {
       final bookmarks = await getAllBookmarks();
-
-      // Remove the bookmark
       bookmarks.removeWhere((b) => b.id == id);
 
-      // Save the updated list
-      await quranBox.put(
+      await _sharedPreferences.setString(
         _bookmarksKey,
         json.encode(bookmarks.map((b) => b.toJson()).toList()),
       );
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to delete bookmark from local storage: $e',
-      );
+      throw CacheException(message: 'Failed to remove bookmark: $e');
     }
   }
 
   @override
   Future<List<QuranReadingHistoryModel>> getReadingHistory() async {
     try {
-      final historyJson = quranBox.get(_historyKey);
+      final historyJson = _sharedPreferences.getString(_readingHistoryKey);
       if (historyJson == null) {
         return [];
       }
 
       final List<dynamic> historyList = json.decode(historyJson);
       return historyList
-          .map((history) => QuranReadingHistoryModel.fromJson(history))
+          .map((json) => QuranReadingHistoryModel.fromJson(json))
           .toList();
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to get reading history from local storage: $e',
-      );
+      throw CacheException(message: 'Failed to get reading history: $e');
     }
   }
 
@@ -187,65 +153,40 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     QuranReadingHistoryModel history,
   ) async {
     try {
-      final historyEntries = await getReadingHistory();
+      final historyList = await getReadingHistory();
+      historyList.add(history);
 
-      // Create new history entry with a unique ID
-      final newHistory = QuranReadingHistoryModel(
-        id: DateTime.now().millisecondsSinceEpoch,
-        surahNumber: history.surahNumber,
-        surahName: history.surahName,
-        ayahNumber: history.ayahNumber,
-        pageNumber: history.pageNumber,
-        timestamp: DateTime.now(),
-        durationSeconds: history.durationSeconds,
+      await _sharedPreferences.setString(
+        _readingHistoryKey,
+        json.encode(historyList.map((h) => h.toJson()).toList()),
       );
 
-      // Add to list and save
-      historyEntries.add(newHistory);
-
-      // Keep only the last 100 entries
-      if (historyEntries.length > 100) {
-        historyEntries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-        historyEntries.removeRange(100, historyEntries.length);
-      }
-
-      await quranBox.put(
-        _historyKey,
-        json.encode(historyEntries.map((h) => h.toJson()).toList()),
-      );
-
-      return newHistory;
+      return history;
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to add reading history to local storage: $e',
-      );
+      throw CacheException(message: 'Failed to add reading history: $e');
     }
   }
 
   @override
   Future<void> clearReadingHistory() async {
     try {
-      await quranBox.delete(_historyKey);
+      await _sharedPreferences.remove(_readingHistoryKey);
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to clear reading history from local storage: $e',
-      );
+      throw CacheException(message: 'Failed to clear reading history: $e');
     }
   }
 
   @override
   Future<QuranReadingHistoryModel?> getLastReadPosition() async {
     try {
-      final lastPositionJson = quranBox.get(_lastPositionKey);
-      if (lastPositionJson == null) {
+      final lastReadJson = _sharedPreferences.getString(_lastReadPositionKey);
+      if (lastReadJson == null) {
         return null;
       }
 
-      return QuranReadingHistoryModel.fromJson(json.decode(lastPositionJson));
+      return QuranReadingHistoryModel.fromJson(json.decode(lastReadJson));
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to get last read position from local storage: $e',
-      );
+      throw CacheException(message: 'Failed to get last read position: $e');
     }
   }
 
@@ -254,28 +195,17 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     QuranReadingHistoryModel history,
   ) async {
     try {
-      // Create new history entry with a unique ID
-      final newHistory = QuranReadingHistoryModel(
-        id: DateTime.now().millisecondsSinceEpoch,
-        surahNumber: history.surahNumber,
-        surahName: history.surahName,
-        ayahNumber: history.ayahNumber,
-        pageNumber: history.pageNumber,
-        timestamp: DateTime.now(),
-        durationSeconds: history.durationSeconds,
+      await _sharedPreferences.setString(
+        _lastReadPositionKey,
+        json.encode(history.toJson()),
       );
-
-      // Save the last position
-      await quranBox.put(_lastPositionKey, json.encode(newHistory.toJson()));
 
       // Also add to reading history
-      await addReadingHistory(newHistory);
+      await addReadingHistory(history);
 
-      return newHistory;
+      return history;
     } catch (e) {
-      throw CacheException(
-        message: 'Failed to update last read position in local storage: $e',
-      );
+      throw CacheException(message: 'Failed to update last read position: $e');
     }
   }
 }

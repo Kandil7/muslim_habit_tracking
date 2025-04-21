@@ -1,29 +1,29 @@
 import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_bookmark.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_bookmark_repository.dart';
 
-/// Use case to add a Quran bookmark
-class AddBookmark implements UseCase<QuranBookmark, AddBookmarkParams> {
-  final QuranRepository repository;
-
-  AddBookmark(this.repository);
-
-  @override
-  Future<Either<Failure, QuranBookmark>> call(AddBookmarkParams params) {
-    return repository.addBookmark(params.bookmark);
-  }
-}
-
-/// Parameters for the AddBookmark use case
-class AddBookmarkParams extends Equatable {
+/// Parameters for adding a bookmark
+class AddBookmarkParams {
+  /// Bookmark to add
   final QuranBookmark bookmark;
 
+  /// Constructor
   const AddBookmarkParams({required this.bookmark});
+}
+
+/// Use case for adding a bookmark
+class AddBookmark implements UseCase<QuranBookmark, AddBookmarkParams> {
+  /// Repository instance
+  final QuranBookmarkRepository repository;
+
+  /// Constructor
+  const AddBookmark(this.repository);
 
   @override
-  List<Object> get props => [bookmark];
+  Future<Either<Failure, QuranBookmark>> call(AddBookmarkParams params) async {
+    return await repository.addBookmark(params.bookmark);
+  }
 }

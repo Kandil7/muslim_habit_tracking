@@ -1,18 +1,20 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_reading_history.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_reading_history_repository.dart';
 
-/// Use case to get Quran reading history
+/// Use case for getting all reading history entries
 class GetReadingHistory implements UseCase<List<QuranReadingHistory>, NoParams> {
-  final QuranRepository repository;
+  /// Repository instance
+  final QuranReadingHistoryRepository repository;
 
-  GetReadingHistory(this.repository);
+  /// Constructor
+  const GetReadingHistory(this.repository);
 
   @override
-  Future<Either<Failure, List<QuranReadingHistory>>> call(NoParams params) {
-    return repository.getReadingHistory();
+  Future<Either<Failure, List<QuranReadingHistory>>> call(NoParams params) async {
+    return await repository.getReadingHistory();
   }
 }

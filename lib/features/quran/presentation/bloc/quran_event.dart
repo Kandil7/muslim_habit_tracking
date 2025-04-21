@@ -96,8 +96,6 @@ class UpdateLastReadPositionEvent extends QuranEvent {
   List<Object?> get props => [history];
 }
 
-// Events for Quran reading functionality (merged from SuraCubit)
-
 /// Event to initialize the page controller
 class InitQuranPageControllerEvent extends QuranEvent {
   final int initialPage;
@@ -108,17 +106,17 @@ class InitQuranPageControllerEvent extends QuranEvent {
   List<Object?> get props => [initialPage];
 }
 
-/// Event to toggle the view state (e.g., showing/hiding UI elements)
+/// Event to toggle the view state
 class ToggleQuranViewStateEvent extends QuranEvent {
   const ToggleQuranViewStateEvent();
 }
 
-/// Event to reset the view state to default
+/// Event to reset the view state
 class ResetQuranViewStateEvent extends QuranEvent {
   const ResetQuranViewStateEvent();
 }
 
-/// Event to save a marker at a specific position
+/// Event to save a marker
 class SaveQuranMarkerEvent extends QuranEvent {
   final int position;
 
@@ -128,12 +126,12 @@ class SaveQuranMarkerEvent extends QuranEvent {
   List<Object?> get props => [position];
 }
 
-/// Event to get the saved marker
+/// Event to get a marker
 class GetQuranMarkerEvent extends QuranEvent {
   const GetQuranMarkerEvent();
 }
 
-/// Event to update the current page
+/// Event to update the page
 class UpdateQuranPageEvent extends QuranEvent {
   final int pageNumber;
 
@@ -143,8 +141,10 @@ class UpdateQuranPageEvent extends QuranEvent {
   List<Object?> get props => [pageNumber];
 }
 
+/// Event to jump to a specific page
 class JumpToQuranPageEvent extends QuranEvent {
   final int pageNumber;
+
   const JumpToQuranPageEvent({required this.pageNumber});
 
   @override

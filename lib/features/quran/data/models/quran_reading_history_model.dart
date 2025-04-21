@@ -1,81 +1,43 @@
 import '../../domain/entities/quran_reading_history.dart';
 
-/// Model class for QuranReadingHistory entity
+/// Data model for Quran reading history
 class QuranReadingHistoryModel extends QuranReadingHistory {
+  /// Constructor
   const QuranReadingHistoryModel({
     required super.id,
-    super.surahNumber,
-    super.surahName,
-    super.ayahNumber,
     required super.pageNumber,
     required super.timestamp,
-    super.durationSeconds,
   });
 
-  /// Create a QuranReadingHistoryModel from a JSON map
+  /// Create from JSON
   factory QuranReadingHistoryModel.fromJson(Map<String, dynamic> json) {
     return QuranReadingHistoryModel(
-      id: json['id'],
-      surahNumber: json['surahNumber'],
-      surahName: json['surahName'],
-      ayahNumber: json['ayahNumber'],
-      pageNumber: json['pageNumber'],
-      timestamp: DateTime.parse(json['timestamp']),
-      durationSeconds: json['durationSeconds'],
+      id: json['id'] as int,
+      pageNumber: json['pageNumber'] as int,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
     );
   }
 
-  /// Create a QuranReadingHistoryModel from a Hive object
-  factory QuranReadingHistoryModel.fromHiveObject(
-    Map<dynamic, dynamic> hiveObject,
-  ) {
-    return QuranReadingHistoryModel(
-      id: hiveObject['id'],
-      surahNumber: hiveObject['surahNumber'],
-      surahName: hiveObject['surahName'],
-      ayahNumber: hiveObject['ayahNumber'],
-      pageNumber: hiveObject['pageNumber'],
-      timestamp: DateTime.parse(hiveObject['timestamp']),
-      durationSeconds: hiveObject['durationSeconds'],
-    );
-  }
-
-  /// Convert this QuranReadingHistoryModel to a JSON map
+  /// Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'surahNumber': surahNumber,
-      'surahName': surahName,
-      'ayahNumber': ayahNumber,
       'pageNumber': pageNumber,
-      'timestamp': timestamp.toIso8601String(),
-      'durationSeconds': durationSeconds,
+      'timestamp': timestamp.millisecondsSinceEpoch,
     };
   }
 
-  /// Convert this QuranReadingHistoryModel to a Hive object
-  Map<String, dynamic> toHiveObject() {
-    return {
-      'id': id,
-      'surahNumber': surahNumber,
-      'surahName': surahName,
-      'ayahNumber': ayahNumber,
-      'pageNumber': pageNumber,
-      'timestamp': timestamp.toIso8601String(),
-      'durationSeconds': durationSeconds,
-    };
-  }
-
-  /// Create a QuranReadingHistoryModel from a QuranReadingHistory entity
-  factory QuranReadingHistoryModel.fromEntity(QuranReadingHistory history) {
+  /// Create a copy with some fields replaced
+  @override
+  QuranReadingHistoryModel copyWith({
+    int? id,
+    int? pageNumber,
+    DateTime? timestamp,
+  }) {
     return QuranReadingHistoryModel(
-      id: history.id,
-      surahNumber: history.surahNumber,
-      surahName: history.surahName,
-      ayahNumber: history.ayahNumber,
-      pageNumber: history.pageNumber,
-      timestamp: history.timestamp,
-      durationSeconds: history.durationSeconds,
+      id: id ?? this.id,
+      pageNumber: pageNumber ?? this.pageNumber,
+      timestamp: timestamp ?? this.timestamp,
     );
   }
 }

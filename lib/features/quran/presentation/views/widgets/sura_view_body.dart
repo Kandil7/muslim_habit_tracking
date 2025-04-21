@@ -7,11 +7,14 @@ import '../../bloc/quran_event.dart';
 import '../../bloc/quran_state.dart';
 import 'sura_save_and_go_mark_widget.dart';
 import 'sura_view_marker.dart';
-import 'dart:developer' as developer;
 
+/// Widget for displaying the Quran page
 class SuraViewBody extends StatefulWidget {
-  const SuraViewBody({super.key, required this.initialPage});
+  /// Initial page to display
   final int initialPage;
+
+  /// Constructor
+  const SuraViewBody({super.key, required this.initialPage});
 
   @override
   State<SuraViewBody> createState() => _SuraViewBodyState();

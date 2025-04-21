@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim_habbit/core/di/injection_container.dart' as di;
-import 'package:muslim_habbit/core/localization/app_localizations_extension.dart';
-import 'package:muslim_habbit/core/utils/navigation.dart';
-import 'package:quran_library/quran_library.dart' hide QuranState;
 
+import '../../../../core/di/injection_container.dart' as di;
 import '../../domain/entities/quran_reading_history.dart';
 import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';
 import '../bloc/quran_state.dart';
-import '../pages/quran_bookmarks_page.dart';
-import '../pages/quran_reading_history_page.dart';
-import '../pages/quran_search_page.dart';
 import '../widgets/add_bookmark_dialog.dart';
 import 'widgets/sura_view_body.dart';
 
+/// Widget for displaying a Quran surah
 class SuraView extends StatelessWidget {
-  const SuraView({super.key, required this.initialPage});
+  /// Initial page to display
   final int initialPage;
+
+  /// Constructor
+  const SuraView({super.key, required this.initialPage});
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +55,17 @@ class SuraView extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              centerTitle: true,
               title: BlocBuilder<QuranBloc, QuranState>(
                 buildWhen: (previous, current) => current is QuranPageChanged,
                 builder: (context, state) {
                   if (state is QuranPageChanged) {
                     return Text(
-                      '${context.tr.translate('quran.page')} ${state.pageNumber}',
+                      'Page ${state.pageNumber}',
                       style: const TextStyle(fontSize: 16),
                     );
                   }
                   return Text(
-                    '${context.tr.translate('quran.page')} $validPage',
+                    'Page $validPage',
                     style: const TextStyle(fontSize: 16),
                   );
                 },
@@ -116,7 +113,6 @@ class SuraView extends StatelessWidget {
                   );
                 }
               },
-
               builder: (context, state) {
                 // Only show loading indicator when we're in the initial state
                 // and haven't created the page controller yet
@@ -131,44 +127,6 @@ class SuraView extends StatelessWidget {
                 // In all other cases, show the SuraViewBody
                 return SuraViewBody(initialPage: validPage);
               },
-            ),
-            bottomNavigationBar: BottomAppBar(
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.search),
-                      tooltip: context.tr.translate('quran.search'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigation.push(context, const QuranSearchPage());
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.bookmark),
-                      tooltip: context.tr.translate('quran.bookmarks'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigation.push(context, const QuranBookmarksPage());
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.history),
-                      tooltip: context.tr.translate('quran.history'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigation.push(
-                          context,
-                          const QuranReadingHistoryPage(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
             ),
           );
         },
@@ -226,9 +184,9 @@ class SuraView extends StatelessWidget {
     );
 
     if (result == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.tr.translate('quran.bookmarkAdded'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Bookmark added')));
 
       // Refresh bookmarks using the quranBloc instance
       quranBloc.add(const GetBookmarksEvent());
@@ -243,14 +201,14 @@ class SuraView extends StatelessWidget {
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title: Text(context.tr.translate('quran.bookmark')),
-            content: Text(context.tr.translate('quran.bookmarkRemoved')),
+            title: const Text('Remove Bookmark'),
+            content: const Text(
+              'Are you sure you want to remove this bookmark?',
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(
-                  context.tr.translate('common.cancel').toUpperCase(),
-                ),
+                child: const Text('CANCEL'),
               ),
               TextButton(
                 onPressed: () {
@@ -258,19 +216,13 @@ class SuraView extends StatelessWidget {
                   // Use the quranBloc instance we got from the parent context
                   quranBloc.add(RemoveBookmarkEvent(id: bookmarkId));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        context.tr.translate('quran.bookmarkRemoved'),
-                      ),
-                    ),
+                    const SnackBar(content: Text('Bookmark removed')),
                   );
 
                   // Refresh bookmarks using the quranBloc instance
                   quranBloc.add(const GetBookmarksEvent());
                 },
-                child: Text(
-                  context.tr.translate('common.delete').toUpperCase(),
-                ),
+                child: const Text('REMOVE'),
               ),
             ],
           ),

@@ -1,17 +1,19 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_reading_history_repository.dart';
 
-/// Use case to clear Quran reading history
+/// Use case for clearing all reading history
 class ClearReadingHistory implements UseCase<void, NoParams> {
-  final QuranRepository repository;
+  /// Repository instance
+  final QuranReadingHistoryRepository repository;
 
-  ClearReadingHistory(this.repository);
+  /// Constructor
+  const ClearReadingHistory(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(NoParams params) {
-    return repository.clearReadingHistory();
+  Future<Either<Failure, void>> call(NoParams params) async {
+    return await repository.clearReadingHistory();
   }
 }

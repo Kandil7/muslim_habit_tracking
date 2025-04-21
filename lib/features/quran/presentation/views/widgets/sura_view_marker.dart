@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:muslim_habbit/core/presentation/widgets/customSvg.dart';
-import '/core/utils/assets.dart';
 
+/// Widget for displaying a marker in the Quran view
 class SuraViewMarker extends StatelessWidget {
+  /// Constructor
   const SuraViewMarker({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 12,
-      left: 64,
-      child: SafeArea(child: CustomSvg(svg: Assets.imagesMarker)),
+      top: 0,
+      right: 0,
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: Colors.amber,
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+          ),
+        ),
+        child: const Icon(
+          Icons.bookmark,
+          color: Colors.white,
+          size: 20,
+        ),
+      ),
     );
   }
 }

@@ -1,78 +1,54 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 /// Entity representing a Quran bookmark
-/// This entity is designed to work with the quran_library package
 class QuranBookmark extends Equatable {
-  /// Unique identifier for the bookmark
+  /// Unique identifier
   final int id;
 
-  /// The surah name
+  /// Page number
+  final int page;
+
+  /// Surah name (optional)
   final String? surahName;
 
-  /// The ayah number
+  /// Ayah number (optional)
   final int? ayahNumber;
 
-  /// The ayah ID
-  final int? ayahId;
+  /// Title or note for the bookmark
+  final String title;
 
-  /// The page number in the Quran
-  final int? page;
+  /// Timestamp when the bookmark was created
+  final DateTime timestamp;
 
-  /// The color of the bookmark
-  final int colorCode;
-
-  /// The name of the bookmark
-  final String name;
-
+  /// Constructor
   const QuranBookmark({
     required this.id,
+    required this.page,
     this.surahName,
     this.ayahNumber,
-    this.ayahId,
-    this.page,
-    required this.colorCode,
-    required this.name,
+    required this.title,
+    required this.timestamp,
   });
 
   @override
-  List<Object?> get props => [
-    id,
-    surahName,
-    ayahNumber,
-    ayahId,
-    page,
-    colorCode,
-    name,
-  ];
+  List<Object?> get props => [id, page, surahName, ayahNumber, title, timestamp];
 
-  /// Create a copy of this QuranBookmark with the given fields replaced with the new values
+  /// Create a copy with some fields replaced
   QuranBookmark copyWith({
     int? id,
+    int? page,
     String? surahName,
     int? ayahNumber,
-    int? ayahId,
-    int? page,
-    int? colorCode,
-    String? name,
+    String? title,
+    DateTime? timestamp,
   }) {
     return QuranBookmark(
       id: id ?? this.id,
+      page: page ?? this.page,
       surahName: surahName ?? this.surahName,
       ayahNumber: ayahNumber ?? this.ayahNumber,
-      ayahId: ayahId ?? this.ayahId,
-      page: page ?? this.page,
-      colorCode: colorCode ?? this.colorCode,
-      name: name ?? this.name,
+      title: title ?? this.title,
+      timestamp: timestamp ?? this.timestamp,
     );
-  }
-
-  /// Factory method to create a bookmark with a color
-  factory QuranBookmark.withColor({
-    required int id,
-    required Color color,
-    required String name,
-  }) {
-    return QuranBookmark(id: id, colorCode: color.value, name: name);
   }
 }

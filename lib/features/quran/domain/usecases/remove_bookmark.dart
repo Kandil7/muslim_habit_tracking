@@ -1,28 +1,28 @@
 import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_bookmark_repository.dart';
 
-/// Use case to remove a Quran bookmark
-class RemoveBookmark implements UseCase<void, RemoveBookmarkParams> {
-  final QuranRepository repository;
-
-  RemoveBookmark(this.repository);
-
-  @override
-  Future<Either<Failure, void>> call(RemoveBookmarkParams params) {
-    return repository.deleteBookmark(params.id);
-  }
-}
-
-/// Parameters for the RemoveBookmark use case
-class RemoveBookmarkParams extends Equatable {
+/// Parameters for removing a bookmark
+class RemoveBookmarkParams {
+  /// ID of the bookmark to remove
   final int id;
 
+  /// Constructor
   const RemoveBookmarkParams({required this.id});
+}
+
+/// Use case for removing a bookmark
+class RemoveBookmark implements UseCase<void, RemoveBookmarkParams> {
+  /// Repository instance
+  final QuranBookmarkRepository repository;
+
+  /// Constructor
+  const RemoveBookmark(this.repository);
 
   @override
-  List<Object> get props => [id];
+  Future<Either<Failure, void>> call(RemoveBookmarkParams params) async {
+    return await repository.removeBookmark(params.id);
+  }
 }

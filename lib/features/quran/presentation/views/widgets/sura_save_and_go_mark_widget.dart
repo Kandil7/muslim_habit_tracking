@@ -1,49 +1,90 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/quran_bloc.dart';
 import '../../bloc/quran_event.dart';
-import 'save_and_go_mark_item.dart';
 
+/// Widget for saving and navigating to markers in the Quran
 class SuraSaveAndGoMarkWidget extends StatelessWidget {
-  const SuraSaveAndGoMarkWidget({super.key, required this.index});
+  /// Current page index
   final int index;
+
+  /// Constructor
+  const SuraSaveAndGoMarkWidget({super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {
     final quranBloc = context.read<QuranBloc>();
+    final markerIndex = quranBloc.markerIndex;
 
     return Container(
-      height: 65,
-      margin: EdgeInsets.symmetric(vertical: Platform.isIOS ? 16 : 0.0),
-      child: Center(
-        child: Row(
-          textDirection: TextDirection.rtl,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SaveAndGoMarkItem(
-              text: "حفظ علامة",
-              onTap: () {
-                quranBloc.add(SaveQuranMarkerEvent(position: index));
-              },
+      height: 150,
+      width: double.infinity,
+      color: Colors.black.withOpacity(0.5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildActionButton(
+                context,
+                icon: Icons.bookmark_add,
+                label: 'Save Marker',
+                onPressed: () {
+                  quranBloc.add(SaveQuranMarkerEvent(position: index));
+                  quranBloc.add(const ResetQuranViewStateEvent());
+                },
+              ),
+              if (markerIndex != null)
+                _buildActionButton(
+                  context,
+                  icon: Icons.bookmark,
+                  label: 'Go to Marker',
+                  onPressed: () {
+                    quranBloc.add(JumpToQuranPageEvent(pageNumber: markerIndex));
+                    quranBloc.add(const ResetQuranViewStateEvent());
+                  },
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 10),
-            SaveAndGoMarkItem(
-              text: "انتقل الي العلامة",
-              onTap: () {
-                quranBloc.add(const ResetQuranViewStateEvent());
-                if (quranBloc.markerIndex != null &&
-                    quranBloc.markerIndex! > 0) {
-                  quranBloc.pageController.jumpToPage(
-                    quranBloc.markerIndex! - 1,
-                  );
-                }
-              },
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 28,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,29 +1,29 @@
 import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/quran_reading_history.dart';
-import '../repositories/quran_repository.dart';
+import '../repositories/quran_reading_history_repository.dart';
 
-/// Use case to add a Quran reading history entry
-class AddReadingHistory implements UseCase<QuranReadingHistory, AddReadingHistoryParams> {
-  final QuranRepository repository;
-
-  AddReadingHistory(this.repository);
-
-  @override
-  Future<Either<Failure, QuranReadingHistory>> call(AddReadingHistoryParams params) {
-    return repository.addReadingHistory(params.history);
-  }
-}
-
-/// Parameters for the AddReadingHistory use case
-class AddReadingHistoryParams extends Equatable {
+/// Parameters for adding a reading history entry
+class AddReadingHistoryParams {
+  /// Reading history entry to add
   final QuranReadingHistory history;
 
+  /// Constructor
   const AddReadingHistoryParams({required this.history});
+}
+
+/// Use case for adding a reading history entry
+class AddReadingHistory implements UseCase<QuranReadingHistory, AddReadingHistoryParams> {
+  /// Repository instance
+  final QuranReadingHistoryRepository repository;
+
+  /// Constructor
+  const AddReadingHistory(this.repository);
 
   @override
-  List<Object> get props => [history];
+  Future<Either<Failure, QuranReadingHistory>> call(AddReadingHistoryParams params) async {
+    return await repository.addReadingHistory(params.history);
+  }
 }

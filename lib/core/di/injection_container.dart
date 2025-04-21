@@ -63,8 +63,10 @@ import '../../features/hadith/domain/usecases/get_hadith_of_the_day.dart';
 import '../../features/hadith/domain/usecases/toggle_hadith_bookmark.dart';
 import '../../features/hadith/presentation/bloc/hadith_bloc.dart';
 import '../../features/quran/data/datasources/quran_local_data_source.dart';
-import '../../features/quran/data/repositories/quran_repository_impl.dart';
-import '../../features/quran/domain/repositories/quran_repository.dart';
+import '../../features/quran/data/repositories/quran_bookmark_repository_impl.dart';
+import '../../features/quran/data/repositories/quran_reading_history_repository_impl.dart';
+import '../../features/quran/domain/repositories/quran_bookmark_repository.dart';
+import '../../features/quran/domain/repositories/quran_reading_history_repository.dart';
 import '../../features/quran/domain/usecases/add_bookmark.dart';
 import '../../features/quran/domain/usecases/add_reading_history.dart';
 import '../../features/quran/domain/usecases/clear_reading_history.dart';
@@ -330,13 +332,20 @@ Future<void> _initQuranFeature() async {
   sl.registerLazySingleton<QuranLocalDataSource>(
     () => QuranLocalDataSourceImpl(
       quranBox: Hive.box(AppConstants.quranBoxName),
-      uuid: sl(),
+      sharedPreferences: sl(),
     ),
   );
 
   // Repositories
-  sl.registerLazySingleton<QuranRepository>(
-    () => QuranRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
+  sl.registerLazySingleton<QuranBookmarkRepository>(
+    () => QuranBookmarkRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
+  );
+
+  sl.registerLazySingleton<QuranReadingHistoryRepository>(
+    () => QuranReadingHistoryRepositoryImpl(
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
   );
 
   // Use cases
@@ -369,7 +378,4 @@ Future<void> _initQuranFeature() async {
       sharedPrefService: sl(),
     ),
   );
-
-  // Cubit (legacy)
-  sl.registerFactory(() => SuraCubit(sl()));
 }
