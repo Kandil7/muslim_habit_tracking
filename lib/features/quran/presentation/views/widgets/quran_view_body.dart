@@ -39,16 +39,19 @@ class QuranViewBody extends StatelessWidget {
                 itemCount: Constants.quranList.length,
                 itemBuilder:
                     (context, index) => GestureDetector(
-                      onTap:
-                          () => Navigation.push(
-                            context,
-                            SuraView(
-                              initialPage:
-                                  QuranItemModel.fromJson(
-                                    Constants.quranList[index],
-                                  ).start,
-                            ),
-                          ),
+                      onTap: () {
+                        // Get the start page from the QuranItemModel
+                        final startPage =
+                            QuranItemModel.fromJson(
+                              Constants.quranList[index],
+                            ).start;
+
+                        // Navigate to the SuraView with the correct page
+                        Navigation.push(
+                          context,
+                          SuraView(initialPage: startPage),
+                        );
+                      },
                       child: Padding(
                         padding: EdgeInsets.only(top: index == 0 ? 12 : 0.0),
                         child: QuranItem(

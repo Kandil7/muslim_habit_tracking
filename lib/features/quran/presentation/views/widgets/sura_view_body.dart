@@ -50,9 +50,9 @@ class _SuraViewBodyState extends State<SuraViewBody> {
                 // Convert from 0-based to 1-based index
                 quranBloc.add(UpdateQuranPageEvent(pageNumber: index + 1));
               },
-              // Convert from 1-based to 0-based index
               // The QuranLibraryScreen expects a 0-based index (0-603)
-              pageIndex: (currentPage - 1).clamp(0, 603),
+              pageIndex:
+                  0, // We'll let the QuranBloc handle the page navigation
             ),
             if (state is QuranMarkerLoaded &&
                 state.markerPosition == currentPage)

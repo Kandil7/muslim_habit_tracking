@@ -310,17 +310,24 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
 
   /// Jump to a specific page
   void _onJumpToPage(JumpToQuranPageEvent event, Emitter<QuranState> emit) {
+    // Ensure the page number is within valid range (1-604)
+    final validPageNumber = event.pageNumber.clamp(1, 604);
+
     // Convert from 1-based to 0-based index for the page controller
-    final pageIndex = event.pageNumber - 1;
+    final pageIndex = validPageNumber - 1;
 
     // Jump to the page
     if (_pageController != null && _pageController!.hasClients) {
+      // Use animateToPage instead of jumpToPage for smoother transition
       _pageController!.jumpToPage(pageIndex);
+
+      // Also set the page in QuranCtrl directly
+      QuranCtrl.instance.state.currentPageNumber.value = validPageNumber;
     }
 
     // Update the current page
-    currentPage = event.pageNumber;
-    emit(QuranPageChanged(pageNumber: event.pageNumber));
+    currentPage = validPageNumber;
+    emit(QuranPageChanged(pageNumber: validPageNumber));
   }
 
   /// Initialize the Quran view
