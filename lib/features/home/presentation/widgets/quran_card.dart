@@ -4,11 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_bookmarks_page.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_reading_history_page.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_search_page.dart';
-import 'package:muslim_habbit/features/quran/presentation/views/quran_view.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/quran_view.dart';
+import '../../../../core/localization/app_localizations_extension.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/utils/constants.dart';
-import '../../../../core/utils/navigation.dart';
-import '../../../../features/quran/data/models/quran_item_model.dart';
+
 import '../../../../features/quran/presentation/bloc/quran_bloc.dart';
 import '../../../../features/quran/presentation/bloc/quran_event.dart';
 import '../../../../features/quran/presentation/bloc/quran_state.dart';
@@ -32,7 +31,7 @@ class QuranCard extends StatelessWidget {
                 current is LastReadPositionUpdated,
         builder: (context, state) {
           return DashboardCard(
-            title: 'Quran',
+            title: context.tr.translate('quran.title'),
             icon: Icons.menu_book,
             iconColor: AppColors.secondary,
             onTap: () {
@@ -109,8 +108,8 @@ class QuranCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             spacing: 5,
                             children: [
-                              const Text(
-                                'Continue Reading',
+                              Text(
+                                context.tr.translate('quran.continue'),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -120,7 +119,7 @@ class QuranCard extends StatelessWidget {
                               if (state is LastReadPositionLoaded &&
                                   state.lastPosition != null)
                                 Text(
-                                  'Page ${state.lastPosition!.pageNumber}',
+                                  '${context.tr.translate('quran.page')} ${state.lastPosition!.pageNumber}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
@@ -128,22 +127,22 @@ class QuranCard extends StatelessWidget {
                                 )
                               else if (state is LastReadPositionUpdated)
                                 Text(
-                                  'Page ${state.lastPosition.pageNumber}',
+                                  '${context.tr.translate('quran.page')} ${state.lastPosition.pageNumber}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                   ),
                                 )
                               else
-                                const Text(
-                                  'Start reading',
+                                Text(
+                                  context.tr.translate('quran.startReading'),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                   ),
                                 ),
                               Text(
-                                'Tap to continue',
+                                context.tr.translate('quran.continueReading'),
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 204),
                                   fontSize: 12,
@@ -163,7 +162,7 @@ class QuranCard extends StatelessWidget {
                     _buildQuickAction(
                       context,
                       icon: Icons.search,
-                      label: 'Search',
+                      label: context.tr.translate('quran.search'),
                       onTap: () {
                         // Navigate to Quran search page
                         Navigator.push(
@@ -177,7 +176,7 @@ class QuranCard extends StatelessWidget {
                     _buildQuickAction(
                       context,
                       icon: Icons.bookmark,
-                      label: 'Bookmarks',
+                      label: context.tr.translate('quran.bookmarks'),
                       onTap: () {
                         // Navigate to Quran bookmarks page
                         Navigator.push(
@@ -191,7 +190,7 @@ class QuranCard extends StatelessWidget {
                     _buildQuickAction(
                       context,
                       icon: Icons.history,
-                      label: 'History',
+                      label: context.tr.translate('quran.history'),
                       onTap: () {
                         // Navigate to Quran reading history page
                         Navigator.push(
