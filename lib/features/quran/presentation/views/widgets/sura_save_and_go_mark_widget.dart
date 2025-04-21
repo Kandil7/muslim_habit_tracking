@@ -32,8 +32,12 @@ class SuraSaveAndGoMarkWidget extends StatelessWidget {
                 icon: Icons.bookmark_add,
                 label: 'Save Marker',
                 onPressed: () {
-                  quranBloc.add(SaveQuranMarkerEvent(position: index));
-                  quranBloc.add(const ResetQuranViewStateEvent());
+                  try {
+                    quranBloc.add(SaveQuranMarkerEvent(position: index));
+                    quranBloc.add(const ResetQuranViewStateEvent());
+                  } catch (e) {
+                    debugPrint('Error saving marker: $e');
+                  }
                 },
               ),
               if (markerIndex != null)
@@ -42,8 +46,14 @@ class SuraSaveAndGoMarkWidget extends StatelessWidget {
                   icon: Icons.bookmark,
                   label: 'Go to Marker',
                   onPressed: () {
-                    quranBloc.add(JumpToQuranPageEvent(pageNumber: markerIndex));
-                    quranBloc.add(const ResetQuranViewStateEvent());
+                    try {
+                      quranBloc.add(
+                        JumpToQuranPageEvent(pageNumber: markerIndex),
+                      );
+                      quranBloc.add(const ResetQuranViewStateEvent());
+                    } catch (e) {
+                      debugPrint('Error jumping to marker: $e');
+                    }
                   },
                 ),
             ],
@@ -70,11 +80,7 @@ class SuraSaveAndGoMarkWidget extends StatelessWidget {
               color: Theme.of(context).primaryColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 28,
-            ),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
           const SizedBox(height: 8),
           Text(

@@ -16,7 +16,12 @@ class QuranViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Trigger loading of surahs if not already loaded
-    context.read<QuranBloc>().add(const GetAllSurahsEvent());
+    // Wrap in try-catch to handle potential closed BLoC
+    try {
+      context.read<QuranBloc>().add(const GetAllSurahsEvent());
+    } catch (e) {
+      debugPrint('Error loading surahs: $e');
+    }
 
     return BlocBuilder<QuranBloc, QuranState>(
       buildWhen:

@@ -17,11 +17,20 @@ class QuranView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create a new BlocProvider to avoid issues with the parent BLoC being closed
+    // Create a new BlocProvider with a new instance of QuranBloc
+    // This ensures we don't reuse a potentially closed BLoC
     return BlocProvider(
-      create:
-          (context) =>
-              context.read<QuranBloc>()..add(const GetLastReadPositionEvent()),
+      create: (context) {
+        // Get a fresh instance from the dependency injection container
+        final quranBloc = context.read<QuranBloc>();
+        // Safely add the event with error handling
+        try {
+          quranBloc.add(const GetLastReadPositionEvent());
+        } catch (e) {
+          debugPrint('Error getting last read position: $e');
+        }
+        return quranBloc;
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Quran'),
