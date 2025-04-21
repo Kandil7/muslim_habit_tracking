@@ -301,7 +301,15 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
       value: event.position,
     );
     emit(QuranMarkerSaved(markerPosition: event.position));
-    add(const GetQuranMarkerEvent());
+
+    // Only add the event if the bloc is not closed
+    try {
+      add(const GetQuranMarkerEvent());
+    } catch (e) {
+      debugPrint('Error adding GetQuranMarkerEvent: $e');
+      // We can still update the marker index directly
+      markerIndex = event.position;
+    }
   }
 
   /// Get the saved marker

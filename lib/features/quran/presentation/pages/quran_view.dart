@@ -17,8 +17,11 @@ class QuranView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: context.read<QuranBloc>()..add(const GetLastReadPositionEvent()),
+    // Create a new BlocProvider to avoid issues with the parent BLoC being closed
+    return BlocProvider(
+      create:
+          (context) =>
+              context.read<QuranBloc>()..add(const GetLastReadPositionEvent()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Quran'),

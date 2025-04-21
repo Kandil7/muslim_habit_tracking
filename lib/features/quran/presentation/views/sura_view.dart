@@ -108,9 +108,17 @@ class SuraView extends StatelessWidget {
                     pageNumber: state.pageNumber,
                     timestamp: timestamp,
                   );
-                  context.read<QuranBloc>().add(
-                    UpdateLastReadPositionEvent(history: history),
-                  );
+
+                  // Only add event if the context is still mounted
+                  if (context.mounted) {
+                    try {
+                      context.read<QuranBloc>().add(
+                        UpdateLastReadPositionEvent(history: history),
+                      );
+                    } catch (e) {
+                      debugPrint('Error updating last read position: $e');
+                    }
+                  }
                 }
               },
               builder: (context, state) {
@@ -138,6 +146,9 @@ class SuraView extends StatelessWidget {
     // Ensure the page number is within valid range (1-604)
     final validPage = initialPage.clamp(1, 604);
 
+    // Only proceed if the context is still mounted
+    if (!context.mounted) return;
+
     final quranBloc = context.read<QuranBloc>();
     final state = quranBloc.state;
 
@@ -154,13 +165,23 @@ class SuraView extends StatelessWidget {
       }
     } else {
       // If state is not BookmarksLoaded, load bookmarks first
-      quranBloc.add(const GetBookmarksEvent());
-      // Then show add dialog
-      _showAddBookmarkDialog(context, validPage);
+      // Only add event if the bloc is not closed
+      try {
+        quranBloc.add(const GetBookmarksEvent());
+        // Then show add dialog
+        _showAddBookmarkDialog(context, validPage);
+      } catch (e) {
+        debugPrint('Error adding event to QuranBloc: $e');
+        // Fallback to showing the dialog without loading bookmarks
+        _showAddBookmarkDialog(context, validPage);
+      }
     }
   }
 
   void _showAddBookmarkDialog(BuildContext context, [int? pageNumber]) async {
+    // Only proceed if the context is still mounted
+    if (!context.mounted) return;
+
     // Get the QuranBloc from the current context before showing the dialog
     final quranBloc = context.read<QuranBloc>();
 
@@ -178,7 +199,12 @@ class SuraView extends StatelessWidget {
             // We'll pass null for surahName and ayahNumber for now
             onBookmarkAdded: (bookmark) {
               // Use the quranBloc instance we got from the parent context
-              quranBloc.add(AddBookmarkEvent(bookmark: bookmark));
+              // Only add event if the bloc is not closed
+              try {
+                quranBloc.add(AddBookmarkEvent(bookmark: bookmark));
+              } catch (e) {
+                debugPrint('Error adding bookmark event: $e');
+              }
             },
           ),
     );
@@ -189,11 +215,19 @@ class SuraView extends StatelessWidget {
       ).showSnackBar(const SnackBar(content: Text('Bookmark added')));
 
       // Refresh bookmarks using the quranBloc instance
-      quranBloc.add(const GetBookmarksEvent());
+      // Only add event if the bloc is not closed
+      try {
+        quranBloc.add(const GetBookmarksEvent());
+      } catch (e) {
+        debugPrint('Error refreshing bookmarks: $e');
+      }
     }
   }
 
   void _showRemoveBookmarkDialog(BuildContext context, int bookmarkId) {
+    // Only proceed if the context is still mounted
+    if (!context.mounted) return;
+
     // Get the QuranBloc from the current context before showing the dialog
     final quranBloc = context.read<QuranBloc>();
 
@@ -213,14 +247,30 @@ class SuraView extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
-                  // Use the quranBloc instance we got from the parent context
-                  quranBloc.add(RemoveBookmarkEvent(id: bookmarkId));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bookmark removed')),
-                  );
 
-                  // Refresh bookmarks using the quranBloc instance
-                  quranBloc.add(const GetBookmarksEvent());
+                  // Only proceed if the context is still mounted
+                  if (!context.mounted) return;
+
+                  // Use the quranBloc instance we got from the parent context
+                  // Only add event if the bloc is not closed
+                  try {
+                    quranBloc.add(RemoveBookmarkEvent(id: bookmarkId));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Bookmark removed')),
+                    );
+
+                    // Refresh bookmarks using the quranBloc instance
+                    quranBloc.add(const GetBookmarksEvent());
+                  } catch (e) {
+                    debugPrint('Error removing bookmark: $e');
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Error removing bookmark'),
+                        ),
+                      );
+                    }
+                  }
                 },
                 child: const Text('REMOVE'),
               ),
