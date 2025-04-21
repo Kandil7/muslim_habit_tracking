@@ -37,7 +37,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
 
   // Properties from SuraCubit
   PageController? _pageController;
-  PageController get pageController => _pageController!;
+  PageController get pageController => _pageController ?? PageController();
   bool isClick = false;
   int? markerIndex;
   int? currentPage;
@@ -318,12 +318,20 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
 
     // Jump to the page
     if (_pageController != null && _pageController!.hasClients) {
-      // Use animateToPage instead of jumpToPage for smoother transition
-      _pageController!.jumpToPage(pageIndex);
-      debugPrint('Jumped to page $validPageNumber');
+      try {
+        // Use jumpToPage for immediate transition
+        _pageController!.jumpToPage(pageIndex);
+        debugPrint('Jumped to page $validPageNumber');
+      } catch (e) {
+        debugPrint('Error jumping to page: $e');
+      }
+    }
 
-      // Also set the page in QuranCtrl directly
+    // Always set the page in QuranCtrl directly, even if the page controller is not ready
+    try {
       QuranCtrl.instance.state.currentPageNumber.value = validPageNumber;
+    } catch (e) {
+      debugPrint('Error setting page in QuranCtrl: $e');
     }
 
     // Update the current page
@@ -333,19 +341,42 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
 
   /// Initialize the Quran view
   void _initQuranView() {
-    WakelockPlus.enable();
+    try {
+      WakelockPlus.enable();
+    } catch (e) {
+      debugPrint('Error enabling wakelock: $e');
+    }
 
-    _pageController?.addListener(() {
-      if (isClick && _pageController!.position.pixels != 0) {
-        add(const ResetQuranViewStateEvent());
-      }
-    });
+    try {
+      _pageController?.addListener(() {
+        if (_pageController != null &&
+            _pageController!.hasClients &&
+            isClick &&
+            _pageController!.position.pixels != 0) {
+          add(const ResetQuranViewStateEvent());
+        }
+      });
+    } catch (e) {
+      debugPrint('Error adding page controller listener: $e');
+    }
   }
 
   @override
   Future<void> close() {
-    _pageController?.dispose();
-    WakelockPlus.disable();
+    try {
+      if (_pageController != null) {
+        _pageController!.dispose();
+      }
+    } catch (e) {
+      debugPrint('Error disposing page controller: $e');
+    }
+
+    try {
+      WakelockPlus.disable();
+    } catch (e) {
+      debugPrint('Error disabling wakelock: $e');
+    }
+
     return super.close();
   }
 }

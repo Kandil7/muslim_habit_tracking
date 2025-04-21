@@ -47,6 +47,7 @@ class _SuraViewBodyState extends State<SuraViewBody> {
           alignment: Alignment.bottomCenter,
           children: [
             QuranLibraryScreen(
+              withPageView: true,
               backgroundColor: Theme.of(context).colorScheme.surface,
               isDark: Theme.of(context).brightness == Brightness.dark,
               useDefaultAppBar: false,
@@ -56,6 +57,9 @@ class _SuraViewBodyState extends State<SuraViewBody> {
               },
               // Directly use the converted page index
               pageIndex: pageIndex,
+              onTap: (_) {
+                quranBloc.add(ToggleQuranViewStateEvent());
+              },
             ),
             if (state is QuranMarkerLoaded &&
                 state.markerPosition == currentPage)
