@@ -252,7 +252,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     currentPage ??= event.initialPage + 1;
 
     // Set the page in QuranCtrl directly
-    QuranCtrl.instance.state.currentPageNumber.value = currentPage ?? 1;
+    QuranCtrl.instance.state.currentPageNumber.value = currentPage!;
 
     // Emit the controller created event
     emit(QuranPageControllerCreated(pageController: _pageController!));
@@ -320,6 +320,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranState> {
     if (_pageController != null && _pageController!.hasClients) {
       // Use animateToPage instead of jumpToPage for smoother transition
       _pageController!.jumpToPage(pageIndex);
+      debugPrint('Jumped to page $validPageNumber');
 
       // Also set the page in QuranCtrl directly
       QuranCtrl.instance.state.currentPageNumber.value = validPageNumber;

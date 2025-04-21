@@ -32,15 +32,11 @@ class SuraView extends StatelessWidget {
         final quranBloc =
             di.sl<QuranBloc>()
               ..add(const GetBookmarksEvent())
-              // Initialize with 0-based index for PageController
-              // We'll use page 1 as the default initial page
-              ..add(InitQuranPageControllerEvent(initialPage: 0));
+              // Initialize with the correct page index
+              ..add(InitQuranPageControllerEvent(initialPage: validPage - 1));
 
-        // After initialization, jump to the specific page
-        // This ensures the page controller is properly initialized before jumping
-        Future.microtask(() {
-          quranBloc.add(JumpToQuranPageEvent(pageNumber: validPage));
-        });
+        // Set the current page directly in the bloc
+        quranBloc.currentPage = validPage;
 
         // Save reading history
         final timestamp = DateTime.now();

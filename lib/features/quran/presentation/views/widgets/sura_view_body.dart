@@ -31,6 +31,10 @@ class _SuraViewBodyState extends State<SuraViewBody> {
 
   @override
   Widget build(BuildContext context) {
+    // Convert from 1-based to 0-based index for the QuranLibraryScreen
+    // The QuranLibraryScreen expects a 0-based index (0-603)
+    final pageIndex = (widget.initialPage - 1).clamp(0, 603);
+
     return BlocBuilder<QuranBloc, QuranState>(
       buildWhen:
           (previous, current) =>
@@ -50,9 +54,8 @@ class _SuraViewBodyState extends State<SuraViewBody> {
                 // Convert from 0-based to 1-based index
                 quranBloc.add(UpdateQuranPageEvent(pageNumber: index + 1));
               },
-              // The QuranLibraryScreen expects a 0-based index (0-603)
-              pageIndex:
-                  0, // We'll let the QuranBloc handle the page navigation
+              // Directly use the converted page index
+              pageIndex: pageIndex,
             ),
             if (state is QuranMarkerLoaded &&
                 state.markerPosition == currentPage)
