@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quran_library/quran_library.dart';
 
+import '../../../../core/localization/app_localizations_extension.dart';
+
 import '../../../../core/utils/navigation.dart';
 import '../views/sura_view.dart';
 
@@ -56,7 +58,7 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Quran')),
+      appBar: AppBar(title: Text(context.tr.translate('quran.search'))),
       body: Column(
         children: [
           Padding(
@@ -64,7 +66,7 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search for ayahs...',
+                hintText: context.tr.translate('quran.search'),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon:
                     _searchController.text.isNotEmpty
@@ -91,8 +93,10 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
                     ? Center(
                       child:
                           _searchController.text.isEmpty
-                              ? const Text('Enter text to search')
-                              : const Text('No results found'),
+                              ? Text(
+                                context.tr.translate('quran.enterSurahName'),
+                              )
+                              : Text(context.tr.translate('quran.noResults')),
                     )
                     : ListView.builder(
                       itemCount: _searchResults.length,
