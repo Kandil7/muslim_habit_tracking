@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:quran_library/quran_library.dart';
 
+import 'core/utils/custom_bloc_observer.dart';
+
 import 'core/di/injection_container.dart' as di;
 import 'core/localization/app_localizations.dart';
 import 'core/localization/bloc/language_bloc_exports.dart';
@@ -30,6 +32,9 @@ import 'features/quran/presentation/pages/quran_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Set up BlocObserver for logging
+  Bloc.observer = const CustomBlocObserver(verbose: false);
 
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
