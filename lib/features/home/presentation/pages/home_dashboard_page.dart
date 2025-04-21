@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/features/prayer_times/presentation/views/prayer_view.dart';
-import 'package:muslim_habbit/features/quran/presentation/views/quran_view.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/quran_view.dart';
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_icons.dart';
@@ -101,6 +101,13 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                 _isEditMode
                     ? context.tr.translate('home.saveChanges')
                     : context.tr.translate('home.editDashboard'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            },
+            tooltip: context.tr.translate('common.settings'),
           ),
           BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, state) {
