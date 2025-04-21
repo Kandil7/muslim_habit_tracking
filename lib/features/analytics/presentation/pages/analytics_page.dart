@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/core/utils/date_utils.dart';
 import 'package:muslim_habbit/core/presentation/widgets/widgets.dart';
 import 'package:muslim_habbit/core/theme/app_theme.dart';
-import 'package:muslim_habbit/core/utils/date_utils.dart';
 import 'package:muslim_habbit/features/analytics/domain/entities/habit_stats.dart';
 import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_event.dart';
@@ -31,10 +30,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   void _loadAnalytics() {
     context.read<AnalyticsBloc>().add(
-      GetHabitStatsByDateRangeEvent(
-        startDate: _startDate,
-        endDate: _endDate,
-      ),
+      GetHabitStatsByDateRangeEvent(startDate: _startDate, endDate: _endDate),
     );
   }
 
@@ -57,26 +53,27 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     _endDate = DateTimeUtils.endOfMonth;
                     break;
                   case 'custom':
-                    // TODO: Implement date range picker
-                    break;
+                    _showDateRangePicker(context);
+                    return; // Don't call _loadAnalytics() yet, it will be called after picking dates
                 }
                 _loadAnalytics();
               });
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem<String>(
-                value: 'week',
-                child: Text('This Week'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'month',
-                child: Text('This Month'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'custom',
-                child: Text('Custom Range'),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem<String>(
+                    value: 'week',
+                    child: Text('This Week'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'month',
+                    child: Text('This Month'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'custom',
+                    child: Text('Custom Range'),
+                  ),
+                ],
             icon: const Icon(Icons.calendar_today),
           ),
         ],
@@ -110,7 +107,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 onAction: _loadAnalytics,
               );
             }
-            
+
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -118,21 +115,21 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 children: [
                   // Date range card
                   _buildDateRangeCard(),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Summary section
                   _buildSummarySection(state.habitStats),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // All habits stats
                   Text(
                     'All Habits',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // List of habit stats cards
                   _buildHabitStatsList(state.habitStats),
                 ],
@@ -173,10 +170,12 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   Widget _buildSummarySection(List<HabitStats> habitStats) {
     // Calculate overall completion rate
-    final overallCompletionRate = habitStats.fold<double>(
-      0.0,
-      (sum, stats) => sum + stats.completionRate,
-    ) / habitStats.length;
+    final overallCompletionRate =
+        habitStats.fold<double>(
+          0.0,
+          (sum, stats) => sum + stats.completionRate,
+        ) /
+        habitStats.length;
 
     // Find most consistent habit
     habitStats.sort((a, b) => b.completionRate.compareTo(a.completionRate));
@@ -186,10 +185,11 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     final leastConsistentHabit = habitStats.last;
 
     return BlocBuilder<AnalyticsBloc, AnalyticsState>(
-      buildWhen: (previous, current) => 
-        current is HabitStatsByDateRangeLoaded && 
-        (previous is! HabitStatsByDateRangeLoaded || 
-         (previous as HabitStatsByDateRangeLoaded).habitStats != current.habitStats),
+      buildWhen: (previous, current) {
+        if (current is! HabitStatsByDateRangeLoaded) return false;
+        if (previous is! HabitStatsByDateRangeLoaded) return true;
+        return previous.habitStats != current.habitStats;
+      },
       builder: (context, state) {
         if (state is HabitStatsByDateRangeLoaded) {
           return Card(
@@ -254,16 +254,18 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
   }
 
-  Widget _buildConsistencyItem(String name, String value, IconData icon, Color color) {
+  Widget _buildConsistencyItem(
+    String name,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Row(
       children: [
         Icon(icon, color: color),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            name,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          child: Text(name, style: Theme.of(context).textTheme.bodyLarge),
         ),
         Text(
           value,
@@ -278,10 +280,11 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   Widget _buildHabitStatsList(List<HabitStats> habitStats) {
     return BlocBuilder<AnalyticsBloc, AnalyticsState>(
-      buildWhen: (previous, current) => 
-        current is HabitStatsByDateRangeLoaded && 
-        (previous is! HabitStatsByDateRangeLoaded || 
-         (previous as HabitStatsByDateRangeLoaded).habitStats != current.habitStats),
+      buildWhen: (previous, current) {
+        if (current is! HabitStatsByDateRangeLoaded) return false;
+        if (previous is! HabitStatsByDateRangeLoaded) return true;
+        return previous.habitStats != current.habitStats;
+      },
       builder: (context, state) {
         if (state is HabitStatsByDateRangeLoaded) {
           return ListView.builder(
@@ -360,6 +363,38 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       return AppColors.warning;
     } else {
       return AppColors.error;
+    }
+  }
+
+  Future<void> _showDateRangePicker(BuildContext context) async {
+    final initialDateRange = DateTimeRange(start: _startDate, end: _endDate);
+
+    final pickedDateRange = await showDateRangePicker(
+      context: context,
+      initialDateRange: initialDateRange,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDateRange != null) {
+      setState(() {
+        _startDate = pickedDateRange.start;
+        _endDate = pickedDateRange.end;
+      });
+      _loadAnalytics();
     }
   }
 }
