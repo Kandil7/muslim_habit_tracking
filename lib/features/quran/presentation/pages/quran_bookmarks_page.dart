@@ -11,15 +11,33 @@ import '../bloc/quran_state.dart';
 import '../views/sura_view.dart';
 
 /// Page for displaying Quran bookmarks
-class QuranBookmarksPage extends StatelessWidget {
+class QuranBookmarksPage extends StatefulWidget {
   /// Constructor
   const QuranBookmarksPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Trigger loading of bookmarks
-    context.read<QuranBloc>().add(const GetBookmarksEvent());
+  State<QuranBookmarksPage> createState() => _QuranBookmarksPageState();
+}
 
+class _QuranBookmarksPageState extends State<QuranBookmarksPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Trigger loading of bookmarks in initState instead of build
+    _loadBookmarks();
+  }
+
+  void _loadBookmarks() {
+    // Safely add the event with error handling
+    try {
+      context.read<QuranBloc>().add(const GetBookmarksEvent());
+    } catch (e) {
+      debugPrint('Error loading bookmarks: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.tr.translate('quran.bookmarks')),
@@ -72,10 +90,15 @@ class QuranBookmarksPage extends StatelessWidget {
                   Text(state.message),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed:
-                        () => context.read<QuranBloc>().add(
+                    onPressed: () {
+                      try {
+                        context.read<QuranBloc>().add(
                           const GetBookmarksEvent(),
-                        ),
+                        );
+                      } catch (e) {
+                        debugPrint('Error reloading bookmarks: $e');
+                      }
+                    },
                     child: Text(context.tr.translate('common.retry')),
                   ),
                 ],
@@ -153,25 +176,41 @@ class QuranBookmarksPage extends StatelessWidget {
                         false;
                   },
                   onDismissed: (direction) {
-                    context.read<QuranBloc>().add(
-                      RemoveBookmarkEvent(id: bookmark.id),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr.translate('quran.bookmarkRemoved'),
-                        ),
-                        action: SnackBarAction(
-                          label: context.tr.translate('common.undo'),
-                          onPressed: () {
-                            // Re-add the bookmark
-                            context.read<QuranBloc>().add(
-                              AddBookmarkEvent(bookmark: bookmark),
-                            );
-                          },
-                        ),
-                      ),
-                    );
+                    try {
+                      context.read<QuranBloc>().add(
+                        RemoveBookmarkEvent(id: bookmark.id),
+                      );
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.tr.translate('quran.bookmarkRemoved'),
+                            ),
+                            action: SnackBarAction(
+                              label: context.tr.translate('common.undo'),
+                              onPressed: () {
+                                // Re-add the bookmark
+                                try {
+                                  context.read<QuranBloc>().add(
+                                    AddBookmarkEvent(bookmark: bookmark),
+                                  );
+                                } catch (e) {
+                                  debugPrint('Error re-adding bookmark: $e');
+                                }
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      debugPrint('Error removing bookmark: $e');
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error removing bookmark')),
+                        );
+                      }
+                    }
                   },
                   child: Card(
                     margin: const EdgeInsets.symmetric(
@@ -261,7 +300,11 @@ class QuranBookmarksPage extends StatelessWidget {
             );
           } else {
             // If we're not in a loading or loaded state, trigger loading
-            context.read<QuranBloc>().add(const GetBookmarksEvent());
+            try {
+              context.read<QuranBloc>().add(const GetBookmarksEvent());
+            } catch (e) {
+              debugPrint('Error loading bookmarks: $e');
+            }
             return const Center(child: CircularProgressIndicator());
           }
         },
