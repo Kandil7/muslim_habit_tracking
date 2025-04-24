@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/quotes_repository.dart';
-
+import '../services/enhanced_notification_service.dart';
 import '../services/logger_service.dart';
 import '../utils/error_handler.dart';
 
@@ -220,8 +220,16 @@ Future<void> _initPrayerTimesFeature() async {
   // Register QuotesRepository
   sl.registerLazySingleton(() => QuotesRepository());
 
-  // Register NotificationService
+  // Register Notification Services
   sl.registerLazySingleton(() => NotificationService());
+
+  // Import and register EnhancedNotificationService
+  sl.registerLazySingleton(
+    () => EnhancedNotificationService(
+      notificationService: sl<NotificationService>(),
+      quotesRepository: sl<QuotesRepository>(),
+    ),
+  );
 
   // Repositories
   sl.registerSingleton<PrayerRepoImpl>(PrayerRepoImpl());

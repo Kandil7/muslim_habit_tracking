@@ -16,6 +16,7 @@ import 'core/services/cache_manager.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/bloc/theme_bloc_exports.dart';
 import 'core/utils/services/location_service.dart';
+import 'core/utils/services/notification_service.dart';
 import 'features/prayer_times/data/repo/prayer_repo_impl.dart';
 import 'features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
@@ -55,6 +56,9 @@ void main() async {
 
     // Initialize dependencies with error handling
     await _initializeDependencies();
+
+    // Initialize notifications
+    await _initializeNotifications();
 
     // Run the app immediately to improve startup time
     // We'll initialize QuranLibrary in the background
@@ -130,6 +134,35 @@ Future<void> _initializeDependencies() async {
   } catch (e) {
     debugPrint('Error during dependency initialization: $e');
     throw Exception('Failed to initialize app dependencies: $e');
+  }
+}
+
+/// Initialize notification services
+Future<void> _initializeNotifications() async {
+  try {
+    // Get the notification service from dependency injection
+    final notificationService = di.sl<NotificationService>();
+
+    // Initialize the notification service
+    try {
+      await notificationService.initNotification();
+    } catch (error) {
+      debugPrint('Error initializing notification service: $error');
+      // Non-critical error, continue app initialization
+    }
+
+    // Request notification permissions
+    try {
+      await notificationService.requestPermissions();
+    } catch (error) {
+      debugPrint('Error requesting notification permissions: $error');
+      // Non-critical error, continue app initialization
+    }
+
+    debugPrint('Notification service initialized successfully');
+  } catch (e) {
+    debugPrint('Error during notification initialization: $e');
+    // Non-critical error, continue app initialization
   }
 }
 

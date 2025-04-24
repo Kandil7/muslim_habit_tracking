@@ -1,80 +1,30 @@
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get_it/get_it.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 
 import '../../../../core/utils/notification_enhancer.dart';
+import '../../../../core/utils/services/notification_service.dart';
 
 /// Service for scheduling habit reminders
 class HabitNotificationService {
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
   HabitNotificationService() {
     _initNotifications();
   }
 
   Future<void> _initNotifications() async {
+    // We only need to initialize timezone data
     tz_data.initializeTimeZones();
 
-    // Create the notification channel for Android
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'habit_reminders_channel',
-      'Habit Reminders',
-      description: 'Reminders for your habits',
-      importance: Importance.max,
-    );
-
-    final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
-        _flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >();
-
-    await androidPlugin?.createNotificationChannel(channel);
-
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsIOS,
-        );
-
-    await _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification taps here
-        debugPrint('Habit notification tapped: ${response.payload}');
-      },
-    );
+    // We don't need to initialize the notification plugin here
+    // as we're using the NotificationEnhancer which uses the centralized NotificationService
+    debugPrint('HabitNotificationService initialized');
   }
 
   Future<bool> requestPermissions() async {
-    // Request permissions for iOS
-    final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
-        _flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin
-            >();
-    if (iOSImplementation != null) {
-      await iOSImplementation.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-    }
-
-    // For Android, permissions are requested during initialization in newer versions
-    // or when creating the notification channel
+    // We don't need to request permissions here
+    // as we're using the NotificationEnhancer which uses the centralized NotificationService
+    // that handles permission requests
     return true;
   }
 
@@ -115,9 +65,19 @@ class HabitNotificationService {
   }
 
   Future<void> cancelHabitReminder(String habitId) async {
-    // Since we can't get the exact notification IDs, we'll need to cancel all and reschedule others
+    // We need to cancel the notification with the specific ID
     // In a real app, you'd want to store the notification IDs somewhere
-    await _flutterLocalNotificationsPlugin.cancelAll();
+    // For now, we'll use the same ID generation logic as in scheduleHabitReminder
+
+    // Get the notification service from GetIt
+    final notificationService = GetIt.instance<NotificationService>();
+
+    // Cancel the notification with the specific ID
+    // Since we can't know all the days that were scheduled, we'll need to cancel all
+    // In a production app, you'd want to store the notification IDs somewhere
+    await notificationService.cancelAllNotifications();
+
+    debugPrint('Cancelled habit reminder for habit ID: $habitId');
   }
 
   // Note: We've removed the _getDayIndex and _getNextDayOccurrence methods

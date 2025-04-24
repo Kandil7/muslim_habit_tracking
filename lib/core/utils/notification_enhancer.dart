@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 
-import '../data/quotes_repository.dart';
-import '../models/motivational_quote.dart';
-import 'services/notification_service.dart';
+import '../services/enhanced_notification_service.dart';
 
 /// Utility class for enhancing notifications with motivational quotes and Islamic teachings
 class NotificationEnhancer {
-  static final NotificationService _notificationService =
-      GetIt.instance<NotificationService>();
-  static final QuotesRepository _quotesRepository =
-      GetIt.instance<QuotesRepository>();
+  static final EnhancedNotificationService _enhancedNotificationService =
+      GetIt.instance<EnhancedNotificationService>();
 
   /// Show a notification with a motivational quote
   static Future<void> showMotivationalNotification({
@@ -21,22 +17,12 @@ class NotificationEnhancer {
     String? tag,
     String? payload,
   }) async {
-    // Get a motivational quote based on the tag
-    final MotivationalQuote quote =
-        tag != null
-            ? _quotesRepository.getRandomQuoteByTag(tag) ??
-                _quotesRepository.getRandomQuote()
-            : _quotesRepository.getRandomQuote();
-
-    // Enhance the notification body with the quote
-    final enhancedBody =
-        '$body\n\n"${quote.text}"\n— ${quote.source} (${quote.reference})';
-
-    // Show the notification with the enhanced body
-    await _notificationService.showNotification(
+    // Use the EnhancedNotificationService to show a notification with a motivational quote
+    await _enhancedNotificationService.showMotivationalNotification(
       id: id,
       title: title,
-      body: enhancedBody,
+      body: body,
+      tag: tag,
       payload: payload,
     );
   }
@@ -52,23 +38,13 @@ class NotificationEnhancer {
     bool repeats = false,
     RepeatInterval? repeatInterval,
   }) async {
-    // Get a motivational quote based on the tag
-    final MotivationalQuote quote =
-        tag != null
-            ? _quotesRepository.getRandomQuoteByTag(tag) ??
-                _quotesRepository.getRandomQuote()
-            : _quotesRepository.getRandomQuote();
-
-    // Enhance the notification body with the quote
-    final enhancedBody =
-        '$body\n\n"${quote.text}"\n— ${quote.source} (${quote.reference})';
-
-    // Schedule the notification with the enhanced body
-    await _notificationService.scheduleNotification(
+    // Use the EnhancedNotificationService to schedule a notification with a motivational quote
+    await _enhancedNotificationService.scheduleMotivationalNotification(
       id: id,
       title: title,
-      body: enhancedBody,
+      body: body,
       scheduledDate: scheduledDate,
+      tag: tag,
       payload: payload,
       repeats: repeats,
       repeatInterval: repeatInterval,
@@ -84,23 +60,13 @@ class NotificationEnhancer {
     String? tag,
     String? payload,
   }) async {
-    // Get a motivational quote based on the tag
-    final MotivationalQuote quote =
-        tag != null
-            ? _quotesRepository.getRandomQuoteByTag(tag) ??
-                _quotesRepository.getRandomQuote()
-            : _quotesRepository.getRandomQuote();
-
-    // Enhance the notification body with the quote
-    final enhancedBody =
-        '$body\n\n"${quote.text}"\n— ${quote.source} (${quote.reference})';
-
-    // Schedule the daily notification with the enhanced body
-    await _notificationService.scheduleDailyNotification(
+    // Use the EnhancedNotificationService to schedule a daily notification with a motivational quote
+    await _enhancedNotificationService.scheduleMotivationalDailyNotification(
       id: id,
       title: title,
-      body: enhancedBody,
+      body: body,
       timeOfDay: timeOfDay,
+      tag: tag,
       payload: payload,
     );
   }
@@ -112,29 +78,13 @@ class NotificationEnhancer {
     required DateTime prayerTime,
     int minutesBefore = 15,
   }) async {
-    // Get a prayer-related quote
-    final MotivationalQuote quote =
-        _quotesRepository.getRandomQuoteByTag('prayer') ??
-        _quotesRepository.getRandomQuote();
-
-    final notificationTime = prayerTime.subtract(
-      Duration(minutes: minutesBefore),
+    // Use the EnhancedNotificationService to schedule a prayer notification
+    await _enhancedNotificationService.scheduleEnhancedPrayerNotification(
+      id: id,
+      prayerName: prayerName,
+      prayerTime: prayerTime,
+      minutesBefore: minutesBefore,
     );
-
-    // Only schedule if the prayer time is in the future
-    if (notificationTime.isAfter(DateTime.now())) {
-      // Create an enhanced notification body with the quote
-      final enhancedBody =
-          '$prayerName prayer time in $minutesBefore minutes\n\n"${quote.text}"\n— ${quote.source} (${quote.reference})';
-
-      await _notificationService.scheduleNotification(
-        id: id,
-        title: 'Prayer Time Reminder',
-        body: enhancedBody,
-        scheduledDate: notificationTime,
-        payload: 'prayer_$prayerName',
-      );
-    }
   }
 
   /// Schedule a habit reminder with a motivational quote
@@ -144,21 +94,12 @@ class NotificationEnhancer {
     required TimeOfDay reminderTime,
     required String habitType,
   }) async {
-    // Get a habit-specific quote
-    final MotivationalQuote quote = _quotesRepository.getQuoteForHabit(
-      habitType,
-    );
-
-    // Create an enhanced notification body with the quote
-    final enhancedBody =
-        'Time to complete your habit: $habitName\n\n"${quote.text}"\n— ${quote.source} (${quote.reference})';
-
-    await _notificationService.scheduleDailyNotification(
+    // Use the EnhancedNotificationService to schedule a habit reminder
+    await _enhancedNotificationService.scheduleEnhancedHabitReminder(
       id: id,
-      title: 'Habit Reminder',
-      body: enhancedBody,
-      timeOfDay: reminderTime,
-      payload: 'habit_$id',
+      habitName: habitName,
+      reminderTime: reminderTime,
+      habitType: habitType,
     );
   }
 }

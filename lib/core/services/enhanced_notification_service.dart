@@ -7,8 +7,15 @@ import '../utils/services/notification_service.dart';
 
 /// Enhanced notification service that includes motivational quotes and Islamic teachings
 class EnhancedNotificationService {
-  final NotificationService _notificationService = NotificationService();
-  final QuotesRepository _quotesRepository = QuotesRepository();
+  final NotificationService _notificationService;
+  final QuotesRepository _quotesRepository;
+
+  /// Creates a new EnhancedNotificationService
+  EnhancedNotificationService({
+    required NotificationService notificationService,
+    required QuotesRepository quotesRepository,
+  }) : _notificationService = notificationService,
+       _quotesRepository = quotesRepository;
 
   /// Show an immediate notification with a motivational quote
   Future<void> showMotivationalNotification({
