@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get_it/get_it.dart';
 
 import '../data/quotes_repository.dart';
 import '../models/motivational_quote.dart';
-import 'services/notification_service.dart';
+import '../utils/services/notification_service.dart';
 
-/// Utility class for enhancing notifications with motivational quotes and Islamic teachings
-class NotificationEnhancer {
-  static final NotificationService _notificationService =
-      GetIt.instance<NotificationService>();
-  static final QuotesRepository _quotesRepository =
-      GetIt.instance<QuotesRepository>();
+/// Enhanced notification service that includes motivational quotes and Islamic teachings
+class EnhancedNotificationService {
+  final NotificationService _notificationService = NotificationService();
+  final QuotesRepository _quotesRepository = QuotesRepository();
 
-  /// Show a notification with a motivational quote
-  static Future<void> showMotivationalNotification({
+  /// Show an immediate notification with a motivational quote
+  Future<void> showMotivationalNotification({
     required int id,
     required String title,
     required String body,
@@ -42,7 +39,7 @@ class NotificationEnhancer {
   }
 
   /// Schedule a notification with a motivational quote
-  static Future<void> scheduleMotivationalNotification({
+  Future<void> scheduleMotivationalNotification({
     required int id,
     required String title,
     required String body,
@@ -76,7 +73,7 @@ class NotificationEnhancer {
   }
 
   /// Schedule a daily notification with a motivational quote
-  static Future<void> scheduleMotivationalDailyNotification({
+  Future<void> scheduleMotivationalDailyNotification({
     required int id,
     required String title,
     required String body,
@@ -106,7 +103,7 @@ class NotificationEnhancer {
   }
 
   /// Schedule a prayer notification with a relevant Islamic teaching
-  static Future<void> schedulePrayerNotification({
+  Future<void> scheduleEnhancedPrayerNotification({
     required int id,
     required String prayerName,
     required DateTime prayerTime,
@@ -138,7 +135,7 @@ class NotificationEnhancer {
   }
 
   /// Schedule a habit reminder with a motivational quote
-  static Future<void> scheduleHabitReminder({
+  Future<void> scheduleEnhancedHabitReminder({
     required int id,
     required String habitName,
     required TimeOfDay reminderTime,
