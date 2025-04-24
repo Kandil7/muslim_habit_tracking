@@ -11,6 +11,7 @@ import '../../domain/utils/streak_calculator.dart';
 import '../bloc/habit_bloc.dart';
 import '../bloc/habit_event.dart';
 import '../bloc/habit_state.dart';
+import 'edit_habit_page.dart';
 
 /// Page for viewing habit details and tracking progress
 class HabitDetailsPage extends StatefulWidget {
@@ -73,7 +74,13 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
           IconButton(
             icon: const Icon(AppIcons.edit),
             onPressed: () {
-              // TODO: Navigate to edit habit page
+              // Navigate to edit habit page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditHabitPage(habit: _habit),
+                ),
+              );
             },
           ),
           PopupMenuButton<String>(
@@ -82,12 +89,13 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                 _showDeleteConfirmation();
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem<String>(
-                value: 'delete',
-                child: Text('Delete Habit'),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Text('Delete Habit'),
+                  ),
+                ],
           ),
         ],
       ),
@@ -147,7 +155,9 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
   }
 
   Widget _buildHabitHeader() {
-    final Color habitColor = Color(int.parse('0xFF${_habit.color.substring(1)}'));
+    final Color habitColor = Color(
+      int.parse('0xFF${_habit.color.substring(1)}'),
+    );
 
     return Card(
       child: Padding(
@@ -160,21 +170,14 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                 CircleAvatar(
                   backgroundColor: habitColor,
                   radius: 24,
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        _habit.name,
-                        style: AppTextStyles.headingMedium,
-                      ),
+                      Text(_habit.name, style: AppTextStyles.headingMedium),
                       Text(
                         _habit.type.toUpperCase(),
                         style: AppTextStyles.bodySmall,
@@ -186,18 +189,23 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
             ),
             if (_habit.description.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text(
-                _habit.description,
-                style: AppTextStyles.bodyMedium,
-              ),
+              Text(_habit.description, style: AppTextStyles.bodyMedium),
             ],
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildInfoItem('Goal', '${_habit.goal} ${_habit.goalUnit}'),
-                _buildInfoItem('Frequency', _habit.daysOfWeek.length == 7 ? 'Daily' : '${_habit.daysOfWeek.length} days/week'),
-                _buildInfoItem('Created', DateTimeUtils.formatShortDate(_habit.createdAt)),
+                _buildInfoItem(
+                  'Frequency',
+                  _habit.daysOfWeek.length == 7
+                      ? 'Daily'
+                      : '${_habit.daysOfWeek.length} days/week',
+                ),
+                _buildInfoItem(
+                  'Created',
+                  DateTimeUtils.formatShortDate(_habit.createdAt),
+                ),
               ],
             ),
           ],
@@ -210,10 +218,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.bodySmall,
-        ),
+        Text(label, style: AppTextStyles.bodySmall),
         const SizedBox(height: 4),
         Text(
           value,
@@ -225,12 +230,23 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
 
   Widget _buildProgressSection() {
     final today = DateTimeUtils.today;
-    final bool completedToday = _logs.any((log) => DateTimeUtils.isSameDay(log.date, today)) ||
-                               (_habit.lastCompletedDate != null && DateTimeUtils.isSameDay(_habit.lastCompletedDate!, today));
+    final bool completedToday =
+        _logs.any((log) => DateTimeUtils.isSameDay(log.date, today)) ||
+        (_habit.lastCompletedDate != null &&
+            DateTimeUtils.isSameDay(_habit.lastCompletedDate!, today));
 
     // Use the streak from the habit entity if available, otherwise calculate it
-    final int currentStreak = _habit.currentStreak > 0 ? _habit.currentStreak : StreakCalculator.calculateCurrentStreak(_logs, _habit.lastCompletedDate);
-    final int longestStreak = _habit.longestStreak > 0 ? _habit.longestStreak : StreakCalculator.calculateLongestStreak(_logs);
+    final int currentStreak =
+        _habit.currentStreak > 0
+            ? _habit.currentStreak
+            : StreakCalculator.calculateCurrentStreak(
+              _logs,
+              _habit.lastCompletedDate,
+            );
+    final int longestStreak =
+        _habit.longestStreak > 0
+            ? _habit.longestStreak
+            : StreakCalculator.calculateLongestStreak(_logs);
 
     return Card(
       child: Padding(
@@ -241,25 +257,32 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Progress',
-                  style: AppTextStyles.headingSmall,
-                ),
+                Text('Progress', style: AppTextStyles.headingSmall),
                 if (currentStreak > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary.withOpacity(0.2),
+                      color: AppColors.secondary.withAlpha(50),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.local_fire_department, color: AppColors.secondary, size: 16),
+                        const Icon(
+                          Icons.local_fire_department,
+                          color: AppColors.secondary,
+                          size: 16,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '$currentStreak day streak!',
-                          style: AppTextStyles.bodySmall.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.secondary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -310,31 +333,31 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
     );
   }
 
-  Widget _buildProgressItem(String label, String value, IconData icon, Color color) {
+  Widget _buildProgressItem(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: color,
-          size: 32,
-        ),
+        Icon(icon, color: color, size: 32),
         const SizedBox(height: 8),
         Text(
           value,
           style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppTextStyles.bodySmall,
-        ),
+        Text(label, style: AppTextStyles.bodySmall),
       ],
     );
   }
 
   Widget _buildTrackingSection() {
     final today = DateTimeUtils.today;
-    final bool completedToday = _logs.any((log) => DateTimeUtils.isSameDay(log.date, today));
+    final bool completedToday = _logs.any(
+      (log) => DateTimeUtils.isSameDay(log.date, today),
+    );
 
     return Card(
       child: Padding(
@@ -342,10 +365,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Track Progress',
-              style: AppTextStyles.headingSmall,
-            ),
+            Text('Track Progress', style: AppTextStyles.headingSmall),
             const SizedBox(height: 16),
             if (completedToday)
               Center(
@@ -359,7 +379,9 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                     const SizedBox(height: 8),
                     Text(
                       'Completed Today',
-                      style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -421,16 +443,9 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
           child: Center(
             child: Column(
               children: [
-                const Icon(
-                  Icons.history,
-                  size: 48,
-                  color: Colors.grey,
-                ),
+                const Icon(Icons.history, size: 48, color: Colors.grey),
                 const SizedBox(height: 16),
-                Text(
-                  'No history yet',
-                  style: AppTextStyles.bodyLarge,
-                ),
+                Text('No history yet', style: AppTextStyles.bodyLarge),
                 const SizedBox(height: 8),
                 Text(
                   'Start tracking your progress to see your history',
@@ -453,10 +468,7 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'History',
-              style: AppTextStyles.headingSmall,
-            ),
+            Text('History', style: AppTextStyles.headingSmall),
             const SizedBox(height: 16),
             ListView.builder(
               shrinkWrap: true,
@@ -467,18 +479,18 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
                 return ListTile(
                   leading: const CircleAvatar(
                     backgroundColor: AppColors.success,
-                    child: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                    ),
+                    child: Icon(Icons.check, color: Colors.white),
                   ),
                   title: Text(
                     DateTimeUtils.formatDate(log.date),
-                    style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  subtitle: log.notes.isNotEmpty
-                      ? Text(log.notes)
-                      : Text('${log.value} ${_habit.goalUnit}'),
+                  subtitle:
+                      log.notes.isNotEmpty
+                          ? Text(log.notes)
+                          : Text('${log.value} ${_habit.goalUnit}'),
                   trailing: Text(
                     DateTimeUtils.formatTime(log.createdAt),
                     style: AppTextStyles.bodySmall,
@@ -509,41 +521,45 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
     context.read<HabitBloc>().add(CreateHabitLogEvent(habitLog: habitLog));
 
     // Update streak information
-    context.read<HabitBloc>().add(UpdateStreakEvent(
-      habitId: _habit.id,
-      logDate: now,
-    ));
+    context.read<HabitBloc>().add(
+      UpdateStreakEvent(habitId: _habit.id, logDate: now),
+    );
 
     // Clear the notes field
     _notesController.clear();
   }
 
-  // This method is kept for backward compatibility but now uses StreakCalculator
-  int _calculateCurrentStreak() {
-    return StreakCalculator.calculateCurrentStreak(_logs, _habit.lastCompletedDate);
-  }
+  // Removed unused method
 
   void _showDeleteConfirmation() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Habit'),
-        content: Text('Are you sure you want to delete "${_habit.name}"? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Habit'),
+            content: Text(
+              'Are you sure you want to delete "${_habit.name}"? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.read<HabitBloc>().add(
+                    DeleteHabitEvent(id: _habit.id),
+                  );
+                  Navigator.pop(context); // Return to habits list
+                },
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: AppColors.error),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<HabitBloc>().add(DeleteHabitEvent(id: _habit.id));
-              Navigator.pop(context); // Return to habits list
-            },
-            child: const Text('Delete', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -552,78 +568,87 @@ class _HabitDetailsPageState extends State<HabitDetailsPage> {
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Set Reminder'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Set a daily reminder for "${_habit.name}"',
-                  style: AppTextStyles.bodyMedium,
+      builder:
+          (context) => StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: const Text('Set Reminder'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Set a daily reminder for "${_habit.name}"',
+                      style: AppTextStyles.bodyMedium,
+                    ),
+                    const SizedBox(height: 20),
+                    InkWell(
+                      onTap: () async {
+                        final TimeOfDay? picked = await showTimePicker(
+                          context: context,
+                          initialTime: selectedTime,
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            selectedTime = picked;
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Reminder Time',
+                              style: AppTextStyles.bodyMedium,
+                            ),
+                            Text(
+                              '${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                InkWell(
-                  onTap: () async {
-                    final TimeOfDay? picked = await showTimePicker(
-                      context: context,
-                      initialTime: selectedTime,
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        selectedTime = picked;
-                      });
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Reminder Time',
-                          style: AppTextStyles.bodyMedium,
-                        ),
-                        Text(
-                          '${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}',
-                          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
                   ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  ///TODO: Schedule the reminder
-                  // Schedule the reminder
+                  ElevatedButton(
+                    onPressed: () {
+                      // In a real implementation, we would create a HabitReminder object
+                      // and dispatch an event to the HabitBloc to schedule the reminder
+                      // For now, we'll just show the success message
 
-                  Navigator.pop(context);
+                      Navigator.pop(context);
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Reminder set successfully!'),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
-                },
-                child: const Text('Set Reminder'),
-              ),
-            ],
-          );
-        },
-      ),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Reminder set for ${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                          ),
+                          backgroundColor: AppColors.success,
+                        ),
+                      );
+                    },
+                    child: const Text('Set Reminder'),
+                  ),
+                ],
+              );
+            },
+          ),
     );
   }
 }

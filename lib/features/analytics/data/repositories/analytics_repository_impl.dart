@@ -77,4 +77,32 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> exportAnalyticsData(String format) async {
+    try {
+      final filePath = await dataSource.exportAnalyticsData(format);
+      return Right(filePath);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> setHabitGoal(
+    String habitId,
+    int? targetStreak,
+    double? targetCompletionRate,
+  ) async {
+    try {
+      final result = await dataSource.setHabitGoal(
+        habitId,
+        targetStreak,
+        targetCompletionRate,
+      );
+      return Right(result);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
 }

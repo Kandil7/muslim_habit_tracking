@@ -13,8 +13,13 @@ class HabitStatsModel extends HabitStats {
     required super.currentStreak,
     required super.longestStreak,
     required super.weekdayCompletion,
+    super.monthlyCompletionRates = const {},
+    super.yearlyCompletionRates = const {},
+    super.targetStreak,
+    super.targetCompletionRate,
+    super.hasReachedGoal = false,
   });
-  
+
   /// Create a HabitStatsModel from a JSON map
   factory HabitStatsModel.fromJson(Map<String, dynamic> json) {
     return HabitStatsModel(
@@ -26,9 +31,20 @@ class HabitStatsModel extends HabitStats {
       currentStreak: json['currentStreak'],
       longestStreak: json['longestStreak'],
       weekdayCompletion: Map<String, int>.from(json['weekdayCompletion']),
+      monthlyCompletionRates:
+          json['monthlyCompletionRates'] != null
+              ? Map<String, double>.from(json['monthlyCompletionRates'])
+              : {},
+      yearlyCompletionRates:
+          json['yearlyCompletionRates'] != null
+              ? Map<String, double>.from(json['yearlyCompletionRates'])
+              : {},
+      targetStreak: json['targetStreak'],
+      targetCompletionRate: json['targetCompletionRate'],
+      hasReachedGoal: json['hasReachedGoal'] ?? false,
     );
   }
-  
+
   /// Convert this HabitStatsModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -40,9 +56,14 @@ class HabitStatsModel extends HabitStats {
       'currentStreak': currentStreak,
       'longestStreak': longestStreak,
       'weekdayCompletion': weekdayCompletion,
+      'monthlyCompletionRates': monthlyCompletionRates,
+      'yearlyCompletionRates': yearlyCompletionRates,
+      'targetStreak': targetStreak,
+      'targetCompletionRate': targetCompletionRate,
+      'hasReachedGoal': hasReachedGoal,
     };
   }
-  
+
   /// Create a HabitStatsModel from a HabitStats entity
   factory HabitStatsModel.fromEntity(HabitStats habitStats) {
     return HabitStatsModel(
@@ -54,6 +75,11 @@ class HabitStatsModel extends HabitStats {
       currentStreak: habitStats.currentStreak,
       longestStreak: habitStats.longestStreak,
       weekdayCompletion: habitStats.weekdayCompletion,
+      monthlyCompletionRates: habitStats.monthlyCompletionRates,
+      yearlyCompletionRates: habitStats.yearlyCompletionRates,
+      targetStreak: habitStats.targetStreak,
+      targetCompletionRate: habitStats.targetCompletionRate,
+      hasReachedGoal: habitStats.hasReachedGoal,
     );
   }
 }

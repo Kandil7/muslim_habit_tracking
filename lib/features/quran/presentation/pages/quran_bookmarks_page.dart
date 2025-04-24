@@ -20,6 +20,9 @@ class QuranBookmarksPage extends StatefulWidget {
 }
 
 class _QuranBookmarksPageState extends State<QuranBookmarksPage> {
+  // Current sort option
+  String _currentSortOption = 'date';
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +39,31 @@ class _QuranBookmarksPageState extends State<QuranBookmarksPage> {
     }
   }
 
+  // Sort bookmarks based on the selected option
+  List<dynamic> _sortBookmarks(List<dynamic> bookmarks, String sortOption) {
+    final sortedBookmarks = List.from(bookmarks);
+
+    switch (sortOption) {
+      case 'date':
+        // Sort by date (newest first)
+        sortedBookmarks.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        break;
+      case 'page':
+        // Sort by page number (ascending)
+        sortedBookmarks.sort((a, b) => a.page.compareTo(b.page));
+        break;
+      case 'title':
+        // Sort by title (alphabetically)
+        sortedBookmarks.sort((a, b) => a.title.compareTo(b.title));
+        break;
+      default:
+        // Default sort by date
+        sortedBookmarks.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    }
+
+    return sortedBookmarks;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,11 +75,24 @@ class _QuranBookmarksPageState extends State<QuranBookmarksPage> {
             icon: const Icon(Icons.sort),
             tooltip: context.tr.translate('quran.sortBy'),
             onSelected: (value) {
-              // Implement sorting logic here
-              // For now, we'll just show a snackbar
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Sorting by $value')));
+              // Update the sort option and rebuild the widget
+              setState(() {
+                _currentSortOption = value;
+              });
+
+              // Show a snackbar to confirm the sort option
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Sorting by ${value == 'date'
+                        ? 'date added'
+                        : value == 'page'
+                        ? 'page number'
+                        : 'title'}',
+                  ),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
             },
             itemBuilder:
                 (context) => [
@@ -105,7 +146,11 @@ class _QuranBookmarksPageState extends State<QuranBookmarksPage> {
               ),
             );
           } else if (state is BookmarksLoaded) {
-            final bookmarks = state.bookmarks;
+            // Sort the bookmarks based on the current sort option
+            final bookmarks = _sortBookmarks(
+              state.bookmarks,
+              _currentSortOption,
+            );
             if (bookmarks.isEmpty) {
               return Center(
                 child: Column(

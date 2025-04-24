@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '/core/utils/colors.dart';
 import '/core/utils/styles.dart';
 
-import '../../utils/colors.dart';
 import 'app_bar_flexible_space.dart';
 
 AppBar customAppBar(String title) {
@@ -13,9 +12,7 @@ AppBar customAppBar(String title) {
     iconTheme: IconThemeData(color: AppColors.whiteColor),
     title: Text(
       title,
-      style: Styles.semiBold16.copyWith(
-        color: AppColors.whiteColor,
-      ),
+      style: Styles.semiBold16.copyWith(color: AppColors.whiteColor),
     ),
   );
 }

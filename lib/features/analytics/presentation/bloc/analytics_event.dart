@@ -51,3 +51,37 @@ class GetMostConsistentHabitEvent extends AnalyticsEvent {
 class GetLeastConsistentHabitEvent extends AnalyticsEvent {
   const GetLeastConsistentHabitEvent();
 }
+
+/// Event to export analytics data
+class ExportAnalyticsDataEvent extends AnalyticsEvent {
+  /// The format to export (csv, pdf)
+  final String format;
+
+  /// Constructor
+  const ExportAnalyticsDataEvent({this.format = 'csv'});
+
+  @override
+  List<Object?> get props => [format];
+}
+
+/// Event to set a goal for a habit
+class SetHabitGoalEvent extends AnalyticsEvent {
+  /// The habit ID
+  final String habitId;
+
+  /// The target streak (optional)
+  final int? targetStreak;
+
+  /// The target completion rate (optional)
+  final double? targetCompletionRate;
+
+  /// Constructor
+  const SetHabitGoalEvent({
+    required this.habitId,
+    this.targetStreak,
+    this.targetCompletionRate,
+  });
+
+  @override
+  List<Object?> get props => [habitId, targetStreak, targetCompletionRate];
+}

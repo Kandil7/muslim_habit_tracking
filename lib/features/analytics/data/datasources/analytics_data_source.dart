@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../habit_tracking/data/datasources/habit_local_data_source.dart';
@@ -27,6 +29,16 @@ abstract class AnalyticsDataSource {
 
   /// Get the least consistent habit
   Future<HabitStatsModel> getLeastConsistentHabit();
+
+  /// Export analytics data
+  Future<String> exportAnalyticsData(String format);
+
+  /// Set a goal for a habit
+  Future<bool> setHabitGoal(
+    String habitId,
+    int? targetStreak,
+    double? targetCompletionRate,
+  );
 }
 
 /// Implementation of AnalyticsDataSource
@@ -141,6 +153,123 @@ class AnalyticsDataSourceImpl implements AnalyticsDataSource {
         weekdayCompletion[weekday] = (weekdayCompletion[weekday] ?? 0) + 1;
       }
 
+      // Calculate monthly completion rates
+      final Map<String, double> monthlyCompletionRates = {};
+      final Map<int, int> monthlyCompletionCounts = {};
+      final Map<int, int> monthlyTotalDays = {};
+
+      // Get the current month and year
+      final now = DateTime.now();
+      final currentYear = now.year;
+
+      // Calculate for the last 12 months
+      for (int i = 0; i < 12; i++) {
+        final month = now.month - i;
+        final year = currentYear - (month <= 0 ? 1 : 0);
+        final adjustedMonth = month <= 0 ? month + 12 : month;
+
+        final monthKey = '$year-${adjustedMonth.toString().padLeft(2, '0')}';
+        monthlyCompletionCounts[adjustedMonth] = 0;
+
+        // Calculate total days in this month (or partial month if it's the current month or habit creation month)
+        DateTime monthStart = DateTime(year, adjustedMonth, 1);
+        DateTime monthEnd = DateTime(
+          year,
+          adjustedMonth + 1,
+          0,
+        ); // Last day of month
+
+        // Adjust start date if habit was created after month start
+        if (habit.createdAt.isAfter(monthStart)) {
+          monthStart = habit.createdAt;
+        }
+
+        // Adjust end date if it's the current month
+        if (adjustedMonth == now.month && year == now.year) {
+          monthEnd = now;
+        }
+
+        // Calculate days in this month (or partial month)
+        final daysInMonth = DateTimeUtils.daysBetween(monthStart, monthEnd) + 1;
+        monthlyTotalDays[adjustedMonth] = daysInMonth;
+
+        // Count completions in this month
+        for (final log in logs) {
+          if (log.date.year == year && log.date.month == adjustedMonth) {
+            monthlyCompletionCounts[adjustedMonth] =
+                (monthlyCompletionCounts[adjustedMonth] ?? 0) + 1;
+          }
+        }
+
+        // Calculate completion rate for this month
+        final monthlyCompletionRate =
+            daysInMonth > 0
+                ? (monthlyCompletionCounts[adjustedMonth] ?? 0) /
+                    daysInMonth *
+                    100
+                : 0.0;
+
+        monthlyCompletionRates[monthKey] = monthlyCompletionRate;
+      }
+
+      // Calculate yearly completion rates
+      final Map<String, double> yearlyCompletionRates = {};
+      final Map<int, int> yearlyCompletionCounts = {};
+      final Map<int, int> yearlyTotalDays = {};
+
+      // Calculate for the last 3 years
+      for (int i = 0; i < 3; i++) {
+        final year = currentYear - i;
+        final yearKey = year.toString();
+        yearlyCompletionCounts[year] = 0;
+
+        // Calculate total days in this year (or partial year if it's the current year or habit creation year)
+        DateTime yearStart = DateTime(year, 1, 1);
+        DateTime yearEnd = DateTime(year, 12, 31);
+
+        // Adjust start date if habit was created after year start
+        if (habit.createdAt.isAfter(yearStart)) {
+          yearStart = habit.createdAt;
+        }
+
+        // Adjust end date if it's the current year
+        if (year == now.year) {
+          yearEnd = now;
+        }
+
+        // Calculate days in this year (or partial year)
+        final daysInYear = DateTimeUtils.daysBetween(yearStart, yearEnd) + 1;
+        yearlyTotalDays[year] = daysInYear;
+
+        // Count completions in this year
+        for (final log in logs) {
+          if (log.date.year == year) {
+            yearlyCompletionCounts[year] =
+                (yearlyCompletionCounts[year] ?? 0) + 1;
+          }
+        }
+
+        // Calculate completion rate for this year
+        final yearlyCompletionRate =
+            daysInYear > 0
+                ? (yearlyCompletionCounts[year] ?? 0) / daysInYear * 100
+                : 0.0;
+
+        yearlyCompletionRates[yearKey] = yearlyCompletionRate;
+      }
+
+      // Check if habit has a goal and if it's reached
+      bool hasReachedGoal = false;
+      int? targetStreak = habit.targetStreak;
+      double? targetCompletionRate = habit.targetCompletionRate;
+
+      if (targetStreak != null && currentStreak >= targetStreak) {
+        hasReachedGoal = true;
+      } else if (targetCompletionRate != null &&
+          completionRate >= targetCompletionRate) {
+        hasReachedGoal = true;
+      }
+
       return HabitStatsModel(
         habitId: habitId,
         habitName: habit.name,
@@ -150,9 +279,14 @@ class AnalyticsDataSourceImpl implements AnalyticsDataSource {
         currentStreak: currentStreak,
         longestStreak: longestStreak,
         weekdayCompletion: weekdayCompletion,
+        monthlyCompletionRates: monthlyCompletionRates,
+        yearlyCompletionRates: yearlyCompletionRates,
+        targetStreak: targetStreak,
+        targetCompletionRate: targetCompletionRate,
+        hasReachedGoal: hasReachedGoal,
       );
     } catch (e) {
-      throw CacheException(message: 'Failed to get habit stats');
+      throw CacheException(message: 'Failed to get habit stats: $e');
     }
   }
 
@@ -333,6 +467,71 @@ class AnalyticsDataSourceImpl implements AnalyticsDataSource {
       return habitStats.first;
     } catch (e) {
       throw CacheException(message: 'Failed to get least consistent habit');
+    }
+  }
+
+  @override
+  Future<String> exportAnalyticsData(String format) async {
+    try {
+      final habitStats = await getAllHabitStats();
+
+      if (habitStats.isEmpty) {
+        throw CacheException(message: 'No habits found to export');
+      }
+
+      // Create a temporary file path
+      final directory = await getTemporaryDirectory();
+      final path = '${directory.path}/habit_analytics.$format';
+      final file = File(path);
+
+      if (format.toLowerCase() == 'csv') {
+        // Create CSV header
+        final csvData = StringBuffer();
+        csvData.writeln(
+          'Habit Name,Completion Rate (%),Current Streak,Longest Streak,Total Completions,Total Days',
+        );
+
+        // Add data for each habit
+        for (final stats in habitStats) {
+          csvData.writeln(
+            '${stats.habitName},${stats.completionRate.toStringAsFixed(1)},${stats.currentStreak},${stats.longestStreak},${stats.completionCount},${stats.totalDays}',
+          );
+        }
+
+        // Write to file
+        await file.writeAsString(csvData.toString());
+      } else {
+        throw CacheException(message: 'Unsupported export format: $format');
+      }
+
+      return path;
+    } catch (e) {
+      throw CacheException(message: 'Failed to export analytics data: $e');
+    }
+  }
+
+  @override
+  Future<bool> setHabitGoal(
+    String habitId,
+    int? targetStreak,
+    double? targetCompletionRate,
+  ) async {
+    try {
+      // Get the habit
+      final habit = await habitLocalDataSource.getHabitById(habitId);
+
+      // Update the habit with the new goals
+      final updatedHabit = habit.copyWith(
+        targetStreak: targetStreak,
+        targetCompletionRate: targetCompletionRate,
+      );
+
+      // Save the updated habit
+      await habitLocalDataSource.updateHabit(updatedHabit);
+
+      return true;
+    } catch (e) {
+      throw CacheException(message: 'Failed to set habit goal: $e');
     }
   }
 }

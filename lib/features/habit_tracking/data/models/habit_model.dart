@@ -22,6 +22,8 @@ class HabitModel extends Habit {
     super.lastCompletedDate,
     super.categoryId,
     super.tags = const [],
+    super.targetStreak,
+    super.targetCompletionRate,
   });
 
   /// Create a HabitModel from a JSON map
@@ -38,12 +40,21 @@ class HabitModel extends Habit {
       daysOfWeek: List<String>.from(json['daysOfWeek']),
       isActive: json['isActive'],
       createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       currentStreak: json['currentStreak'] ?? 0,
       longestStreak: json['longestStreak'] ?? 0,
-      lastCompletedDate: json['lastCompletedDate'] != null ? DateTime.parse(json['lastCompletedDate']) : null,
+      lastCompletedDate:
+          json['lastCompletedDate'] != null
+              ? DateTime.parse(json['lastCompletedDate'])
+              : null,
       categoryId: json['categoryId'],
       tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
+      targetStreak: json['targetStreak'],
+      targetCompletionRate:
+          json['targetCompletionRate'] != null
+              ? (json['targetCompletionRate'] as num).toDouble()
+              : null,
     );
   }
 
@@ -67,6 +78,8 @@ class HabitModel extends Habit {
       'lastCompletedDate': lastCompletedDate?.toIso8601String(),
       'categoryId': categoryId,
       'tags': tags,
+      'targetStreak': targetStreak,
+      'targetCompletionRate': targetCompletionRate,
     };
   }
 
@@ -90,6 +103,8 @@ class HabitModel extends Habit {
       lastCompletedDate: habit.lastCompletedDate,
       categoryId: habit.categoryId,
       tags: habit.tags,
+      targetStreak: habit.targetStreak,
+      targetCompletionRate: habit.targetCompletionRate,
     );
   }
 
@@ -114,6 +129,8 @@ class HabitModel extends Habit {
     bool clearLastCompletedDate = false,
     String? categoryId,
     List<String>? tags,
+    int? targetStreak,
+    double? targetCompletionRate,
   }) {
     return HabitModel(
       id: id ?? this.id,
@@ -130,9 +147,14 @@ class HabitModel extends Habit {
       updatedAt: updatedAt ?? this.updatedAt,
       currentStreak: currentStreak ?? this.currentStreak,
       longestStreak: longestStreak ?? this.longestStreak,
-      lastCompletedDate: clearLastCompletedDate ? null : (lastCompletedDate ?? this.lastCompletedDate),
+      lastCompletedDate:
+          clearLastCompletedDate
+              ? null
+              : (lastCompletedDate ?? this.lastCompletedDate),
       categoryId: categoryId ?? this.categoryId,
       tags: tags ?? this.tags,
+      targetStreak: targetStreak ?? this.targetStreak,
+      targetCompletionRate: targetCompletionRate ?? this.targetCompletionRate,
     );
   }
 }

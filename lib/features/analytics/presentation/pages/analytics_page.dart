@@ -8,6 +8,7 @@ import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_blo
 import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_event.dart';
 import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_state.dart';
 import 'package:muslim_habbit/features/analytics/presentation/pages/habit_stats_detail_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Analytics page with granular BlocBuilder widgets
 class AnalyticsPage extends StatefulWidget {
@@ -40,17 +41,28 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       appBar: AppBar(
         title: const Text('Analytics'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Export Data',
+            onPressed: _exportAnalyticsData,
+          ),
           PopupMenuButton<String>(
             onSelected: (value) {
               setState(() {
                 switch (value) {
                   case 'week':
                     _startDate = DateTimeUtils.startOfWeek;
-                    _endDate = DateTimeUtils.endOfWeek;
+                    // Make sure end date is not in the future
+                    final endOfWeek = DateTimeUtils.endOfWeek;
+                    final now = DateTime.now();
+                    _endDate = endOfWeek.isAfter(now) ? now : endOfWeek;
                     break;
                   case 'month':
                     _startDate = DateTimeUtils.startOfMonth;
-                    _endDate = DateTimeUtils.endOfMonth;
+                    // Make sure end date is not in the future
+                    final endOfMonth = DateTimeUtils.endOfMonth;
+                    final now = DateTime.now();
+                    _endDate = endOfMonth.isAfter(now) ? now : endOfMonth;
                     break;
                   case 'custom':
                     _showDateRangePicker(context);
@@ -318,9 +330,21 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                stats.habitName,
-                style: Theme.of(context).textTheme.titleMedium,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      stats.habitName,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  if (stats.hasReachedGoal)
+                    Tooltip(
+                      message: 'Goal reached!',
+                      child: Icon(Icons.emoji_events, color: AppColors.success),
+                    ),
+                ],
               ),
               const SizedBox(height: 16),
               Row(
@@ -329,14 +353,20 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   StatItem(
                     label: 'Completion',
                     value: '${stats.completionRate.toStringAsFixed(1)}%',
+                    icon: Icons.percent,
+                    color: _getCompletionColor(stats.completionRate),
                   ),
                   StatItem(
                     label: 'Current Streak',
                     value: '${stats.currentStreak} days',
+                    icon: Icons.local_fire_department,
+                    color: AppColors.secondary,
                   ),
                   StatItem(
                     label: 'Longest Streak',
                     value: '${stats.longestStreak} days',
+                    icon: Icons.emoji_events,
+                    color: AppColors.success,
                   ),
                 ],
               ),
@@ -348,6 +378,29 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 valueColor: AlwaysStoppedAnimation<Color>(
                   _getCompletionColor(stats.completionRate),
                 ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Completed ${stats.completionCount} out of ${stats.totalDays} days',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  HabitStatsDetailPage(habitStats: stats),
+                        ),
+                      );
+                    },
+                    child: const Text('Details'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -367,13 +420,23 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   }
 
   Future<void> _showDateRangePicker(BuildContext context) async {
-    final initialDateRange = DateTimeRange(start: _startDate, end: _endDate);
+    // Make sure the end date is not in the future
+    final now = DateTime.now();
+    final adjustedEndDate = _endDate.isAfter(now) ? now : _endDate;
+
+    final initialDateRange = DateTimeRange(
+      start: _startDate,
+      end: adjustedEndDate,
+    );
+
+    // Set lastDate to at least one year in the future to accommodate any reasonable range
+    final lastDate = DateTime(now.year + 1, now.month, now.day);
 
     final pickedDateRange = await showDateRangePicker(
       context: context,
       initialDateRange: initialDateRange,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: lastDate,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -396,5 +459,53 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       });
       _loadAnalytics();
     }
+  }
+
+  void _exportAnalyticsData() {
+    context.read<AnalyticsBloc>().add(
+      const ExportAnalyticsDataEvent(format: 'csv'),
+    );
+
+    // Show a snackbar to indicate that the export is in progress
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Exporting analytics data...')),
+    );
+
+    // Listen for the export completion
+    final blocListener = BlocListener<AnalyticsBloc, AnalyticsState>(
+      listenWhen:
+          (previous, current) =>
+              current is AnalyticsDataExported || current is AnalyticsError,
+      listener: (context, state) {
+        if (state is AnalyticsDataExported) {
+          // Share the exported file
+          Share.shareXFiles(
+            [XFile(state.filePath)],
+            subject: 'Habit Analytics Data',
+            text: 'Here is your habit analytics data',
+          );
+        } else if (state is AnalyticsError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: const SizedBox.shrink(),
+    );
+
+    // Add the listener to the widget tree temporarily
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => blocListener,
+    );
+
+    Overlay.of(context).insert(overlayEntry);
+
+    // Remove the overlay entry after a delay
+    Future.delayed(const Duration(seconds: 5), () {
+      overlayEntry.remove();
+    });
   }
 }

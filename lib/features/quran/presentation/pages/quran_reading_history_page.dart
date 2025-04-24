@@ -21,6 +21,9 @@ class QuranReadingHistoryPage extends StatefulWidget {
 }
 
 class _QuranReadingHistoryPageState extends State<QuranReadingHistoryPage> {
+  // Current filter option
+  String _currentFilter = 'all';
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,42 @@ class _QuranReadingHistoryPageState extends State<QuranReadingHistoryPage> {
     }
   }
 
+  // Filter history entries based on the selected filter
+  List<dynamic> _filterHistory(List<dynamic> history, String filter) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final filteredHistory = List.from(history);
+
+    switch (filter) {
+      case 'today':
+        // Filter entries from today
+        return filteredHistory.where((entry) {
+          final entryDate = DateTime(
+            entry.timestamp.year,
+            entry.timestamp.month,
+            entry.timestamp.day,
+          );
+          return entryDate.isAtSameMomentAs(today);
+        }).toList();
+      case 'week':
+        // Filter entries from the last 7 days
+        final weekAgo = today.subtract(const Duration(days: 7));
+        return filteredHistory.where((entry) {
+          return entry.timestamp.isAfter(weekAgo);
+        }).toList();
+      case 'month':
+        // Filter entries from the last 30 days
+        final monthAgo = today.subtract(const Duration(days: 30));
+        return filteredHistory.where((entry) {
+          return entry.timestamp.isAfter(monthAgo);
+        }).toList();
+      case 'all':
+      default:
+        // Return all entries
+        return filteredHistory;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,11 +87,26 @@ class _QuranReadingHistoryPageState extends State<QuranReadingHistoryPage> {
             icon: const Icon(Icons.filter_list),
             tooltip: context.tr.translate('quran.filterBy'),
             onSelected: (value) {
-              // Implement filtering logic here
-              // For now, we'll just show a snackbar
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Filtering by $value')));
+              // Update the filter option and rebuild the widget
+              setState(() {
+                _currentFilter = value;
+              });
+
+              // Show a snackbar to confirm the filter option
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Showing ${value == 'all'
+                        ? 'all history'
+                        : value == 'today'
+                        ? 'today\'s'
+                        : value == 'week'
+                        ? 'this week\'s'
+                        : 'this month\'s'} entries',
+                  ),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
             },
             itemBuilder:
                 (context) => [
@@ -107,7 +161,8 @@ class _QuranReadingHistoryPageState extends State<QuranReadingHistoryPage> {
               ),
             );
           } else if (state is ReadingHistoryLoaded) {
-            final history = state.history;
+            // Filter the history based on the current filter option
+            final history = _filterHistory(state.history, _currentFilter);
             if (history.isEmpty) {
               return Center(
                 child: Column(

@@ -84,3 +84,30 @@ class LeastConsistentHabitLoaded extends AnalyticsState {
   @override
   List<Object?> get props => [habitStats];
 }
+
+/// State when analytics data has been exported
+class AnalyticsDataExported extends AnalyticsState {
+  final String filePath;
+  final String format;
+
+  const AnalyticsDataExported({required this.filePath, required this.format});
+
+  @override
+  List<Object?> get props => [filePath, format];
+}
+
+/// State when a goal has been set for a habit
+class HabitGoalSet extends AnalyticsState {
+  final String habitId;
+  final int? targetStreak;
+  final double? targetCompletionRate;
+
+  const HabitGoalSet({
+    required this.habitId,
+    this.targetStreak,
+    this.targetCompletionRate,
+  });
+
+  @override
+  List<Object?> get props => [habitId, targetStreak, targetCompletionRate];
+}

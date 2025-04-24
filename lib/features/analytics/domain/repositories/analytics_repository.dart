@@ -25,4 +25,14 @@ abstract class AnalyticsRepository {
 
   /// Get the least consistent habit
   Future<Either<Failure, HabitStats>> getLeastConsistentHabit();
+
+  /// Export analytics data
+  Future<Either<Failure, String>> exportAnalyticsData(String format);
+
+  /// Set a goal for a habit
+  Future<Either<Failure, bool>> setHabitGoal(
+    String habitId,
+    int? targetStreak,
+    double? targetCompletionRate,
+  );
 }

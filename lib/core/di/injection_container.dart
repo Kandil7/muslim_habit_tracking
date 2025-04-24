@@ -10,6 +10,9 @@ import 'package:quran_library/quran_library.dart' hide QuranRepository;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../services/logger_service.dart';
+import '../utils/error_handler.dart';
+
 import '../../features/notification/data/repo/notification_repo_impl.dart';
 import '../../features/notification/presentation/manager/notification/notification_cubit.dart';
 import '../../features/prayer_times/data/repo/prayer_repo_impl.dart';
@@ -17,6 +20,7 @@ import '../localization/bloc/language_bloc_exports.dart';
 
 import '../constants/app_constants.dart';
 import '../network/network_info.dart';
+import '../network/network_error_handler.dart';
 import '../services/cache_manager.dart';
 import '../../features/habit_tracking/data/datasources/habit_local_data_source.dart';
 import '../../features/habit_tracking/data/repositories/habit_repository_impl.dart';
@@ -35,16 +39,19 @@ import '../../features/dua_dhikr/domain/repositories/dua_dhikr_repository.dart';
 import '../../features/dua_dhikr/domain/usecases/get_all_dhikrs.dart';
 import '../../features/dua_dhikr/domain/usecases/get_duas_by_category.dart';
 import '../../features/dua_dhikr/domain/usecases/toggle_dua_favorite.dart';
+import '../../features/dua_dhikr/domain/usecases/toggle_dhikr_favorite.dart';
 import '../../features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import '../../features/analytics/data/datasources/analytics_data_source.dart';
 import '../../features/analytics/data/repositories/analytics_repository_impl.dart';
 import '../../features/analytics/domain/repositories/analytics_repository.dart';
+import '../../features/analytics/domain/usecases/export_analytics_data_usecase.dart';
 import '../../features/analytics/domain/usecases/get_all_habit_stats.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats.dart';
 import '../../features/analytics/domain/usecases/get_habit_stats_by_date_range.dart';
 import '../../features/analytics/domain/usecases/get_least_consistent_habit.dart';
 import '../../features/analytics/domain/usecases/get_most_consistent_habit.dart';
 import '../../features/analytics/domain/usecases/get_overall_completion_rate.dart';
+import '../../features/analytics/domain/usecases/set_habit_goal.dart';
 import '../../features/analytics/presentation/bloc/analytics_bloc.dart';
 import '../utils/services/location_service.dart';
 
@@ -131,8 +138,17 @@ Future<void> _initCore() async {
   // NetworkInfo
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
+  // NetworkErrorHandler
+  sl.registerLazySingleton(() => NetworkErrorHandler(networkInfo: sl()));
+
   // Cache Manager
   sl.registerLazySingleton(() => CacheManager());
+
+  // Logger Service
+  sl.registerLazySingleton(() => LoggerService());
+
+  // Error Handler
+  sl.registerLazySingleton(() => ErrorHandler());
 
   // Initialize SharedPrefService
   await SharedPrefService.init();
@@ -227,6 +243,7 @@ Future<void> _initDuaDhikrFeature() async {
   sl.registerLazySingleton(() => GetDuasByCategory(sl()));
   sl.registerLazySingleton(() => GetAllDhikrs(sl()));
   sl.registerLazySingleton(() => ToggleDuaFavorite(sl()));
+  sl.registerLazySingleton(() => ToggleDhikrFavorite(sl()));
 
   // BLoC
   sl.registerFactory(
@@ -234,6 +251,7 @@ Future<void> _initDuaDhikrFeature() async {
       getDuasByCategory: sl(),
       getAllDhikrs: sl(),
       toggleDuaFavorite: sl(),
+      toggleDhikrFavorite: sl(),
     ),
   );
 }
@@ -257,6 +275,8 @@ Future<void> _initAnalyticsFeature() async {
   sl.registerLazySingleton(() => GetOverallCompletionRate(sl()));
   sl.registerLazySingleton(() => GetMostConsistentHabit(sl()));
   sl.registerLazySingleton(() => GetLeastConsistentHabit(sl()));
+  sl.registerLazySingleton(() => ExportAnalyticsData(sl()));
+  sl.registerLazySingleton(() => SetHabitGoal(sl()));
 
   // BLoC
   sl.registerFactory(
@@ -267,6 +287,8 @@ Future<void> _initAnalyticsFeature() async {
       getOverallCompletionRate: sl(),
       getMostConsistentHabit: sl(),
       getLeastConsistentHabit: sl(),
+      exportAnalyticsData: sl(),
+      setHabitGoal: sl(),
     ),
   );
 }
