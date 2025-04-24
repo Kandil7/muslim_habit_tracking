@@ -211,8 +211,11 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    // Flatten provider structure for better performance by combining
+    // all providers in a single MultiProvider
+    return MultiProvider(
       providers: [
+        // BLoC providers
         BlocProvider<ThemeBloc>(
           create: (context) => ThemeBloc()..add(const LoadThemeEvent()),
         ),
@@ -239,64 +242,60 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
         ),
         BlocProvider<QuranBloc>(create: (context) => di.sl<QuranBloc>()),
       ],
-      child: BlocBuilder<LanguageCubit, LanguageState>(
-        builder: (context, languageState) {
-          return BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (context, themeState) {
-              return MaterialApp(
-                title: 'Muslim Habbit',
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: themeState.themeMode,
-                locale: languageState.locale,
-                supportedLocales: const [
-                  Locale('en', ''), // English
-                  Locale('ar', ''), // Arabic
-                ],
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                // RTL support and accessibility features
-                builder: (context, child) {
-                  final textSizeProvider = Provider.of<TextSizeProvider>(
-                    context,
-                  );
-                  final contrastProvider = Provider.of<ContrastProvider>(
-                    context,
-                  );
+      child: Builder(
+        builder: (context) {
+          // Access the language and theme state from the context
+          final languageState = context.watch<LanguageCubit>().state;
+          final themeState = context.watch<ThemeBloc>().state;
 
-                  // Apply high contrast theme if needed
-                  final theme =
-                      contrastProvider.isHighContrast
-                          ? _applyHighContrast(Theme.of(context))
-                          : null;
+          return MaterialApp(
+            title: 'Muslim Habbit',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeState.themeMode,
+            locale: languageState.locale,
+            supportedLocales: const [
+              Locale('en', ''), // English
+              Locale('ar', ''), // Arabic
+            ],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            // RTL support and accessibility features
+            builder: (context, child) {
+              final textSizeProvider = Provider.of<TextSizeProvider>(context);
+              final contrastProvider = Provider.of<ContrastProvider>(context);
 
-                  return Theme(
-                    data: theme ?? Theme.of(context),
-                    child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(
-                          textSizeProvider.textScaleFactor,
-                        ),
-                      ),
-                      child: Directionality(
-                        textDirection:
-                            languageState.isRtl
-                                ? TextDirection.rtl
-                                : TextDirection.ltr,
-                        child: child!,
-                      ),
+              // Apply high contrast theme if needed
+              final theme =
+                  contrastProvider.isHighContrast
+                      ? _applyHighContrast(Theme.of(context))
+                      : null;
+
+              return Theme(
+                data: theme ?? Theme.of(context),
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.linear(
+                      textSizeProvider.textScaleFactor,
                     ),
-                  );
-                },
-                home: const SplashPage(),
-                onGenerateRoute: _generateRoute,
+                  ),
+                  child: Directionality(
+                    textDirection:
+                        languageState.isRtl
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                    child: child!,
+                  ),
+                ),
               );
             },
+            home: const SplashPage(),
+            onGenerateRoute: _generateRoute,
           );
         },
       ),
