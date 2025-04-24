@@ -146,24 +146,29 @@ Future<void> _initializeNotifications() async {
     // Initialize the notification service
     try {
       await notificationService.initNotification();
+      debugPrint('Notification service initialized successfully');
+
+      // Request notification permissions
+      final permissionsGranted = await notificationService.requestPermissions();
+      debugPrint('Notification permissions granted: $permissionsGranted');
+
+      // Register notification handlers
+      _registerNotificationHandlers(notificationService);
     } catch (error) {
       debugPrint('Error initializing notification service: $error');
       // Non-critical error, continue app initialization
     }
-
-    // Request notification permissions
-    try {
-      await notificationService.requestPermissions();
-    } catch (error) {
-      debugPrint('Error requesting notification permissions: $error');
-      // Non-critical error, continue app initialization
-    }
-
-    debugPrint('Notification service initialized successfully');
   } catch (e) {
     debugPrint('Error during notification initialization: $e');
     // Non-critical error, continue app initialization
   }
+}
+
+/// Register notification handlers for different notification types
+void _registerNotificationHandlers(NotificationService notificationService) {
+  // This will be called when the app is in the foreground and a notification is received
+  // We can add custom handling for different notification types here
+  debugPrint('Registered notification handlers');
 }
 
 class SunnahTrackApp extends StatefulWidget {

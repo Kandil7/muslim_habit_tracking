@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -19,15 +21,18 @@ class NotificationService {
     // Initialize timezone
     await _setTimeZone();
 
+    // Create notification channels for Android
+    await _createNotificationChannels();
+
     // Initialize notification settings
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings("@mipmap/launcher_icon");
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
+          requestAlertPermission: false, // We'll request permissions separately
+          requestBadgePermission: false,
+          requestSoundPermission: false,
         );
 
     const InitializationSettings initializationSettings =
@@ -42,30 +47,112 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: _onNotificationTap,
     );
 
-    await _checkNotificationPermission();
     _isInitialized = true;
+    debugPrint('Notification service initialized successfully');
+  }
+
+  /// Create notification channels for Android
+  Future<void> _createNotificationChannels() async {
+    // Only needed for Android 8.0+
+    if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
+          _notificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
+
+      if (androidPlugin != null) {
+        // Create the main notification channel
+        await androidPlugin.createNotificationChannel(
+          const AndroidNotificationChannel(
+            'muslim_habit_channel',
+            'Muslim Habit Notifications',
+            description: 'Notifications for Muslim Habit app',
+            importance: Importance.max,
+          ),
+        );
+
+        // Create the scheduled notification channel
+        await androidPlugin.createNotificationChannel(
+          const AndroidNotificationChannel(
+            'muslim_habit_scheduled_channel',
+            'Muslim Habit Scheduled Notifications',
+            description: 'Scheduled notifications for Muslim Habit app',
+            importance: Importance.max,
+          ),
+        );
+
+        // Create the daily notification channel
+        await androidPlugin.createNotificationChannel(
+          const AndroidNotificationChannel(
+            'muslim_habit_daily_channel',
+            'Muslim Habit Daily Notifications',
+            description: 'Daily notifications for Muslim Habit app',
+            importance: Importance.max,
+          ),
+        );
+
+        debugPrint('Android notification channels created');
+      }
+    }
   }
 
   /// Request notification permissions
   Future<bool> requestPermissions() async {
     if (!_isInitialized) await initNotification();
 
+    bool permissionsGranted = false;
+
     // Request permissions for iOS
-    final bool? iosPermission = await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
+    if (Platform.isIOS) {
+      final iOSPlugin =
+          _notificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin
+              >();
+
+      if (iOSPlugin != null) {
+        final bool? result = await iOSPlugin.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+          critical: true, // For important notifications
+        );
+
+        permissionsGranted = result ?? false;
+        debugPrint('iOS notification permissions granted: $permissionsGranted');
+      }
+    }
 
     // Request permissions for Android
-    final bool? androidPermission =
-        await _notificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >()
-            ?.requestNotificationsPermission();
+    if (Platform.isAndroid) {
+      final androidPlugin =
+          _notificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
 
-    return iosPermission == true || androidPermission == true;
+      if (androidPlugin != null) {
+        // For Android 13+ (API level 33+)
+        final bool? result =
+            await androidPlugin.requestNotificationsPermission();
+        permissionsGranted =
+            result ?? true; // Default to true for older Android versions
+
+        // Check if notifications are enabled
+        final bool? enabled = await androidPlugin.areNotificationsEnabled();
+        debugPrint('Android notifications enabled: $enabled');
+
+        if (enabled == false) {
+          // If notifications are disabled, we can prompt the user to enable them
+          debugPrint(
+            'Android notifications are disabled. Please enable them in settings.',
+          );
+        }
+      }
+    }
+
+    return permissionsGranted;
   }
 
   /// Show an immediate notification
@@ -79,12 +166,13 @@ class NotificationService {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'muslim_habbit_channel',
-          'Muslim Habbit Notifications',
-          channelDescription: 'Notifications for Muslim Habbit app',
+          'muslim_habit_channel',
+          'Muslim Habit Notifications',
+          channelDescription: 'Notifications for Muslim Habit app',
           importance: Importance.max,
           priority: Priority.high,
           showWhen: true,
+          icon: '@mipmap/launcher_icon',
         );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -151,12 +239,13 @@ class NotificationService {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'muslim_habbit_scheduled_channel',
-          'Muslim Habbit Scheduled Notifications',
-          channelDescription: 'Scheduled notifications for Muslim Habbit app',
+          'muslim_habit_scheduled_channel',
+          'Muslim Habit Scheduled Notifications',
+          channelDescription: 'Scheduled notifications for Muslim Habit app',
           importance: Importance.max,
           priority: Priority.high,
           showWhen: true,
+          icon: '@mipmap/launcher_icon',
         );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -222,12 +311,13 @@ class NotificationService {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'muslim_habbit_daily_channel',
-          'Muslim Habbit Daily Notifications',
-          channelDescription: 'Daily notifications for Muslim Habbit app',
+          'muslim_habit_daily_channel',
+          'Muslim Habit Daily Notifications',
+          channelDescription: 'Daily notifications for Muslim Habit app',
           importance: Importance.max,
           priority: Priority.high,
           showWhen: true,
+          icon: '@mipmap/launcher_icon',
         );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -316,15 +406,38 @@ class NotificationService {
     // Handle notification tap based on payload
     if (response.payload != null) {
       final payload = response.payload!;
+      debugPrint('Notification tapped with payload: $payload');
 
-      if (payload.startsWith('prayer_')) {
-        // Handle prayer notification tap
-        final prayerName = payload.split('_')[1];
-        debugPrint('Prayer notification tapped: $prayerName');
-      } else if (payload.startsWith('habit_')) {
-        // Handle habit notification tap
-        final habitId = payload.split('_')[1];
-        debugPrint('Habit notification tapped: $habitId');
+      try {
+        if (payload.startsWith('prayer_')) {
+          // Handle prayer notification tap
+          final prayerName = payload.split('_')[1];
+          debugPrint('Prayer notification tapped: $prayerName');
+
+          // TODO: Navigate to prayer times screen
+          // This would typically be handled by a navigation service
+        } else if (payload.startsWith('habit_')) {
+          // Handle habit notification tap
+          final habitId = payload.split('_')[1];
+          debugPrint('Habit notification tapped: $habitId');
+
+          // TODO: Navigate to habit details screen
+          // This would typically be handled by a navigation service
+        } else if (payload.startsWith('quran_')) {
+          // Handle Quran notification tap
+          final quranInfo = payload.split('_')[1];
+          debugPrint('Quran notification tapped: $quranInfo');
+
+          // TODO: Navigate to Quran screen
+        } else if (payload.startsWith('dhikr_')) {
+          // Handle Dhikr notification tap
+          final dhikrId = payload.split('_')[1];
+          debugPrint('Dhikr notification tapped: $dhikrId');
+
+          // TODO: Navigate to Dhikr screen
+        }
+      } catch (e) {
+        debugPrint('Error handling notification tap: $e');
       }
     }
   }
@@ -363,11 +476,12 @@ class NotificationService {
   NotificationDetails _setNotificationDetails() {
     NotificationDetails notificationDetails = const NotificationDetails(
       android: AndroidNotificationDetails(
-        "muslim_habbit_channel",
-        "Muslim Habbit Notifications",
-        channelDescription: "Notifications for Muslim Habbit app",
+        "muslim_habit_channel",
+        "Muslim Habit Notifications",
+        channelDescription: "Notifications for Muslim Habit app",
         priority: Priority.high,
         importance: Importance.max,
+        icon: '@mipmap/launcher_icon',
       ),
       iOS: DarwinNotificationDetails(
         presentAlert: true,
@@ -378,28 +492,5 @@ class NotificationService {
     return notificationDetails;
   }
 
-  Future<void> _checkNotificationPermission() async {
-    final androidStatus =
-        _notificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >();
-
-    final iOSStatus =
-        _notificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin
-            >();
-
-    bool? androidPermission = await androidStatus?.areNotificationsEnabled();
-    final iOSPermission = await iOSStatus?.checkPermissions();
-
-    if (androidPermission == null || androidPermission == false) {
-      await androidStatus?.requestNotificationsPermission();
-    }
-
-    if (iOSPermission == null || !iOSPermission.isEnabled) {
-      await iOSStatus?.requestPermissions();
-    }
-  }
+  // Method removed as it's now handled in requestPermissions()
 }
