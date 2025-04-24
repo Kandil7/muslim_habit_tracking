@@ -169,43 +169,62 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
     return null;
   }
 
-  /// Applies high contrast to the theme
+  /// Applies high contrast to the theme for improved accessibility
+  ///
+  /// This method enhances the visual contrast of the app by:
+  /// 1. Using pure black and white colors for maximum contrast
+  /// 2. Ensuring text has high contrast against backgrounds
+  /// 3. Making interactive elements more distinguishable
+  /// 4. Increasing contrast for dividers and borders
+  ///
+  /// The method respects the current brightness mode (light/dark) and
+  /// applies appropriate contrast enhancements for each mode.
+  ///
+  /// @param theme The original theme to enhance
+  /// @return A new ThemeData instance with high contrast settings
   ThemeData _applyHighContrast(ThemeData theme) {
     // Determine colors based on brightness
+    // Use pure black/white for maximum contrast in high contrast mode
     final backgroundColor =
         theme.brightness == Brightness.dark ? Colors.black : Colors.white;
     final foregroundColor =
         theme.brightness == Brightness.dark ? Colors.white : Colors.black;
     final dividerColor =
         theme.brightness == Brightness.dark
-            ? Colors.white.withAlpha(77) // ~0.3 opacity
-            : Colors.black.withAlpha(77); // ~0.3 opacity
+            ? Colors.white.withAlpha(77) // ~0.3 opacity for dark mode
+            : Colors.black.withAlpha(77); // ~0.3 opacity for light mode
 
-    // Increase contrast by using more distinct colors
+    // Create a new theme with enhanced contrast settings
     return theme.copyWith(
+      // Modify the color scheme for better contrast
       colorScheme: theme.colorScheme.copyWith(
-        // Increase contrast for primary colors
-        primary: theme.colorScheme.primary,
-        onPrimary: Colors.white,
-        // Increase contrast for secondary colors
-        secondary: theme.colorScheme.secondary,
-        onSecondary: Colors.white,
-        // Increase contrast for surface
-        surface: backgroundColor,
-        onSurface: foregroundColor,
-        // Increase contrast for error
-        error: Colors.red.shade700,
-        onError: Colors.white,
+        // Ensure primary colors have sufficient contrast
+        primary: theme.colorScheme.primary, // Keep brand color
+        onPrimary: Colors.white, // White text on primary for best readability
+        // Enhance secondary colors
+        secondary: theme.colorScheme.secondary, // Keep brand secondary color
+        onSecondary: Colors.white, // White text on secondary for readability
+        // Maximize contrast for surfaces (backgrounds)
+        surface: backgroundColor, // Pure black/white for surfaces
+        onSurface: foregroundColor, // Opposite color for text on surfaces
+        // Make error states highly visible
+        error: Colors.red.shade700, // Darker red for better visibility
+        onError: Colors.white, // White text on error for readability
       ),
-      // Increase text contrast
+
+      // Apply high contrast to all text
       textTheme: theme.textTheme.apply(
-        bodyColor: foregroundColor,
-        displayColor: foregroundColor,
+        bodyColor: foregroundColor, // High contrast text color
+        displayColor: foregroundColor, // High contrast heading color
       ),
-      // Increase divider contrast
+
+      // Enhance dividers for better visual separation
       dividerColor: dividerColor,
-      // Increase card contrast
-      cardTheme: theme.cardTheme.copyWith(color: backgroundColor),
+
+      // Ensure cards have consistent high contrast
+      cardTheme: theme.cardTheme.copyWith(
+        color: backgroundColor, // Pure black/white for card backgrounds
+      ),
     );
   }
 
