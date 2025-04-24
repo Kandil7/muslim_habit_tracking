@@ -142,6 +142,33 @@ class SunnahTrackApp extends StatefulWidget {
 }
 
 class _SunnahTrackAppState extends State<SunnahTrackApp> {
+  /// Generate routes for the app
+  ///
+  /// This method handles all named routes in the app and returns the appropriate
+  /// page based on the route name and arguments.
+  Route<dynamic>? _generateRoute(RouteSettings settings) {
+    // Map of route names to builder functions
+    final routes = {
+      '/dhikr-counter':
+          (context) => DhikrCounterPage(dhikr: settings.arguments as Dhikr),
+      '/add-habit': (context) => const AddHabitPage(),
+      '/hadith-collection': (context) => const HadithCollectionPage(),
+      '/quran': (context) => const QuranView(),
+      '/settings': (context) => const SettingsPage(),
+    };
+
+    // Get the builder for the requested route
+    final builder = routes[settings.name];
+
+    // If the route exists, create a MaterialPageRoute
+    if (builder != null) {
+      return MaterialPageRoute(settings: settings, builder: builder);
+    }
+
+    // Return null for unknown routes (will use the onUnknownRoute handler if provided)
+    return null;
+  }
+
   /// Applies high contrast to the theme
   ThemeData _applyHighContrast(ThemeData theme) {
     // Determine colors based on brightness
@@ -267,33 +294,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
                   );
                 },
                 home: const SplashPage(),
-                onGenerateRoute: (settings) {
-                  // Handle named routes
-                  if (settings.name == '/dhikr-counter') {
-                    // Extract the Dhikr argument
-                    final dhikr = settings.arguments as Dhikr;
-                    return MaterialPageRoute(
-                      builder: (context) => DhikrCounterPage(dhikr: dhikr),
-                    );
-                  } else if (settings.name == '/add-habit') {
-                    return MaterialPageRoute(
-                      builder: (context) => const AddHabitPage(),
-                    );
-                  } else if (settings.name == '/hadith-collection') {
-                    return MaterialPageRoute(
-                      builder: (context) => const HadithCollectionPage(),
-                    );
-                  } else if (settings.name == '/quran') {
-                    return MaterialPageRoute(
-                      builder: (context) => const QuranView(),
-                    );
-                  } else if (settings.name == '/settings') {
-                    return MaterialPageRoute(
-                      builder: (context) => const SettingsPage(),
-                    );
-                  }
-                  return null;
-                },
+                onGenerateRoute: _generateRoute,
               );
             },
           );
