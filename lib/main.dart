@@ -7,7 +7,6 @@ import 'package:quran_library/quran_library.dart';
 
 import 'core/utils/animation_utils.dart';
 import 'core/utils/custom_bloc_observer.dart';
-
 import 'core/di/injection_container.dart' as di;
 import 'core/localization/app_localizations.dart';
 import 'core/localization/bloc/language_bloc_exports.dart';
