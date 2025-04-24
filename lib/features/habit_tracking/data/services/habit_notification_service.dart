@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart' as material;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
+
+import '../../../../core/utils/notification_enhancer.dart';
 
 /// Service for scheduling habit reminders
 class HabitNotificationService {
@@ -23,8 +26,10 @@ class HabitNotificationService {
     );
 
     final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+        _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
 
     await androidPlugin?.createNotificationChannel(channel);
 
@@ -33,30 +38,33 @@ class HabitNotificationService {
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // Handle notification taps here
-        print('Habit notification tapped: ${response.payload}');
+        debugPrint('Habit notification tapped: ${response.payload}');
       },
     );
   }
 
   Future<bool> requestPermissions() async {
     // Request permissions for iOS
-final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
-    _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>();
+    final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
+        _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >();
     if (iOSImplementation != null) {
       await iOSImplementation.requestPermissions(
         alert: true,
@@ -79,64 +87,29 @@ final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
     // Cancel any existing reminders for this habit
     await cancelHabitReminder(habitId);
 
-    // Get current date
-    final now = DateTime.now();
-
     // For each selected day of the week, schedule a notification
     for (final day in daysOfWeek) {
-      final int dayIndex = _getDayIndex(day);
+      // We don't need to calculate the next occurrence anymore
+      // as NotificationEnhancer handles scheduling based on the TimeOfDay
 
-      // Calculate the next occurrence of this day
-      final DateTime nextOccurrence = _getNextDayOccurrence(now, dayIndex);
+      // Note: We no longer need to convert to TZ DateTime or create notification details
+      // as we're using the NotificationEnhancer which handles this for us
 
-      // Set the reminder time
-      final DateTime reminderDateTime = DateTime(
-        nextOccurrence.year,
-        nextOccurrence.month,
-        nextOccurrence.day,
-        reminderTime.hour,
-        reminderTime.minute,
+      // Get habit type from the habit ID (simplified for demo)
+      final String habitType = _getHabitTypeFromId(habitId);
+
+      // Convert our TimeOfDay to Flutter's TimeOfDay
+      final flutterTimeOfDay = material.TimeOfDay(
+        hour: reminderTime.hour,
+        minute: reminderTime.minute,
       );
 
-      // Convert to TZ DateTime
-      final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
-        reminderDateTime,
-        tz.local,
-      );
-
-      // Create notification details
-      const AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-        'habit_reminders_channel',
-        'Habit Reminders',
-        channelDescription: 'Reminders for your habits',
-        importance: Importance.max,
-        priority: Priority.high,
-        showWhen: true,
-      );
-
-      const DarwinNotificationDetails iOSPlatformChannelSpecifics =
-          DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      );
-
-      const NotificationDetails platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: iOSPlatformChannelSpecifics,
-      );
-
-      // Schedule the notification
-      await _flutterLocalNotificationsPlugin.zonedSchedule(
-        '${habitId}_$day'.hashCode, // Use habit ID + day as unique ID
-        'Habit Reminder: $habitName',
-        'Time to complete your habit: $habitName',
-        scheduledDate,
-        platformChannelSpecifics,
-        payload: 'habit_$habitId', // Add payload for handling notification taps
-        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      // Use the NotificationEnhancer to schedule a notification with a motivational quote
+      await NotificationEnhancer.scheduleHabitReminder(
+        id: '${habitId}_$day'.hashCode, // Use habit ID + day as unique ID
+        habitName: habitName,
+        reminderTime: flutterTimeOfDay,
+        habitType: habitType,
       );
     }
   }
@@ -147,36 +120,27 @@ final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
     await _flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  int _getDayIndex(String day) {
-    switch (day.toLowerCase()) {
-      case 'monday':
-        return DateTime.monday;
-      case 'tuesday':
-        return DateTime.tuesday;
-      case 'wednesday':
-        return DateTime.wednesday;
-      case 'thursday':
-        return DateTime.thursday;
-      case 'friday':
-        return DateTime.friday;
-      case 'saturday':
-        return DateTime.saturday;
-      case 'sunday':
-        return DateTime.sunday;
-      default:
-        return DateTime.monday;
+  // Note: We've removed the _getDayIndex and _getNextDayOccurrence methods
+  // as they're no longer needed with our enhanced notification approach
+
+  /// Get the habit type from the habit ID
+  /// This is a simplified implementation for demo purposes
+  String _getHabitTypeFromId(String habitId) {
+    // In a real app, you would look up the habit type from a database
+    // For this demo, we'll use a simple heuristic based on the ID
+    if (habitId.contains('prayer')) {
+      return 'prayer';
+    } else if (habitId.contains('quran')) {
+      return 'quran';
+    } else if (habitId.contains('fast')) {
+      return 'fasting';
+    } else if (habitId.contains('dhikr')) {
+      return 'dhikr';
+    } else if (habitId.contains('charity')) {
+      return 'charity';
+    } else {
+      return 'custom';
     }
-  }
-
-  DateTime _getNextDayOccurrence(DateTime fromDate, int dayIndex) {
-    DateTime resultDate = fromDate;
-
-    // If the day index is less than today's weekday, it will be next week
-    while (resultDate.weekday != dayIndex) {
-      resultDate = resultDate.add(const Duration(days: 1));
-    }
-
-    return resultDate;
   }
 }
 

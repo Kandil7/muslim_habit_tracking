@@ -10,6 +10,8 @@ import 'package:quran_library/quran_library.dart' hide QuranRepository;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../data/quotes_repository.dart';
+
 import '../services/logger_service.dart';
 import '../utils/error_handler.dart';
 
@@ -214,6 +216,11 @@ Future<void> _initHabitTrackingFeature() async {
 Future<void> _initPrayerTimesFeature() async {
   // Services
   sl.registerLazySingleton(() => LocationService());
+
+  // Register QuotesRepository
+  sl.registerLazySingleton(() => QuotesRepository());
+
+  // Register NotificationService
   sl.registerLazySingleton(() => NotificationService());
 
   // Repositories

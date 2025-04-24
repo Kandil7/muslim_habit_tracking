@@ -128,9 +128,9 @@ class _ThemeToggleState extends State<ThemeToggle>
   void _toggleTheme() {
     final themeBloc = BlocProvider.of<ThemeBloc>(context);
     if (themeBloc.state.themeMode == ThemeMode.dark) {
-      themeBloc.add(const ChangeThemeEvent(ThemeMode.light));
+      themeBloc.add(const SetThemeModeEvent(ThemeMode.light));
     } else {
-      themeBloc.add(const ChangeThemeEvent(ThemeMode.dark));
+      themeBloc.add(const SetThemeModeEvent(ThemeMode.dark));
     }
   }
 }
