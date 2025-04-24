@@ -267,7 +267,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
           final themeState = context.watch<ThemeBloc>().state;
 
           return MaterialApp(
-            title: 'Muslim Habit',
+            title: 'SunnahTracker',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,

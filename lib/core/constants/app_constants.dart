@@ -1,7 +1,7 @@
 /// Application-wide constants
 class AppConstants {
   // App info
-  static const String appName = 'SunnahTrack';
+  static const String appName = 'SunnahTracker';
   static const String appVersion = '1.0.0';
 
   // API endpoints

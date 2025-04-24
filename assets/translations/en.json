@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Muslim Habit",
+    "name": "SunnahTracker",
     "slogan": "Track your Islamic habits"
   },
   "common": {
@@ -47,7 +47,7 @@
     "streaks": "Streaks",
     "achievements": "Achievements",
     "seeAll": "See All",
-    "appTitle": "SunnahTrack",
+    "appTitle": "SunnahTracker",
     "saveChanges": "Save changes",
     "editDashboard": "Edit dashboard",
     "toggleTheme": "Toggle Theme",
@@ -306,7 +306,7 @@
     "animations": "Animations"
   },
   "onboarding": {
-    "welcome": "Welcome to SunnahTrack",
+    "welcome": "Welcome to SunnahTracker",
     "habits": "Track Your Habits",
     "prayer": "Prayer Times",
     "dua": "Duas & Dhikr",

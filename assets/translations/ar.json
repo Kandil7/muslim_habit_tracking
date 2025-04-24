@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "مسلم هابت",
+    "name": "متابع السنة",
     "slogan": "تتبع عاداتك الإسلامية"
   },
   "common": {
@@ -47,7 +47,7 @@
     "streaks": "التتابع",
     "achievements": "الإنجازات",
     "seeAll": "عرض الكل",
-    "appTitle": "سنة تراك",
+    "appTitle": "متابع السنة",
     "saveChanges": "حفظ التغييرات",
     "editDashboard": "تعديل اللوحة",
     "toggleTheme": "تبديل السمة",
