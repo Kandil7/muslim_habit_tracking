@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/badge.dart';
+import '../../domain/entities/badge.dart' as custom;
 
 /// Widget to display a badge
 class BadgeCard extends StatelessWidget {
-  final Badge badge;
+  final custom.Badge badge;
   final VoidCallback? onTap;
 
   /// Creates a new BadgeCard
-  const BadgeCard({
-    super.key,
-    required this.badge,
-    this.onTap,
-  });
+  const BadgeCard({super.key, required this.badge, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: badge.isEarned 
-              ? theme.colorScheme.primary 
-              : theme.colorScheme.outline.withOpacity(0.5),
+          color:
+              badge.isEarned
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline.withOpacity(0.5),
           width: badge.isEarned ? 2 : 1,
         ),
       ),
@@ -63,7 +60,7 @@ class BadgeCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   // Lock overlay for unearned badges
                   if (!badge.isEarned)
                     Container(
@@ -79,7 +76,7 @@ class BadgeCard extends StatelessWidget {
                         size: 30,
                       ),
                     ),
-                    
+
                   // Progress indicator for unearned badges
                   if (!badge.isEarned && badge.progress > 0)
                     SizedBox(
@@ -94,25 +91,26 @@ class BadgeCard extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Badge name
               Text(
                 badge.name,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: badge.isEarned 
-                      ? theme.colorScheme.primary 
-                      : theme.colorScheme.onSurface,
+                  color:
+                      badge.isEarned
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               const SizedBox(height: 4),
-              
+
               // Badge description
               Text(
                 badge.description,
@@ -123,9 +121,9 @@ class BadgeCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Badge level and points
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -162,7 +160,7 @@ class BadgeCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               // Earned date
               if (badge.isEarned && badge.earnedDate != null)
                 Padding(
@@ -180,12 +178,12 @@ class BadgeCard extends StatelessWidget {
       ),
     );
   }
-  
+
   /// Format date to a readable string
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-  
+
   /// Get color based on badge level
   Color _getLevelColor(String level) {
     switch (level.toLowerCase()) {

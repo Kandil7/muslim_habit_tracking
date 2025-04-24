@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/presentation/widgets/widgets.dart';
-import '../../domain/entities/badge.dart';
+import '../../domain/entities/badge.dart' as custom;
 import '../bloc/badge_bloc.dart';
 import '../bloc/badge_event.dart';
 import '../bloc/badge_state.dart';
@@ -17,24 +17,25 @@ class BadgesPage extends StatefulWidget {
   State<BadgesPage> createState() => _BadgesPageState();
 }
 
-class _BadgesPageState extends State<BadgesPage> with SingleTickerProviderStateMixin {
+class _BadgesPageState extends State<BadgesPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 7, vsync: this);
-    
+
     // Load all badges
     context.read<BadgeBloc>().add(LoadAllBadgesEvent());
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,9 +107,16 @@ class _BadgesPageState extends State<BadgesPage> with SingleTickerProviderStateM
               emptyMessage: 'No badges earned yet',
             );
           } else if (state is BadgeError) {
-            return ErrorWidget(
-              message: state.message,
-              onRetry: () => context.read<BadgeBloc>().add(LoadAllBadgesEvent()),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(state.message, style: const TextStyle(color: Colors.red)),
+                ElevatedButton(
+                  onPressed:
+                      () => context.read<BadgeBloc>().add(LoadAllBadgesEvent()),
+                  child: const Text('Retry'),
+                ),
+              ],
             );
           } else {
             return const Center(child: Text('No badges found'));
@@ -117,8 +125,11 @@ class _BadgesPageState extends State<BadgesPage> with SingleTickerProviderStateM
       ),
     );
   }
-  
-  Widget _buildBadgeGrid(List<Badge> badges, {String emptyMessage = 'No badges found'}) {
+
+  Widget _buildBadgeGrid(
+    List<custom.Badge> badges, {
+    String emptyMessage = 'No badges found',
+  }) {
     return BadgeGrid(
       badges: badges,
       emptyMessage: emptyMessage,

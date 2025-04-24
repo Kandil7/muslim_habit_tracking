@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/gamification/domain/entities/badge.dart';
 
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/award_badge.dart';
@@ -57,10 +58,9 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
     );
     result.fold(
       (failure) => emit(BadgeError(message: failure.message)),
-      (badges) => emit(BadgesByCategoryLoaded(
-        badges: badges,
-        category: event.category,
-      )),
+      (badges) => emit(
+        BadgesByCategoryLoaded(badges: badges, category: event.category),
+      ),
     );
   }
 
@@ -91,10 +91,9 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
     );
     result.fold(
       (failure) => emit(BadgeError(message: failure.message)),
-      (isAwarded) => emit(BadgeRequirementsChecked(
-        badgeId: event.badgeId,
-        isAwarded: isAwarded,
-      )),
+      (isAwarded) => emit(
+        BadgeRequirementsChecked(badgeId: event.badgeId, isAwarded: isAwarded),
+      ),
     );
   }
 
@@ -104,9 +103,7 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
     Emitter<BadgeState> emit,
   ) async {
     emit(BadgeLoading());
-    final result = await awardBadge(
-      AwardBadgeParams(badgeId: event.badgeId),
-    );
+    final result = await awardBadge(AwardBadgeParams(badgeId: event.badgeId));
     result.fold(
       (failure) => emit(BadgeError(message: failure.message)),
       (badge) => emit(BadgeAwarded(badge: badge)),
@@ -119,20 +116,20 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
     Emitter<BadgeState> emit,
   ) async {
     emit(BadgeLoading());
-    
+
     // Get all badges
     final badgesResult = await getAllBadges(NoParams());
-    
+
     return badgesResult.fold(
       (failure) => emit(BadgeError(message: failure.message)),
       (badges) async {
-        final awardedBadges = [];
-        
+        final List<Badge> awardedBadges = [];
+
         // Check each badge
         for (final badge in badges) {
           // Skip already earned badges
           if (badge.isEarned) continue;
-          
+
           // Check requirements
           final requirementsResult = await checkBadgeRequirements(
             CheckBadgeRequirementsParams(
@@ -140,7 +137,7 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
               userStats: event.userStats,
             ),
           );
-          
+
           await requirementsResult.fold(
             (failure) => null, // Skip on failure
             (isAwarded) async {
@@ -149,7 +146,7 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
                 final awardResult = await awardBadge(
                   AwardBadgeParams(badgeId: badge.id),
                 );
-                
+
                 awardResult.fold(
                   (failure) => null, // Skip on failure
                   (awardedBadge) => awardedBadges.add(awardedBadge),
@@ -158,7 +155,7 @@ class BadgeBloc extends Bloc<BadgeEvent, BadgeState> {
             },
           );
         }
-        
+
         emit(AllBadgesChecked(awardedBadges: awardedBadges));
       },
     );

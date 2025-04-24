@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/badge.dart';
+import '../../domain/entities/badge.dart' as custom;
 import '../bloc/badge_bloc.dart';
 import '../bloc/badge_event.dart';
 import '../bloc/user_points_bloc.dart';
@@ -9,22 +9,17 @@ import '../bloc/user_points_event.dart';
 
 /// Page to display badge details
 class BadgeDetailsPage extends StatelessWidget {
-  final Badge badge;
+  final custom.Badge badge;
 
   /// Creates a new BadgeDetailsPage
-  const BadgeDetailsPage({
-    super.key,
-    required this.badge,
-  });
+  const BadgeDetailsPage({super.key, required this.badge});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Badge Details'),
-      ),
+      appBar: AppBar(title: const Text('Badge Details')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -52,23 +47,24 @@ class BadgeDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Badge name
             Text(
               badge.name,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: badge.isEarned 
-                    ? theme.colorScheme.primary 
-                    : theme.colorScheme.onSurface,
+                color:
+                    badge.isEarned
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             // Badge level and points
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -91,11 +87,7 @@ class BadgeDetailsPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Icon(
-                  Icons.star,
-                  size: 20,
-                  color: theme.colorScheme.secondary,
-                ),
+                Icon(Icons.star, size: 20, color: theme.colorScheme.secondary),
                 const SizedBox(width: 4),
                 Text(
                   '${badge.points} points',
@@ -106,30 +98,33 @@ class BadgeDetailsPage extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Badge status
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: badge.isEarned 
-                    ? theme.colorScheme.primary.withOpacity(0.1)
-                    : theme.colorScheme.surfaceVariant,
+                color:
+                    badge.isEarned
+                        ? theme.colorScheme.primary.withOpacity(0.1)
+                        : theme.colorScheme.surfaceVariant,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: badge.isEarned 
-                      ? theme.colorScheme.primary 
-                      : theme.colorScheme.outline.withOpacity(0.5),
+                  color:
+                      badge.isEarned
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline.withOpacity(0.5),
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
                     badge.isEarned ? Icons.check_circle : Icons.hourglass_top,
-                    color: badge.isEarned 
-                        ? theme.colorScheme.primary 
-                        : theme.colorScheme.onSurfaceVariant,
+                    color:
+                        badge.isEarned
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -140,9 +135,10 @@ class BadgeDetailsPage extends StatelessWidget {
                           badge.isEarned ? 'Badge Earned' : 'Badge Not Earned',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: badge.isEarned 
-                                ? theme.colorScheme.primary 
-                                : theme.colorScheme.onSurfaceVariant,
+                            color:
+                                badge.isEarned
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         if (badge.isEarned && badge.earnedDate != null)
@@ -169,9 +165,9 @@ class BadgeDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Badge description
             Container(
               width: double.infinity,
@@ -193,16 +189,13 @@ class BadgeDetailsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    badge.description,
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                  Text(badge.description, style: theme.textTheme.bodyMedium),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Badge requirements
             Container(
               width: double.infinity,
@@ -248,9 +241,9 @@ class BadgeDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Debug buttons (for testing)
             if (!badge.isEarned)
               ElevatedButton(
@@ -259,7 +252,7 @@ class BadgeDetailsPage extends StatelessWidget {
                   context.read<BadgeBloc>().add(
                     AwardBadgeEvent(badgeId: badge.id),
                   );
-                  
+
                   // Add points
                   context.read<UserPointsBloc>().add(
                     AddPointsEvent(
@@ -267,7 +260,7 @@ class BadgeDetailsPage extends StatelessWidget {
                       reason: 'Earned badge: ${badge.name}',
                     ),
                   );
-                  
+
                   // Show snackbar
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -275,7 +268,7 @@ class BadgeDetailsPage extends StatelessWidget {
                       backgroundColor: theme.colorScheme.primary,
                     ),
                   );
-                  
+
                   // Navigate back
                   Navigator.pop(context);
                 },
@@ -286,12 +279,12 @@ class BadgeDetailsPage extends StatelessWidget {
       ),
     );
   }
-  
+
   /// Format date to a readable string
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-  
+
   /// Format requirement to a readable string
   String _formatRequirement(String key, dynamic value) {
     switch (key) {
@@ -325,7 +318,7 @@ class BadgeDetailsPage extends StatelessWidget {
         return '$key: $value';
     }
   }
-  
+
   /// Get color based on badge level
   Color _getLevelColor(String level) {
     switch (level.toLowerCase()) {

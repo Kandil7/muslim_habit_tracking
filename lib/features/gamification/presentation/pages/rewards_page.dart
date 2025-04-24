@@ -21,27 +21,28 @@ class RewardsPage extends StatefulWidget {
   State<RewardsPage> createState() => _RewardsPageState();
 }
 
-class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStateMixin {
+class _RewardsPageState extends State<RewardsPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    
+
     // Load user points
     context.read<UserPointsBloc>().add(LoadUserPointsEvent());
-    
+
     // Load all content
     context.read<UnlockableContentBloc>().add(LoadAllContentEvent());
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,10 +61,14 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
           onTap: (index) {
             switch (index) {
               case 0:
-                context.read<UnlockableContentBloc>().add(LoadAllContentEvent());
+                context.read<UnlockableContentBloc>().add(
+                  LoadAllContentEvent(),
+                );
                 break;
               case 1:
-                context.read<UnlockableContentBloc>().add(LoadUnlockedContentEvent());
+                context.read<UnlockableContentBloc>().add(
+                  LoadUnlockedContentEvent(),
+                );
                 break;
               case 2:
                 context.read<UnlockableContentBloc>().add(
@@ -91,26 +96,24 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
             padding: const EdgeInsets.all(16),
             child: BlocBuilder<UserPointsBloc, UserPointsState>(
               builder: (context, state) {
-                if (state is UserPointsLoaded || 
-                    state is PointsAdded || 
+                if (state is UserPointsLoaded ||
+                    state is PointsAdded ||
                     state is PointsSpent) {
-                  final userPoints = state is UserPointsLoaded 
-                      ? state.userPoints 
-                      : state is PointsAdded 
-                          ? state.userPoints 
+                  final userPoints =
+                      state is UserPointsLoaded
+                          ? state.userPoints
+                          : state is PointsAdded
+                          ? state.userPoints
                           : (state as PointsSpent).userPoints;
-                  
-                  return PointsDisplay(
-                    userPoints: userPoints,
-                    isCompact: true,
-                  );
+
+                  return PointsDisplay(userPoints: userPoints, isCompact: true);
                 }
-                
+
                 return const SizedBox.shrink();
               },
             ),
           ),
-          
+
           // Content list
           Expanded(
             child: BlocBuilder<UnlockableContentBloc, UnlockableContentState>(
@@ -130,10 +133,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                     emptyMessage: 'No content unlocked yet',
                   );
                 } else if (state is UnlockableContentError) {
-                  return ErrorWidget(
-                    message: state.message,
-                    onRetry: () => context.read<UnlockableContentBloc>().add(LoadAllContentEvent()),
-                  );
+                  return ErrorWidget(state.message);
                 } else {
                   return const Center(child: Text('No content found'));
                 }
@@ -144,32 +144,33 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
       ),
     );
   }
-  
+
   Widget _buildContentGrid(
-    List<UnlockableContent> content, 
-    {String emptyMessage = 'No content found'}
-  ) {
+    List<UnlockableContent> content, {
+    String emptyMessage = 'No content found',
+  }) {
     if (content.isEmpty) {
       return Center(
         child: Text(
           emptyMessage,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
       );
     }
-    
+
     return BlocBuilder<UserPointsBloc, UserPointsState>(
       builder: (context, pointsState) {
-        final userPoints = pointsState is UserPointsLoaded 
-            ? pointsState.userPoints 
-            : pointsState is PointsAdded 
-                ? pointsState.userPoints 
-                : pointsState is PointsSpent 
-                    ? pointsState.userPoints 
-                    : null;
-        
+        final userPoints =
+            pointsState is UserPointsLoaded
+                ? pointsState.userPoints
+                : pointsState is PointsAdded
+                ? pointsState.userPoints
+                : pointsState is PointsSpent
+                ? pointsState.userPoints
+                : null;
+
         return GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -181,9 +182,10 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
           itemCount: content.length,
           itemBuilder: (context, index) {
             final item = content[index];
-            final canUnlock = userPoints != null && 
+            final canUnlock =
+                userPoints != null &&
                 userPoints.totalPoints >= item.pointsRequired;
-            
+
             return UnlockableContentCard(
               content: item,
               canUnlock: canUnlock,
@@ -192,7 +194,9 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UnlockableContentDetailsPage(content: item),
+                      builder:
+                          (context) =>
+                              UnlockableContentDetailsPage(content: item),
                     ),
                   );
                 }
@@ -202,7 +206,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                 context.read<UnlockableContentBloc>().add(
                   UnlockContentEvent(contentId: item.id),
                 );
-                
+
                 // Spend points
                 context.read<UserPointsBloc>().add(
                   SpendPointsEvent(
@@ -210,7 +214,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                     reason: 'Unlocked content: ${item.name}',
                   ),
                 );
-                
+
                 // Show snackbar
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

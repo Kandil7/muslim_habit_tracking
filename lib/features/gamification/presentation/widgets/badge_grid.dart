@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/badge.dart';
+import '../../domain/entities/badge.dart' as custom;
 import 'badge_card.dart';
 
 /// Widget to display a grid of badges
 class BadgeGrid extends StatelessWidget {
-  final List<Badge> badges;
-  final Function(Badge)? onBadgeTap;
+  final List<custom.Badge> badges;
+  final Function(custom.Badge)? onBadgeTap;
   final String emptyMessage;
 
   /// Creates a new BadgeGrid
@@ -24,8 +24,8 @@ class BadgeGrid extends StatelessWidget {
         child: Text(
           emptyMessage,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
       );
     }
@@ -40,7 +40,7 @@ class BadgeGrid extends StatelessWidget {
       ),
       itemCount: badges.length,
       itemBuilder: (context, index) {
-        final badge = badges[index];
+        final custom.Badge badge = badges[index];
         return BadgeCard(
           badge: badge,
           onTap: onBadgeTap != null ? () => onBadgeTap!(badge) : null,
