@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Muslim Habbit",
+    "name": "Muslim Habit",
     "slogan": "Track your Islamic habits"
   },
   "common": {
@@ -21,7 +21,11 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "noInternet": "No internet connection"
+    "noInternet": "No internet connection",
+    "retry": "Retry",
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "tryAgain": "Try Again"
   },
   "auth": {
     "login": "Login",
@@ -277,7 +281,29 @@
     "importSuccess": "Data imported successfully",
     "importError": "Error importing data",
     "deleteSuccess": "Data deleted successfully",
-    "deleteError": "Error deleting data"
+    "deleteError": "Error deleting data",
+    "clearCache": "Clear Cache",
+    "clearCacheConfirm": "Are you sure you want to clear the cache? This will free up approximately",
+    "clearCacheSuccess": "Cache cleared successfully",
+    "exportingData": "Exporting data...",
+    "importFeatureComingSoon": "Import feature coming soon",
+    "comingSoon": "Coming soon",
+    "accessibility": "Accessibility",
+    "textSize": "Text Size",
+    "textSizeSelected": "Selected text size",
+    "selectTextSize": "Select this text size",
+    "contrast": "Contrast",
+    "contrastSelected": "Selected contrast mode",
+    "selectContrast": "Select this contrast mode",
+    "screenReader": "Screen Reader",
+    "screenReaderInfo": "Screen Reader Information",
+    "screenReaderDescription": "This app supports screen readers like TalkBack on Android and VoiceOver on iOS. Enable them in your device settings.",
+    "openSystemSettings": "Open System Settings",
+    "reduceAnimations": "Reduce Animations",
+    "reduceAnimationsDescription": "Minimize motion and animations throughout the app",
+    "enableHapticFeedback": "Enable Haptic Feedback",
+    "hapticFeedbackDescription": "Provide tactile feedback when interacting with the app",
+    "animations": "Animations"
   },
   "onboarding": {
     "welcome": "Welcome to SunnahTrack",
@@ -301,5 +327,32 @@
     "remindertoreadthedailyQuran": "Reminder to read the daily Quran",
     "rememberingthemorningandeveningremembrances": "Remembering the morning and evening remembrances",
     "remindingtheentryofprayertimes": "Reminding the entry of prayer times"
+  },
+  "error": {
+    "network": "Network Error",
+    "server": "Server Error",
+    "cache": "Cache Error",
+    "auth": "Authentication Error",
+    "permission": "Permission Error",
+    "validation": "Validation Error",
+    "location": "Location Error",
+    "timeout": "Timeout Error",
+    "notFound": "Not Found",
+    "featureNotAvailable": "Feature Not Available",
+    "unknown": "Unknown Error",
+    "noInternet": "No Internet Connection",
+    "serverUnavailable": "Server Unavailable",
+    "invalidData": "Invalid Data",
+    "sessionExpired": "Session Expired",
+    "permissionDenied": "Permission Denied",
+    "locationDisabled": "Location Services Disabled",
+    "tryAgain": "Please try again later",
+    "contactSupport": "If the problem persists, please contact support",
+    "checkConnection": "Please check your internet connection and try again",
+    "enableLocation": "Please enable location services in your device settings",
+    "grantPermission": "Please grant the required permissions to use this feature",
+    "loginRequired": "Please log in to use this feature",
+    "updateRequired": "Please update the app to the latest version",
+    "maintenanceMode": "The service is currently under maintenance. Please try again later"
   }
 }

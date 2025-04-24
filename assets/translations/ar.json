@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "مسلم هابيت",
+    "name": "مسلم هابت",
     "slogan": "تتبع عاداتك الإسلامية"
   },
   "common": {
@@ -21,7 +21,11 @@
     "confirm": "تأكيد",
     "yes": "نعم",
     "no": "لا",
-    "noInternet": "لا يوجد اتصال بالإنترنت"
+    "noInternet": "لا يوجد اتصال بالإنترنت",
+    "retry": "إعادة المحاولة",
+    "close": "إغلاق",
+    "dismiss": "تجاهل",
+    "tryAgain": "حاول مرة أخرى"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -277,7 +281,29 @@
     "importSuccess": "تم استيراد البيانات بنجاح",
     "importError": "خطأ في استيراد البيانات",
     "deleteSuccess": "تم حذف البيانات بنجاح",
-    "deleteError": "خطأ في حذف البيانات"
+    "deleteError": "خطأ في حذف البيانات",
+    "clearCache": "مسح ذاكرة التخزين المؤقت",
+    "clearCacheConfirm": "هل أنت متأكد من مسح ذاكرة التخزين المؤقت؟ سيؤدي هذا إلى تحرير مساحة تقريبية",
+    "clearCacheSuccess": "تم مسح ذاكرة التخزين المؤقت بنجاح",
+    "exportingData": "جاري تصدير البيانات...",
+    "importFeatureComingSoon": "ميزة الاستيراد قادمة قريباً",
+    "comingSoon": "قادم قريباً",
+    "accessibility": "إمكانية الوصول",
+    "textSize": "حجم النص",
+    "textSizeSelected": "حجم النص المحدد",
+    "selectTextSize": "اختر حجم النص هذا",
+    "contrast": "التباين",
+    "contrastSelected": "وضع التباين المحدد",
+    "selectContrast": "اختر وضع التباين هذا",
+    "screenReader": "قارئ الشاشة",
+    "screenReaderInfo": "معلومات قارئ الشاشة",
+    "screenReaderDescription": "يدعم هذا التطبيق قارئات الشاشة مثل TalkBack على Android و VoiceOver على iOS. قم بتمكينها في إعدادات جهازك.",
+    "openSystemSettings": "فتح إعدادات النظام",
+    "reduceAnimations": "تقليل الرسوم المتحركة",
+    "reduceAnimationsDescription": "تقليل الحركة والرسوم المتحركة في جميع أنحاء التطبيق",
+    "enableHapticFeedback": "تمكين التغذية الراجعة اللمسية",
+    "hapticFeedbackDescription": "توفير تغذية راجعة لمسية عند التفاعل مع التطبيق",
+    "animations": "الرسوم المتحركة"
   },
   "notifications": {
     "readingSurahAlKahfOnFriday": "قراءة سورة الكهف يوم الجمعة",
@@ -291,5 +317,32 @@
     "remindertoreadthedailyQuran": "تذكير بقراءة القرآن اليومي",
     "rememberingthemorningandeveningremembrances": "تذكير بذكر الصباح والمساء",
     "remindingtheentryofprayertimes": "تذكير بدخول أوقات الصلاة"
+  },
+  "error": {
+    "network": "خطأ في الشبكة",
+    "server": "خطأ في الخادم",
+    "cache": "خطأ في التخزين المؤقت",
+    "auth": "خطأ في المصادقة",
+    "permission": "خطأ في الصلاحيات",
+    "validation": "خطأ في التحقق",
+    "location": "خطأ في الموقع",
+    "timeout": "انتهت المهلة",
+    "notFound": "غير موجود",
+    "featureNotAvailable": "الميزة غير متوفرة",
+    "unknown": "خطأ غير معروف",
+    "noInternet": "لا يوجد اتصال بالإنترنت",
+    "serverUnavailable": "الخادم غير متاح",
+    "invalidData": "بيانات غير صالحة",
+    "sessionExpired": "انتهت الجلسة",
+    "permissionDenied": "تم رفض الإذن",
+    "locationDisabled": "خدمات الموقع معطلة",
+    "tryAgain": "يرجى المحاولة مرة أخرى لاحقًا",
+    "contactSupport": "إذا استمرت المشكلة، يرجى الاتصال بالدعم",
+    "checkConnection": "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى",
+    "enableLocation": "يرجى تمكين خدمات الموقع في إعدادات جهازك",
+    "grantPermission": "يرجى منح الأذونات المطلوبة لاستخدام هذه الميزة",
+    "loginRequired": "يرجى تسجيل الدخول لاستخدام هذه الميزة",
+    "updateRequired": "يرجى تحديث التطبيق إلى أحدث إصدار",
+    "maintenanceMode": "الخدمة قيد الصيانة حاليًا. يرجى المحاولة مرة أخرى لاحقًا"
   }
 }
