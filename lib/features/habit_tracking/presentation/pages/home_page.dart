@@ -59,54 +59,65 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textSecondary,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(AppIcons.homeOutlined),
-            activeIcon: Icon(AppIcons.home),
-            label: 'Habits',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(AppIcons.prayerOutlined),
-            activeIcon: Icon(AppIcons.prayer),
-            label: 'Prayer',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
-            label: 'Quran',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(AppIcons.duaOutlined),
-            activeIcon: Icon(AppIcons.dua),
-            label: 'Dua',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(AppIcons.analyticsOutlined),
-            activeIcon: Icon(AppIcons.analytics),
-            label: 'Analytics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(AppIcons.settingsOutlined),
-            activeIcon: Icon(AppIcons.settings),
-            label: 'Settings',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(15),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          elevation: 0,
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          animationDuration: const Duration(milliseconds: 500),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.dashboard_outlined),
+              selectedIcon: Icon(Icons.dashboard),
+              label: 'Dashboard',
+            ),
+            NavigationDestination(
+              icon: Icon(AppIcons.homeOutlined),
+              selectedIcon: Icon(AppIcons.home),
+              label: 'Habits',
+            ),
+            NavigationDestination(
+              icon: Icon(AppIcons.prayerOutlined),
+              selectedIcon: Icon(AppIcons.prayer),
+              label: 'Prayer',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.menu_book_outlined),
+              selectedIcon: Icon(Icons.menu_book),
+              label: 'Quran',
+            ),
+            NavigationDestination(
+              icon: Icon(AppIcons.duaOutlined),
+              selectedIcon: Icon(AppIcons.dua),
+              label: 'Dua',
+            ),
+            NavigationDestination(
+              icon: Icon(AppIcons.analyticsOutlined),
+              selectedIcon: Icon(AppIcons.analytics),
+              label: 'Analytics',
+            ),
+            NavigationDestination(
+              icon: Icon(AppIcons.settingsOutlined),
+              selectedIcon: Icon(AppIcons.settings),
+              label: 'Settings',
+            ),
+          ],
+        ),
       ),
     );
   }
