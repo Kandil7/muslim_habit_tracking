@@ -396,7 +396,7 @@ Future<void> _initQuranFeature() async {
   sl.registerLazySingleton(() => UpdateLastReadPosition(sl()));
 
   // Register QuranLibrary
-  sl.registerLazySingleton(() => QuranLibrary());
+  sl.registerLazySingleton<QuranLibrary>(() => QuranLibrary());
 
   // BLoC
   sl.registerFactory(

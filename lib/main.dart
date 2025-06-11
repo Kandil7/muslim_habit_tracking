@@ -83,7 +83,9 @@ void main() async {
     // This prevents blocking the main thread during startup
     Future.microtask(() {
       try {
-        QuranLibrary().init();
+        // Get the QuranLibrary instance from the dependency injection container
+        final quranLibrary = di.sl<QuranLibrary>();
+        quranLibrary.init();
       } catch (e) {
         debugPrint('Error initializing QuranLibrary: $e');
         // Non-critical error, app can function without QuranLibrary

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../domain/entities/habit_category.dart';
 
 /// Model class for HabitCategory entity
@@ -12,7 +10,7 @@ class HabitCategoryModel extends HabitCategory {
     required super.icon,
     required super.createdAt,
   });
-  
+
   /// Create a HabitCategoryModel from a JSON map
   factory HabitCategoryModel.fromJson(Map<String, dynamic> json) {
     return HabitCategoryModel(
@@ -24,7 +22,7 @@ class HabitCategoryModel extends HabitCategory {
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
-  
+
   /// Convert this HabitCategoryModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -36,7 +34,7 @@ class HabitCategoryModel extends HabitCategory {
       'createdAt': createdAt.toIso8601String(),
     };
   }
-  
+
   /// Create a HabitCategoryModel from a HabitCategory entity
   factory HabitCategoryModel.fromEntity(HabitCategory category) {
     return HabitCategoryModel(
@@ -48,7 +46,7 @@ class HabitCategoryModel extends HabitCategory {
       createdAt: category.createdAt,
     );
   }
-  
+
   /// Create a copy of this HabitCategoryModel with the given fields replaced with the new values
   @override
   HabitCategoryModel copyWith({

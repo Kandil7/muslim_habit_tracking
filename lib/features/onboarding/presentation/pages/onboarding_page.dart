@@ -15,52 +15,57 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  
+
   final List<OnboardingItem> _onboardingItems = [
     OnboardingItem(
       title: 'Welcome to SunnahTrack',
-      description: 'Your companion for building and maintaining consistent Islamic practices.',
+      description:
+          'Your companion for building and maintaining consistent Islamic practices.',
       image: 'assets/images/onboarding_welcome.png',
       backgroundColor: AppColors.primary,
     ),
     OnboardingItem(
       title: 'Track Your Habits',
-      description: 'Create and track your daily Islamic habits like prayers, Quran reading, and more.',
+      description:
+          'Create and track your daily Islamic habits like prayers, Quran reading, and more.',
       image: 'assets/images/onboarding_habits.png',
       backgroundColor: AppColors.secondary,
     ),
     OnboardingItem(
       title: 'Prayer Times',
-      description: 'Get accurate prayer times based on your location and receive timely notifications.',
+      description:
+          'Get accurate prayer times based on your location and receive timely notifications.',
       image: 'assets/images/onboarding_prayer.png',
       backgroundColor: AppColors.primaryDark,
     ),
     OnboardingItem(
       title: 'Duas & Dhikr',
-      description: 'Access a collection of duas and dhikrs with a built-in counter to help you remember Allah.',
+      description:
+          'Access a collection of duas and dhikrs with a built-in counter to help you remember Allah.',
       image: 'assets/images/onboarding_dua.png',
       backgroundColor: AppColors.secondaryDark,
     ),
     OnboardingItem(
       title: 'Track Your Progress',
-      description: 'View detailed analytics to see your progress and stay motivated on your spiritual journey.',
+      description:
+          'View detailed analytics to see your progress and stay motivated on your spiritual journey.',
       image: 'assets/images/onboarding_analytics.png',
       backgroundColor: AppColors.primary,
     ),
   ];
-  
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
-  
+
   void _onPageChanged(int page) {
     setState(() {
       _currentPage = page;
     });
   }
-  
+
   void _nextPage() {
     if (_currentPage < _onboardingItems.length - 1) {
       _pageController.nextPage(
@@ -71,20 +76,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
       _completeOnboarding();
     }
   }
-  
+
   Future<void> _completeOnboarding() async {
     // Mark onboarding as completed
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_completed', true);
-    
+
     if (!mounted) return;
-    
+
     // Navigate to home page
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const HomePage()),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +105,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               return _buildOnboardingPage(item);
             },
           ),
-          
+
           // Skip button
           Positioned(
             top: 50,
@@ -109,14 +114,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
               onPressed: _completeOnboarding,
               child: const Text(
                 'Skip',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),
-          
+
           // Indicators and next button
           Positioned(
             bottom: 50,
@@ -138,8 +140,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: _onboardingItems[_currentPage].backgroundColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    foregroundColor:
+                        _onboardingItems[_currentPage].backgroundColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 16,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -161,7 +167,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
     );
   }
-  
+
   Widget _buildOnboardingPage(OnboardingItem item) {
     return Container(
       color: item.backgroundColor,
@@ -174,7 +180,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             width: 200,
             height: 200,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withAlpha(51), // 0.2 opacity
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -196,29 +202,29 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 20),
           Text(
             item.description,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
             textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildPageIndicator(bool isActive) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
       height: 10,
       width: isActive ? 24 : 10,
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.white.withOpacity(0.4),
+        color:
+            isActive
+                ? Colors.white
+                : Colors.white.withAlpha(102), // 0.4 opacity
         borderRadius: BorderRadius.circular(5),
       ),
     );
   }
-  
+
   IconData _getIconForImage(String imagePath) {
     if (imagePath.contains('welcome')) {
       return Icons.waving_hand;
@@ -241,7 +247,7 @@ class OnboardingItem {
   final String description;
   final String image;
   final Color backgroundColor;
-  
+
   OnboardingItem({
     required this.title,
     required this.description,

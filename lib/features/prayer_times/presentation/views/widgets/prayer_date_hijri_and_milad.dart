@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/core/localization/bloc/language_bloc_exports.dart';
 import '/core/utils/helper.dart';
-import '/core/utils/styles.dart';
 
 class PrayerDateHijriAndMilad extends StatelessWidget {
   const PrayerDateHijriAndMilad({super.key});

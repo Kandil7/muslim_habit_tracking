@@ -20,12 +20,10 @@ class StreakIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final effectiveColor = color ?? theme.colorScheme.primary;
-    
+
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -48,7 +46,7 @@ class StreakIndicator extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Current streak
             Row(
               children: [
@@ -71,7 +69,7 @@ class StreakIndicator extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             // Target streak
             if (targetStreak != null && targetStreak! > 0)
               Padding(
@@ -88,7 +86,9 @@ class StreakIndicator extends StatelessWidget {
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: currentStreak / targetStreak!,
-                      backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+                      backgroundColor: theme.colorScheme.onSurface.withAlpha(
+                        26,
+                      ), // 0.1 opacity
                       color: effectiveColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -96,7 +96,9 @@ class StreakIndicator extends StatelessWidget {
                     Text(
                       '${currentStreak > targetStreak! ? 100 : ((currentStreak / targetStreak!) * 100).toInt()}% complete',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        color: theme.colorScheme.onSurface.withAlpha(
+                          179,
+                        ), // 0.7 opacity
                       ),
                     ),
                   ],
@@ -107,7 +109,7 @@ class StreakIndicator extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStreakItem(
     BuildContext context,
     String label,
@@ -115,13 +117,13 @@ class StreakIndicator extends StatelessWidget {
     Color color,
   ) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         Text(
           label,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.withAlpha(179), // 0.7 opacity
           ),
         ),
         const SizedBox(height: 4),
@@ -142,7 +144,9 @@ class StreakIndicator extends StatelessWidget {
               child: Text(
                 'days',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withAlpha(
+                    179,
+                  ), // 0.7 opacity
                 ),
               ),
             ),

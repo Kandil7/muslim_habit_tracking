@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muslim_habbit/core/theme/app_theme.dart';
@@ -17,7 +16,9 @@ void main() {
     themeBloc.close();
   });
 
-  testWidgets('App should use light theme when ThemeBloc emits light theme', (WidgetTester tester) async {
+  testWidgets('App should use light theme when ThemeBloc emits light theme', (
+    WidgetTester tester,
+  ) async {
     // Set up mock SharedPreferences
     SharedPreferences.setMockInitialValues({});
 
@@ -30,11 +31,7 @@ void main() {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: mockThemeState.themeMode,
-        home: const Scaffold(
-          body: Center(
-            child: Text('Test'),
-          ),
-        ),
+        home: const Scaffold(body: Center(child: Text('Test'))),
       ),
     );
 
@@ -50,7 +47,9 @@ void main() {
     expect(theme.brightness, equals(Brightness.light));
   });
 
-  testWidgets('App should use dark theme when ThemeBloc emits dark theme', (WidgetTester tester) async {
+  testWidgets('App should use dark theme when ThemeBloc emits dark theme', (
+    WidgetTester tester,
+  ) async {
     // Set up mock SharedPreferences
     SharedPreferences.setMockInitialValues({});
 
@@ -63,11 +62,7 @@ void main() {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: mockThemeState.themeMode,
-        home: const Scaffold(
-          body: Center(
-            child: Text('Test'),
-          ),
-        ),
+        home: const Scaffold(body: Center(child: Text('Test'))),
       ),
     );
 
@@ -83,7 +78,9 @@ void main() {
     expect(theme.brightness, equals(Brightness.dark));
   });
 
-  testWidgets('Theme should change when theme mode changes', (WidgetTester tester) async {
+  testWidgets('Theme should change when theme mode changes', (
+    WidgetTester tester,
+  ) async {
     // Set up mock SharedPreferences
     SharedPreferences.setMockInitialValues({});
 

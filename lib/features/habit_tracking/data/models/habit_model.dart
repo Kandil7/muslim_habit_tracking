@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../domain/entities/habit.dart';
 
 /// Model class for Habit entity

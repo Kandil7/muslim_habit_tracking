@@ -25,11 +25,12 @@ class SuraView extends StatelessWidget {
     return BlocProvider(
       create: (context) {
         // Create the QuranBloc and initialize it
-        final quranBloc =
-            di.sl<QuranBloc>()
-              ..add(const GetBookmarksEvent())
-              // Initialize with the correct page index
-              ..add(InitQuranPageControllerEvent(initialPage: validPage - 1));
+        final quranBloc = di.sl<QuranBloc>();
+
+        // Add events to initialize the bloc
+        quranBloc
+          ..add(const GetBookmarksEvent())
+          ..add(InitQuranPageControllerEvent(initialPage: validPage - 1));
 
         // Set the current page directly in the bloc
         quranBloc.currentPage = validPage;
@@ -43,7 +44,8 @@ class SuraView extends StatelessWidget {
         );
         quranBloc.add(UpdateLastReadPositionEvent(history: history));
 
-        return quranBloc;
+        // Return the initialized QuranBloc
+        return quranBloc as QuranBloc;
       },
       child: Builder(
         builder: (context) {

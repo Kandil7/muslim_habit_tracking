@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../domain/entities/habit_log.dart';
 
 /// Model class for HabitLog entity
@@ -12,7 +10,7 @@ class HabitLogModel extends HabitLog {
     required super.notes,
     required super.createdAt,
   });
-  
+
   /// Create a HabitLogModel from a JSON map
   factory HabitLogModel.fromJson(Map<String, dynamic> json) {
     return HabitLogModel(
@@ -24,7 +22,7 @@ class HabitLogModel extends HabitLog {
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
-  
+
   /// Convert this HabitLogModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -36,7 +34,7 @@ class HabitLogModel extends HabitLog {
       'createdAt': createdAt.toIso8601String(),
     };
   }
-  
+
   /// Create a HabitLogModel from a HabitLog entity
   factory HabitLogModel.fromEntity(HabitLog habitLog) {
     return HabitLogModel(
@@ -48,7 +46,7 @@ class HabitLogModel extends HabitLog {
       createdAt: habitLog.createdAt,
     );
   }
-  
+
   /// Create a copy of this HabitLogModel with the given fields replaced with the new values
   @override
   HabitLogModel copyWith({

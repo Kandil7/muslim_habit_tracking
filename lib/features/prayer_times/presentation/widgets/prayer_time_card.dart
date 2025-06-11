@@ -18,15 +18,13 @@ class PrayerTimeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final now = DateTime.now();
+    // Using now variable for time difference calculation
     final nextPrayer = prayerTime.getNextPrayer();
     final currentPrayer = prayerTime.getCurrentPrayer();
-    
+
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -49,9 +47,9 @@ class PrayerTimeCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Next prayer
             if (nextPrayer.isNotEmpty)
               Container(
@@ -74,7 +72,8 @@ class PrayerTimeCard extends StatelessWidget {
                           Text(
                             'Next Prayer',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer.withOpacity(0.7),
+                              color: theme.colorScheme.onPrimaryContainer
+                                  .withAlpha(179), // 0.7 opacity
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -89,7 +88,9 @@ class PrayerTimeCard extends StatelessWidget {
                               ),
                               const Spacer(),
                               Text(
-                                DateFormat('h:mm a').format(nextPrayer.values.first),
+                                DateFormat(
+                                  'h:mm a',
+                                ).format(nextPrayer.values.first),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: theme.colorScheme.onPrimaryContainer,
@@ -101,7 +102,8 @@ class PrayerTimeCard extends StatelessWidget {
                           Text(
                             _getTimeUntil(nextPrayer.values.first),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer.withOpacity(0.7),
+                              color: theme.colorScheme.onPrimaryContainer
+                                  .withAlpha(179), // 0.7 opacity
                             ),
                           ),
                         ],
@@ -110,9 +112,9 @@ class PrayerTimeCard extends StatelessWidget {
                   ],
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Current prayer
             if (currentPrayer != null && currentPrayer.isNotEmpty)
               Container(
@@ -135,7 +137,8 @@ class PrayerTimeCard extends StatelessWidget {
                           Text(
                             'Current Prayer',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSecondaryContainer.withOpacity(0.7),
+                              color: theme.colorScheme.onSecondaryContainer
+                                  .withAlpha(179), // 0.7 opacity
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -152,14 +155,14 @@ class PrayerTimeCard extends StatelessWidget {
                   ],
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // All prayer times
             ..._buildPrayerTimesList(context),
-            
+
             const SizedBox(height: 16),
-            
+
             // Set reminder button
             if (onSetReminder != null)
               OutlinedButton.icon(
@@ -175,18 +178,18 @@ class PrayerTimeCard extends StatelessWidget {
       ),
     );
   }
-  
+
   List<Widget> _buildPrayerTimesList(BuildContext context) {
     final theme = Theme.of(context);
     final allPrayers = prayerTime.getAllPrayers();
-    final now = DateTime.now();
-    
+    // No need for now variable here
+
     return allPrayers.entries.map((entry) {
       final prayerName = entry.key;
       final time = entry.value;
       final isNext = prayerTime.getNextPrayer().keys.first == prayerName;
       final isCurrent = prayerTime.getCurrentPrayer()?.keys.first == prayerName;
-      
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(
@@ -196,11 +199,14 @@ class PrayerTimeCard extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isNext
-                    ? theme.colorScheme.primary
-                    : isCurrent
+                color:
+                    isNext
+                        ? theme.colorScheme.primary
+                        : isCurrent
                         ? theme.colorScheme.secondary
-                        : theme.colorScheme.onSurface.withOpacity(0.3),
+                        : theme.colorScheme.onSurface.withAlpha(
+                          77,
+                        ), // 0.3 opacity
               ),
             ),
             const SizedBox(width: 12),
@@ -209,9 +215,10 @@ class PrayerTimeCard extends StatelessWidget {
                 prayerName,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: isNext || isCurrent ? FontWeight.bold : null,
-                  color: isNext
-                      ? theme.colorScheme.primary
-                      : isCurrent
+                  color:
+                      isNext
+                          ? theme.colorScheme.primary
+                          : isCurrent
                           ? theme.colorScheme.secondary
                           : null,
                 ),
@@ -221,9 +228,10 @@ class PrayerTimeCard extends StatelessWidget {
               DateFormat('h:mm a').format(time),
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: isNext || isCurrent ? FontWeight.bold : null,
-                color: isNext
-                    ? theme.colorScheme.primary
-                    : isCurrent
+                color:
+                    isNext
+                        ? theme.colorScheme.primary
+                        : isCurrent
                         ? theme.colorScheme.secondary
                         : null,
               ),
@@ -233,18 +241,18 @@ class PrayerTimeCard extends StatelessWidget {
       );
     }).toList();
   }
-  
+
   String _getTimeUntil(DateTime time) {
     final now = DateTime.now();
     final difference = time.difference(now);
-    
+
     if (difference.isNegative) {
       return 'Passed';
     }
-    
+
     final hours = difference.inHours;
     final minutes = difference.inMinutes % 60;
-    
+
     if (hours > 0) {
       return '$hours hour${hours > 1 ? 's' : ''} $minutes minute${minutes > 1 ? 's' : ''} remaining';
     } else {
