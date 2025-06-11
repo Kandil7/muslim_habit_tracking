@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../models/dua_model.dart';
 import '../models/dhikr_model.dart';
