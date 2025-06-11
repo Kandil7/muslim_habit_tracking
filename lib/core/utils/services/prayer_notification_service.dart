@@ -49,6 +49,7 @@ class PrayerNotificationService {
         InitializationSettings(
           android: initializationSettingsAndroid,
           iOS: initializationSettingsIOS,
+          macOS: initializationSettingsIOS,
         );
 
     await _flutterLocalNotificationsPlugin.initialize(
