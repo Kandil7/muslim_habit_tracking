@@ -77,47 +77,59 @@ class AppColors {
 
 /// Text styles for the app
 class AppTextStyles {
-  static TextStyle get headingLarge => GoogleFonts.lato(
+  // Define font families
+  static const String latoFontFamily = 'Lato';
+  static const String scheherazadeFontFamily = 'ScheherazadeNew';
+
+  static TextStyle get headingLarge => TextStyle(
+    fontFamily: latoFontFamily,
     fontSize: 32,
     fontWeight: FontWeight.bold,
     // color: AppColors.textPrimary,
   );
 
-  static TextStyle get headingMedium => GoogleFonts.lato(
+  static TextStyle get headingMedium => TextStyle(
+    fontFamily: latoFontFamily,
     fontSize: 24,
     fontWeight: FontWeight.bold,
     // color: AppColors.textPrimary,
   );
 
-  static TextStyle get headingSmall => GoogleFonts.lato(
+  static TextStyle get headingSmall => TextStyle(
+    fontFamily: latoFontFamily,
     fontSize: 20,
     fontWeight: FontWeight.bold,
     // color: AppColors.textPrimary,
   );
 
-  static TextStyle get bodyLarge => GoogleFonts.lato(
+  static TextStyle get bodyLarge => TextStyle(
+    fontFamily: latoFontFamily,
     fontSize: 18,
     // color: AppColors.textPrimary,
   );
 
-  static TextStyle get bodyMedium => GoogleFonts.lato(
+  static TextStyle get bodyMedium => TextStyle(
+    fontFamily: latoFontFamily,
     fontSize: 16,
     // color: AppColors.textPrimary,
   );
 
-  static TextStyle get bodySmall => GoogleFonts.lato(
+  static TextStyle get bodySmall => TextStyle(
+    fontFamily: latoFontFamily,
     fontSize: 14,
     // color: AppColors.textSecondary,
   );
 
-  static TextStyle get arabicText => GoogleFonts.scheherazadeNew(
+  static TextStyle get arabicText => TextStyle(
+    fontFamily: scheherazadeFontFamily,
     fontSize: 22,
     // color: AppColors.textPrimary,
     height: 1.5,
   );
 
   // Arabic text style for dark mode
-  static TextStyle get arabicTextDark => GoogleFonts.scheherazadeNew(
+  static TextStyle get arabicTextDark => TextStyle(
+    fontFamily: scheherazadeFontFamily,
     fontSize: 22,
     // color: AppColors.darkTextPrimary,
     height: 1.5,
