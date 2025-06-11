@@ -9,18 +9,16 @@ import 'dashboard_card.dart';
 class HabitsSummaryCard extends StatelessWidget {
   final List<Habit> habits;
 
-  const HabitsSummaryCard({
-    super.key,
-    required this.habits,
-  });
+  const HabitsSummaryCard({super.key, required this.habits});
 
   @override
   Widget build(BuildContext context) {
     // Calculate stats
     final activeHabits = habits.where((h) => h.isActive).length;
-    final completedToday = 0; // This would come from habit logs in a real implementation
+    final completedToday =
+        0; // This would come from habit logs in a real implementation
     final streakHabits = habits.where((h) => h.currentStreak > 0).length;
-    
+
     return DashboardCard(
       title: 'Habits',
       icon: AppIcons.home,
@@ -44,7 +42,7 @@ class HabitsSummaryCard extends StatelessWidget {
               ),
               _buildStatItem(
                 context,
-                value: '$completedToday/${activeHabits}',
+                value: '$completedToday/$activeHabits',
                 label: 'Today',
                 icon: Icons.today,
                 color: AppColors.secondary,
@@ -61,12 +59,10 @@ class HabitsSummaryCard extends StatelessWidget {
           const SizedBox(height: 16),
           const Divider(),
           const SizedBox(height: 16),
-          
+
           // Habits list
           if (habits.isEmpty)
-            const Center(
-              child: Text('No habits yet. Add your first habit!'),
-            )
+            const Center(child: Text('No habits yet. Add your first habit!'))
           else
             Column(
               children: [
@@ -87,7 +83,7 @@ class HabitsSummaryCard extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStatItem(
     BuildContext context, {
     required String value,
@@ -104,17 +100,10 @@ class HabitsSummaryCard extends StatelessWidget {
             color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 20,
-          ),
+          child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(height: 8),
-        Text(
-          value,
-          style: AppTextStyles.headingSmall,
-        ),
+        Text(value, style: AppTextStyles.headingSmall),
         Text(
           label,
           style: AppTextStyles.bodySmall.copyWith(
@@ -124,12 +113,13 @@ class HabitsSummaryCard extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildHabitItem(BuildContext context, Habit habit) {
     // Check if habit is completed today
     final now = DateTime.now();
-    final isCompletedToday = false; // This would come from habit logs in a real implementation
-    
+    final isCompletedToday =
+        false; // This would come from habit logs in a real implementation
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
@@ -192,7 +182,7 @@ class HabitsSummaryCard extends StatelessWidget {
       ),
     );
   }
-  
+
   IconData _getIconForHabitType(String type) {
     switch (type) {
       case 'prayer':

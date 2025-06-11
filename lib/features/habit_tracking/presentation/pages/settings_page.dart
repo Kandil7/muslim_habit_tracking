@@ -14,11 +14,8 @@ import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/services/cache_manager.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/theme/bloc/theme_bloc_exports.dart';
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/di/injection_container.dart' as di;
 
-import '../../../../core/presentation/widgets/section_header.dart';
 import 'accessibility_settings_page.dart';
 
 /// Settings page

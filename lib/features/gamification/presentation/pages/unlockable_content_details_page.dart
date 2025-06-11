@@ -9,15 +9,12 @@ class UnlockableContentDetailsPage extends StatelessWidget {
   final UnlockableContent content;
 
   /// Creates a new UnlockableContentDetailsPage
-  const UnlockableContentDetailsPage({
-    super.key,
-    required this.content,
-  });
+  const UnlockableContentDetailsPage({super.key, required this.content});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(content.name),
@@ -45,7 +42,7 @@ class UnlockableContentDetailsPage extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     height: 300,
-                    color: theme.colorScheme.surfaceVariant,
+                    color: theme.colorScheme.surfaceContainerHighest,
                     child: Icon(
                       Icons.wallpaper,
                       size: 64,
@@ -66,7 +63,7 @@ class UnlockableContentDetailsPage extends StatelessWidget {
                   ),
                 ),
               ),
-            
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -79,17 +76,14 @@ class UnlockableContentDetailsPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Content description
-                  Text(
-                    content.description,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                  
+                  Text(content.description, style: theme.textTheme.bodyLarge),
+
                   const SizedBox(height: 16),
-                  
+
                   // Content details
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -130,9 +124,9 @@ class UnlockableContentDetailsPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Action buttons
                   if (content.contentType == 'wallpaper')
                     ElevatedButton.icon(
@@ -155,7 +149,10 @@ class UnlockableContentDetailsPage extends StatelessWidget {
                       onPressed: () {
                         // Copy quote to clipboard
                         Clipboard.setData(
-                          ClipboardData(text: 'Quote from Muslim Habit Tracker: ${content.name}'),
+                          ClipboardData(
+                            text:
+                                'Quote from Muslim Habit Tracker: ${content.name}',
+                          ),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -193,10 +190,10 @@ class UnlockableContentDetailsPage extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildDetailRow(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -207,22 +204,17 @@ class UnlockableContentDetailsPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );
   }
-  
+
   /// Format date to a readable string
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-  
+
   /// Format content type to a readable string
   String _formatContentType(String contentType) {
     switch (contentType.toLowerCase()) {
@@ -238,7 +230,7 @@ class UnlockableContentDetailsPage extends StatelessWidget {
         return contentType;
     }
   }
-  
+
   /// Get icon based on content type
   IconData _getContentTypeIcon(String contentType) {
     switch (contentType.toLowerCase()) {

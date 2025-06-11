@@ -4,10 +4,8 @@ import '../../../../../core/di/injection_container.dart' as di;
 import '/core/utils/helper.dart';
 import '/core/utils/services/location_service.dart';
 import '/core/utils/services/prayer_notification_service.dart';
-import '/core/utils/services/setup_locator_service.dart';
 import '/core/utils/services/shared_pref_service.dart';
 
-import '../../../../../core/utils/services/shared_pref_service.dart';
 import '../../../data/models/prayer_item_model.dart';
 import '../../../data/repo/prayer_repo.dart';
 
@@ -15,7 +13,7 @@ part 'prayer_state.dart';
 
 class PrayerCubit extends Cubit<PrayerState> {
   PrayerCubit(this._prayerRepo, this._locationService)
-      : super(PrayerInitial()) {
+    : super(PrayerInitial()) {
     _startTimer();
     _initNotificationService();
   }
@@ -100,8 +98,12 @@ class PrayerCubit extends Cubit<PrayerState> {
   Future<void> _initNotificationService() async {
     _notificationService = PrayerNotificationService();
     // Load notification preferences from SharedPreferences
-    _notificationsEnabled = _sharedPrefService.getBool(key: 'prayer_notifications_enabled') ?? false;
-    _notificationMinutesBefore = _sharedPrefService.getInt(key: 'prayer_notifications_minutes_before') ?? 15;
+    _notificationsEnabled =
+        _sharedPrefService.getBool(key: 'prayer_notifications_enabled') ??
+        false;
+    _notificationMinutesBefore =
+        _sharedPrefService.getInt(key: 'prayer_notifications_minutes_before') ??
+        15;
 
     if (_notificationsEnabled) {
       await _notificationService.requestPermissions();
@@ -112,13 +114,18 @@ class PrayerCubit extends Cubit<PrayerState> {
   Future<void> _scheduleNotifications() async {
     if (_notificationsEnabled && prayerList.isNotEmpty) {
       await _notificationService.scheduleAllPrayerNotifications(
-          prayerList, _notificationMinutesBefore);
+        prayerList,
+        _notificationMinutesBefore,
+      );
     }
   }
 
   Future<void> toggleNotifications(bool enabled) async {
     _notificationsEnabled = enabled;
-    await _sharedPrefService.setBool(key: 'prayer_notifications_enabled', value: enabled);
+    await _sharedPrefService.setBool(
+      key: 'prayer_notifications_enabled',
+      value: enabled,
+    );
 
     if (enabled) {
       await _notificationService.requestPermissions();
@@ -131,7 +138,10 @@ class PrayerCubit extends Cubit<PrayerState> {
 
   Future<void> setNotificationTime(int minutesBefore) async {
     _notificationMinutesBefore = minutesBefore;
-    await _sharedPrefService.setInt(key: 'prayer_notifications_minutes_before', value: minutesBefore);
+    await _sharedPrefService.setInt(
+      key: 'prayer_notifications_minutes_before',
+      value: minutesBefore,
+    );
 
     if (_notificationsEnabled) {
       _scheduleNotifications();

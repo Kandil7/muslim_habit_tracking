@@ -108,7 +108,7 @@ class BadgeDetailsPage extends StatelessWidget {
                 color:
                     badge.isEarned
                         ? theme.colorScheme.primary.withOpacity(0.1)
-                        : theme.colorScheme.surfaceVariant,
+                        : theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color:
@@ -237,7 +237,7 @@ class BadgeDetailsPage extends StatelessWidget {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),

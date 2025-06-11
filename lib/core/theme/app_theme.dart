@@ -156,7 +156,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: Colors.white),
         shadowColor: AppColors.primary.withAlpha(102),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -340,7 +340,7 @@ class AppTheme {
         iconTheme: IconThemeData(color: AppColors.darkPrimary),
         shadowColor: Colors.black.withAlpha(102),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.darkCardBackground,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -553,7 +553,7 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.darkCardBackground,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         titleTextStyle: GoogleFonts.lato(

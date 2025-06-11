@@ -6,7 +6,7 @@ import 'app_localizations_extension.dart';
 import 'bloc/language_bloc_exports.dart';
 
 class LanguageSelector extends StatelessWidget {
-  const LanguageSelector({Key? key}) : super(key: key);
+  const LanguageSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,19 +27,9 @@ class LanguageSelector extends StatelessWidget {
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: 16),
-                _buildLanguageOption(
-                  context,
-                  'English',
-                  'en',
-                  currentLanguage,
-                ),
+                _buildLanguageOption(context, 'English', 'en', currentLanguage),
                 const Divider(),
-                _buildLanguageOption(
-                  context,
-                  'العربية',
-                  'ar',
-                  currentLanguage,
-                ),
+                _buildLanguageOption(context, 'العربية', 'ar', currentLanguage),
               ],
             ),
           ),
@@ -62,16 +52,10 @@ class LanguageSelector extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            Text(
-              languageName,
-              style: AppTextStyles.bodyLarge,
-            ),
+            Text(languageName, style: AppTextStyles.bodyLarge),
             const Spacer(),
             if (currentLanguage == languageCode)
-              const Icon(
-                Icons.check_circle,
-                color: AppColors.primary,
-              ),
+              const Icon(Icons.check_circle, color: AppColors.primary),
           ],
         ),
       ),

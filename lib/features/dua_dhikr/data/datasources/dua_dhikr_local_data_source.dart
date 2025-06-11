@@ -95,7 +95,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       final updatedDua = duas[index].copyWith(
         isFavorite: !duas[index].isFavorite,
       );
-      duas[index] = updatedDua as DuaModel;
+      duas[index] = updatedDua;
 
       await duaDhikrBox.put(
         'duas',
@@ -151,7 +151,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       final updatedDhikr = dhikrs[index].copyWith(
         isFavorite: !dhikrs[index].isFavorite,
       );
-      dhikrs[index] = updatedDhikr as DhikrModel;
+      dhikrs[index] = updatedDhikr;
 
       await duaDhikrBox.put(
         'dhikrs',

@@ -21,15 +21,16 @@ class UnlockableContentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: content.isUnlocked 
-              ? theme.colorScheme.primary 
-              : theme.colorScheme.outline.withOpacity(0.5),
+          color:
+              content.isUnlocked
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline.withOpacity(0.5),
           width: content.isUnlocked ? 2 : 1,
         ),
       ),
@@ -41,7 +42,9 @@ class UnlockableContentCard extends StatelessWidget {
           children: [
             // Preview image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -54,7 +57,7 @@ class UnlockableContentCard extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: 120,
-                        color: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.surfaceContainerHighest,
                         child: Icon(
                           _getContentTypeIcon(content.contentType),
                           size: 48,
@@ -63,7 +66,7 @@ class UnlockableContentCard extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   // Lock overlay for locked content
                   if (!content.isUnlocked)
                     Container(
@@ -73,11 +76,7 @@ class UnlockableContentCard extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.lock,
-                            color: Colors.white,
-                            size: 32,
-                          ),
+                          const Icon(Icons.lock, color: Colors.white, size: 32),
                           const SizedBox(height: 8),
                           Text(
                             '${content.pointsRequired} points to unlock',
@@ -92,7 +91,7 @@ class UnlockableContentCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Content details
             Padding(
               padding: const EdgeInsets.all(12),
@@ -104,16 +103,17 @@ class UnlockableContentCard extends StatelessWidget {
                     content.name,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: content.isUnlocked 
-                          ? theme.colorScheme.primary 
-                          : theme.colorScheme.onSurface,
+                      color:
+                          content.isUnlocked
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
+
                   const SizedBox(height: 4),
-                  
+
                   // Content description
                   Text(
                     content.description,
@@ -123,9 +123,9 @@ class UnlockableContentCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Unlock button or status
                   if (content.isUnlocked)
                     Row(
@@ -148,7 +148,9 @@ class UnlockableContentCard extends StatelessWidget {
                             child: Text(
                               ' on ${_formatDate(content.unlockedDate!)}',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                color: theme.colorScheme.onSurface.withOpacity(
+                                  0.6,
+                                ),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -161,8 +163,10 @@ class UnlockableContentCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: theme.colorScheme.onPrimary,
-                        disabledBackgroundColor: theme.colorScheme.onSurface.withOpacity(0.12),
-                        disabledForegroundColor: theme.colorScheme.onSurface.withOpacity(0.38),
+                        disabledBackgroundColor: theme.colorScheme.onSurface
+                            .withOpacity(0.12),
+                        disabledForegroundColor: theme.colorScheme.onSurface
+                            .withOpacity(0.38),
                         minimumSize: const Size(double.infinity, 36),
                       ),
                       child: Text(
@@ -177,12 +181,12 @@ class UnlockableContentCard extends StatelessWidget {
       ),
     );
   }
-  
+
   /// Format date to a readable string
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-  
+
   /// Get icon based on content type
   IconData _getContentTypeIcon(String contentType) {
     switch (contentType.toLowerCase()) {

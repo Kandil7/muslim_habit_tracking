@@ -56,7 +56,7 @@ class NotificationService {
 
     // Request permissions for Android
     // Android permissions are handled at the app level, no need to request here
-    final bool? androidPermission = true;
+    final bool androidPermission = true;
 
     return iosPermission == true || androidPermission == true;
   }

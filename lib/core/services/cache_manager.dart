@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,7 +39,11 @@ class CacheManager {
   }
 
   /// Save data to cache
-  Future<bool> saveToCache(String key, dynamic data, {Duration? expiration}) async {
+  Future<bool> saveToCache(
+    String key,
+    dynamic data, {
+    Duration? expiration,
+  }) async {
     try {
       final cacheDir = await _getCacheDirectory();
       final file = File('${cacheDir.path}/$key');

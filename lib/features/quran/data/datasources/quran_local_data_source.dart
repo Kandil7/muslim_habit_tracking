@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../models/quran_bookmark_model.dart';
 import '../models/quran_reading_history_model.dart';
@@ -51,8 +50,8 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
   QuranLocalDataSourceImpl({
     required Box quranBox,
     required SharedPreferences sharedPreferences,
-  })  : _quranBox = quranBox,
-        _sharedPreferences = sharedPreferences;
+  }) : _quranBox = quranBox,
+       _sharedPreferences = sharedPreferences;
 
   // Keys for SharedPreferences
   static const String _bookmarksKey = 'quran_bookmarks';

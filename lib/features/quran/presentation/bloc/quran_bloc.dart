@@ -9,7 +9,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/services/shared_pref_service.dart';
-import '../../domain/entities/quran_reading_history.dart';
 import '../../domain/usecases/add_bookmark.dart';
 import '../../domain/usecases/add_reading_history.dart';
 import '../../domain/usecases/clear_reading_history.dart';

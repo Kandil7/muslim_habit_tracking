@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 /// Base class for all theme states
 abstract class ThemeState extends Equatable {
   final ThemeMode themeMode;
-  
+
   const ThemeState(this.themeMode);
-  
+
   @override
   List<Object> get props => [themeMode];
 }
@@ -18,8 +18,8 @@ class ThemeInitial extends ThemeState {
 
 /// State when the theme is loaded
 class ThemeLoaded extends ThemeState {
-  const ThemeLoaded(ThemeMode themeMode) : super(themeMode);
-  
+  const ThemeLoaded(super.themeMode);
+
   /// Check if dark mode is enabled
   bool get isDarkMode => themeMode == ThemeMode.dark;
 }

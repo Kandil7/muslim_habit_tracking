@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_bookmarks_page.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_reading_history_page.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_search_page.dart';

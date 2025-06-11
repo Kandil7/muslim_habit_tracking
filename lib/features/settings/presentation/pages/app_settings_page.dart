@@ -9,14 +9,12 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/bloc/theme_bloc_exports.dart';
 
 class AppSettingsPage extends StatelessWidget {
-  const AppSettingsPage({Key? key}) : super(key: key);
+  const AppSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.tr.translate('settings.title')),
-      ),
+      appBar: AppBar(title: Text(context.tr.translate('settings.title'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -26,12 +24,12 @@ class AppSettingsPage extends StatelessWidget {
             _buildSectionHeader(context, 'settings.appearance'),
             _buildThemeSelector(context),
             const SizedBox(height: 24),
-            
+
             // Language section
             _buildSectionHeader(context, 'settings.language'),
             const LanguageSelector(),
             const SizedBox(height: 24),
-            
+
             // About section
             _buildSectionHeader(context, 'settings.about'),
             _buildAboutCard(context),
@@ -112,16 +110,10 @@ class AppSettingsPage extends StatelessWidget {
           children: [
             Icon(icon),
             const SizedBox(width: 16),
-            Text(
-              themeName,
-              style: AppTextStyles.bodyLarge,
-            ),
+            Text(themeName, style: AppTextStyles.bodyLarge),
             const Spacer(),
             if (currentThemeMode == themeMode)
-              const Icon(
-                Icons.check_circle,
-                color: AppColors.primary,
-              ),
+              const Icon(Icons.check_circle, color: AppColors.primary),
           ],
         ),
       ),

@@ -45,7 +45,7 @@ class SuraView extends StatelessWidget {
         quranBloc.add(UpdateLastReadPositionEvent(history: history));
 
         // Return the initialized QuranBloc
-        return quranBloc as QuranBloc;
+        return quranBloc;
       },
       child: Builder(
         builder: (context) {

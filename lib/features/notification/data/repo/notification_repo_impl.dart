@@ -3,15 +3,13 @@ import '/core/utils/constants.dart';
 import '/core/utils/helper.dart';
 
 import '../../../../core/utils/services/notification_service.dart';
-import '../../../../core/utils/services/setup_locator_service.dart';
 
 import '../models/notification_model.dart';
 import 'notification_repo.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationRepoImpl extends NotificationRepo {
-  final NotificationService _notificationService =
-      di.sl<NotificationService>();
+  final NotificationService _notificationService = di.sl<NotificationService>();
 
   @pragma('vm:entry-point')
   @override
@@ -23,9 +21,10 @@ class NotificationRepoImpl extends NotificationRepo {
 
     if (boolList[0]) {
       await _readingSurahAlKahfAndDoaaOnFriday(
-          id: 0,
-          hour: prayerDateTimes[2].hour,
-          minute: prayerDateTimes[2].minute);
+        id: 0,
+        hour: prayerDateTimes[2].hour,
+        minute: prayerDateTimes[2].minute,
+      );
     }
 
     // if (boolList[1]) {
@@ -34,12 +33,13 @@ class NotificationRepoImpl extends NotificationRepo {
 
     if (boolList[2]) {
       await _readingSurahAlKahfAndDoaaOnFriday(
-          id: 1,
-          duration: 1,
-          hour: prayerDateTimes[4].hour,
-          minute: prayerDateTimes[4].minute,
-          title: "🤲 لا تنسَ الدعاء في آخر ساعة من يوم الجمعة",
-          body: "🕋 ساعة استجابة، أكثر من الدعاء وتوجه إلى الله بقلب خاشع");
+        id: 1,
+        duration: 1,
+        hour: prayerDateTimes[4].hour,
+        minute: prayerDateTimes[4].minute,
+        title: "🤲 لا تنسَ الدعاء في آخر ساعة من يوم الجمعة",
+        body: "🕋 ساعة استجابة، أكثر من الدعاء وتوجه إلى الله بقلب خاشع",
+      );
     }
 
     if (boolList[3]) {
@@ -60,10 +60,11 @@ class NotificationRepoImpl extends NotificationRepo {
 
     if (boolList[7]) {
       await _rememberDoaaBeforIqmaaAndPrayerTimes(
-          prayerDateTimes: prayerDateTimes,
-          id: Constants.doaaBeforIqmaaID,
-          title: Constants.doaaBeforIqmaaTitle,
-          body: Constants.doaaBeforIgmaaBody);
+        prayerDateTimes: prayerDateTimes,
+        id: Constants.doaaBeforIqmaaID,
+        title: Constants.doaaBeforIqmaaTitle,
+        body: Constants.doaaBeforIgmaaBody,
+      );
     }
 
     if (boolList[8]) {
@@ -76,59 +77,81 @@ class NotificationRepoImpl extends NotificationRepo {
 
     if (boolList[10]) {
       await _rememberDoaaBeforIqmaaAndPrayerTimes(
-          prayerDateTimes: prayerDateTimes);
+        prayerDateTimes: prayerDateTimes,
+      );
     }
   }
 
   // reading surah al-kahf and doaa on friday
   @pragma('vm:entry-point')
-  Future<void> _readingSurahAlKahfAndDoaaOnFriday(
-      {int? duration,
-      required int hour,
-      required int minute,
-      String? title,
-      String? body,
-      required int id}) async {
+  Future<void> _readingSurahAlKahfAndDoaaOnFriday({
+    int? duration,
+    required int hour,
+    required int minute,
+    String? title,
+    String? body,
+    required int id,
+  }) async {
     DateTime currentTime = DateTime.now();
     DateTime nextFriday;
 
     if (currentTime.weekday == DateTime.friday) {
-      nextFriday = DateTime(currentTime.year, currentTime.month,
-          currentTime.day, duration != null ? hour - 1 : hour - 2, minute);
+      nextFriday = DateTime(
+        currentTime.year,
+        currentTime.month,
+        currentTime.day,
+        duration != null ? hour - 1 : hour - 2,
+        minute,
+      );
 
-      if (currentTime
-          .isBefore(nextFriday.subtract(Duration(hours: duration ?? 2)))) {
+      if (currentTime.isBefore(
+        nextFriday.subtract(Duration(hours: duration ?? 2)),
+      )) {
         await _readingAlKahfAndDoaaNotification(
-            id: id, date: nextFriday, title: title, body: body);
+          id: id,
+          date: nextFriday,
+          title: title,
+          body: body,
+        );
       }
     } else {
       int daysUntilNextFriday = (DateTime.friday - currentTime.weekday + 7) % 7;
-      DateTime nextFridayDate =
-          currentTime.add(Duration(days: daysUntilNextFriday));
+      DateTime nextFridayDate = currentTime.add(
+        Duration(days: daysUntilNextFriday),
+      );
       nextFriday = DateTime(
-          nextFridayDate.year,
-          nextFridayDate.month,
-          nextFridayDate.day,
-          duration != null ? hour - 1 : hour - 2,
-          duration != null ? 0 : 30);
+        nextFridayDate.year,
+        nextFridayDate.month,
+        nextFridayDate.day,
+        duration != null ? hour - 1 : hour - 2,
+        duration != null ? 0 : 30,
+      );
 
       await _readingAlKahfAndDoaaNotification(
-          id: id, date: nextFriday, title: title, body: body);
+        id: id,
+        date: nextFriday,
+        title: title,
+        body: body,
+      );
     }
   }
 
-  Future<void> _readingAlKahfAndDoaaNotification(
-      {required DateTime date,
-      String? title,
-      String? body,
-      required int id}) async {
-    await _notificationService.scheduledNotification(NotificationModel(
-      id: id,
-      title: title ?? "📖 لا تنسَ قراءة سورة الكهف",
-      body: body ??
-          "✨ يُستحب قراءة سورة الكهف يوم الجمعة، استمتع ببركاتها الآن 🕌",
-      date: DateTime(date.year, date.month, date.day, date.hour, date.minute),
-    ));
+  Future<void> _readingAlKahfAndDoaaNotification({
+    required DateTime date,
+    String? title,
+    String? body,
+    required int id,
+  }) async {
+    await _notificationService.scheduledNotification(
+      NotificationModel(
+        id: id,
+        title: title ?? "📖 لا تنسَ قراءة سورة الكهف",
+        body:
+            body ??
+            "✨ يُستحب قراءة سورة الكهف يوم الجمعة، استمتع ببركاتها الآن 🕌",
+        date: DateTime(date.year, date.month, date.day, date.hour, date.minute),
+      ),
+    );
   }
 
   // prayer on prompt mohamed (PBUH)
@@ -137,13 +160,17 @@ class NotificationRepoImpl extends NotificationRepo {
     for (int i = 0; i < Constants.prayerOnPromptMohamedID.length; i++) {
       await _notificationService.scheduledNotification(
         NotificationModel(
-            id: Constants.prayerOnPromptMohamedID[i],
-            title: "🌿 أكثر من الصلاة على النبي ﷺ",
-            body:
-                "🕌 اجعل لسانك رطبًا بذكره، فبها تُفرّج الهموم وتُرفع الدرجات 🤍",
-            scheduledDate: tz.TZDateTime.now(tz.local).add(Duration(
-                hours: Constants.prayerOnPromptMohamedTime[i],
-                minutes: i == 7 ? 30 : 0))),
+          id: Constants.prayerOnPromptMohamedID[i],
+          title: "🌿 أكثر من الصلاة على النبي ﷺ",
+          body:
+              "🕌 اجعل لسانك رطبًا بذكره، فبها تُفرّج الهموم وتُرفع الدرجات 🤍",
+          scheduledDate: tz.TZDateTime.now(tz.local).add(
+            Duration(
+              hours: Constants.prayerOnPromptMohamedTime[i],
+              minutes: i == 7 ? 30 : 0,
+            ),
+          ),
+        ),
       );
     }
   }
@@ -151,7 +178,8 @@ class NotificationRepoImpl extends NotificationRepo {
   // rememebr azkar subh and masaa
   @pragma('vm:entry-point')
   Future<void> _rememebrAzkarSubhAndMasaa(
-      List<DateTime> prayerDateTimes) async {
+    List<DateTime> prayerDateTimes,
+  ) async {
     DateTime now = DateTime.now();
     DateTime azkarSubhTime = DateTime(
       prayerDateTimes[0].year,
@@ -178,22 +206,31 @@ class NotificationRepoImpl extends NotificationRepo {
     }
 
     await _azkarSubhAndMasaaNotification(
-        azkarSubhTime: azkarSubhTime, azkarMasaaTime: azkarMasaaTime);
+      azkarSubhTime: azkarSubhTime,
+      azkarMasaaTime: azkarMasaaTime,
+    );
   }
 
-  Future<void> _azkarSubhAndMasaaNotification(
-      {required DateTime azkarSubhTime,
-      required DateTime azkarMasaaTime}) async {
-    await _notificationService.scheduledNotification(NotificationModel(
+  Future<void> _azkarSubhAndMasaaNotification({
+    required DateTime azkarSubhTime,
+    required DateTime azkarMasaaTime,
+  }) async {
+    await _notificationService.scheduledNotification(
+      NotificationModel(
         id: 3,
         title: "🌅 ابدأ يومك بذكر الله",
         body: "✨ أذكار الصباح حصن لك من كل شر، لا تفوّت الأجر والبركة",
-        date: azkarSubhTime));
-    await _notificationService.scheduledNotification(NotificationModel(
+        date: azkarSubhTime,
+      ),
+    );
+    await _notificationService.scheduledNotification(
+      NotificationModel(
         id: 4,
         title: "🌙 أنِر ليلك بذكر الله",
         body: "🤲 أذكار المساء تحفظك وتمنحك راحة القلب، لا تنسَها قبل النوم",
-        date: azkarMasaaTime));
+        date: azkarMasaaTime,
+      ),
+    );
   }
 
   // rememebr duha prayer
@@ -210,17 +247,21 @@ class NotificationRepoImpl extends NotificationRepo {
     if (now.isAfter(duhaPrayerTime)) {
       duhaPrayerTime = duhaPrayerTime.add(Duration(days: 1));
     }
-    await _notificationService.scheduledNotification(NotificationModel(
+    await _notificationService.scheduledNotification(
+      NotificationModel(
         id: 5,
         title: "☀️ لا تفوّت صلاة الضحى",
         body: "🕊️ ركعتان تساويان صدقة عن كل مفصل في جسدك، لا تحرم نفسك الأجر",
-        date: duhaPrayerTime));
+        date: duhaPrayerTime,
+      ),
+    );
   }
 
   // rememebr reading quran every day
   @pragma('vm:entry-point')
   Future<void> _rememebrReadingQuranEveryDay(
-      List<DateTime> prayerDateTimes) async {
+    List<DateTime> prayerDateTimes,
+  ) async {
     DateTime now = DateTime.now();
     DateTime readingQuranTime = DateTime(
       prayerDateTimes[5].year,
@@ -233,11 +274,14 @@ class NotificationRepoImpl extends NotificationRepo {
       readingQuranTime = readingQuranTime.add(Duration(days: 1));
     }
 
-    await _notificationService.scheduledNotification(NotificationModel(
+    await _notificationService.scheduledNotification(
+      NotificationModel(
         id: 6,
         title: "📖 لا تنسَ وردك اليومي من القرآن",
         body: "✨ دقائق قليلة مع القرآن تملأ قلبك بالسكينة والطمأنينة",
-        date: readingQuranTime));
+        date: readingQuranTime,
+      ),
+    );
   }
 
   // // early jumaa
@@ -265,58 +309,83 @@ class NotificationRepoImpl extends NotificationRepo {
   @pragma('vm:entry-point')
   Future<void> _fastingMondayAndThursday(DateTime date) async {
     await _mondayAndThursdayNotification(
-        id: 12, date: date, day: DateTime.sunday);
+      id: 12,
+      date: date,
+      day: DateTime.sunday,
+    );
     await _mondayAndThursdayNotification(
-        id: 13,
-        date: date,
-        day: DateTime.wednesday,
-        body:
-            "🤍 غدًا يوم الخميس، فرصة للصيام ونيل الأجر العظيم! لا تنسَ نيتك 💫");
+      id: 13,
+      date: date,
+      day: DateTime.wednesday,
+      body:
+          "🤍 غدًا يوم الخميس، فرصة للصيام ونيل الأجر العظيم! لا تنسَ نيتك 💫",
+    );
   }
 
-  Future<void> _mondayAndThursdayNotification(
-      {required DateTime date,
-      required int day,
-      required int id,
-      String? body}) async {
+  Future<void> _mondayAndThursdayNotification({
+    required DateTime date,
+    required int day,
+    required int id,
+    String? body,
+  }) async {
     DateTime currentTime = DateTime.now();
     DateTime nextDay;
 
     if (currentTime.weekday == day) {
-      nextDay = DateTime(currentTime.year, currentTime.month, currentTime.day,
-          date.hour + 1, date.minute);
+      nextDay = DateTime(
+        currentTime.year,
+        currentTime.month,
+        currentTime.day,
+        date.hour + 1,
+        date.minute,
+      );
 
       if (currentTime.isBefore(nextDay)) {
-        await _notificationService.scheduledNotification(NotificationModel(
+        await _notificationService.scheduledNotification(
+          NotificationModel(
             id: id,
             title: "🌙 تذكير بصيام غدًا",
-            body: body ??
+            body:
+                body ??
                 "🤍 غدًا يوم الإثنين، فرصة للصيام ونيل الأجر العظيم! لا تنسَ نيتك 💫",
-            date: nextDay));
+            date: nextDay,
+          ),
+        );
       }
     } else {
       int daysUntilNextFriday = (day - currentTime.weekday + 7) % 7;
-      DateTime nextSundayDate =
-          currentTime.add(Duration(days: daysUntilNextFriday));
-      nextDay = DateTime(nextSundayDate.year, nextSundayDate.month,
-          nextSundayDate.day, date.hour + 1, date.minute);
+      DateTime nextSundayDate = currentTime.add(
+        Duration(days: daysUntilNextFriday),
+      );
+      nextDay = DateTime(
+        nextSundayDate.year,
+        nextSundayDate.month,
+        nextSundayDate.day,
+        date.hour + 1,
+        date.minute,
+      );
 
-      await _notificationService.scheduledNotification(NotificationModel(
+      await _notificationService.scheduledNotification(
+        NotificationModel(
           id: id,
           title: "🌙 تذكير بصيام غدًا",
-          body: body ??
+          body:
+              body ??
               "🤍 غدًا يوم الإثنين، فرصة للصيام ونيل الأجر العظيم! لا تنسَ نيتك 💫",
-          date: nextDay));
+          date: nextDay,
+        ),
+      );
     }
   }
 
   // remember prayer times
   @pragma('vm:entry-point')
-  Future<void> _rememberDoaaBeforIqmaaAndPrayerTimes(
-      {required List<DateTime> prayerDateTimes,
-      List<int>? id,
-      List<String>? title,
-      List<String>? body}) async {
+  Future<void> _rememberDoaaBeforIqmaaAndPrayerTimes({
+    required List<DateTime> prayerDateTimes,
+    List<int>? id,
+    List<String>? title,
+    List<String>? body,
+  }) async {
     DateTime now = DateTime.now();
     final nextDay = now.add(Duration(days: 1));
 
@@ -342,18 +411,21 @@ class NotificationRepoImpl extends NotificationRepo {
       {"المغرب": nextDayPrayerTimes[4]},
       {"العشاء": nextDayPrayerTimes[5]},
     ];
-    int firstAvailableIndex =
-        prayerTimes.indexWhere((time) => time.entries.first.value.isAfter(now));
+    int firstAvailableIndex = prayerTimes.indexWhere(
+      (time) => time.entries.first.value.isAfter(now),
+    );
     if (firstAvailableIndex == -1) return;
 
     for (int i = firstAvailableIndex; i < prayerTimes.length; i++) {
       DateTime prayerTime = prayerTimes[i].entries.first.value;
-      await _notificationService.scheduledNotification(NotificationModel(
-        id: id?[i] ?? Constants.prayerTimesID[i],
-        title: title?[i] ?? Constants.prayerTimesTitle[i],
-        body: body?[i] ?? Constants.prayerTimesBody[i],
-        date: id != null ? prayerTime.add(Duration(minutes: 5)) : prayerTime,
-      ));
+      await _notificationService.scheduledNotification(
+        NotificationModel(
+          id: id?[i] ?? Constants.prayerTimesID[i],
+          title: title?[i] ?? Constants.prayerTimesTitle[i],
+          body: body?[i] ?? Constants.prayerTimesBody[i],
+          date: id != null ? prayerTime.add(Duration(minutes: 5)) : prayerTime,
+        ),
+      );
     }
   }
 

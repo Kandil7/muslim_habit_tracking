@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../domain/entities/dua.dart';
 
 /// Model class for Dua entity
@@ -14,7 +12,7 @@ class DuaModel extends Dua {
     required super.category,
     required super.isFavorite,
   });
-  
+
   /// Create a DuaModel from a JSON map
   factory DuaModel.fromJson(Map<String, dynamic> json) {
     return DuaModel(
@@ -28,7 +26,7 @@ class DuaModel extends Dua {
       isFavorite: json['isFavorite'],
     );
   }
-  
+
   /// Convert this DuaModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -42,7 +40,7 @@ class DuaModel extends Dua {
       'isFavorite': isFavorite,
     };
   }
-  
+
   /// Create a DuaModel from a Dua entity
   factory DuaModel.fromEntity(Dua dua) {
     return DuaModel(
@@ -56,7 +54,7 @@ class DuaModel extends Dua {
       isFavorite: dua.isFavorite,
     );
   }
-  
+
   /// Create a copy of this DuaModel with the given fields replaced with the new values
   @override
   DuaModel copyWith({

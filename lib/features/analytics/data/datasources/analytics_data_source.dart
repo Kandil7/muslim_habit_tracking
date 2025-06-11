@@ -3,8 +3,6 @@ import 'package:path_provider/path_provider.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../habit_tracking/data/datasources/habit_local_data_source.dart';
-import '../../../habit_tracking/data/models/habit_model.dart';
-import '../../../habit_tracking/data/models/habit_log_model.dart';
 import '../models/habit_stats_model.dart';
 
 /// Interface for analytics data source

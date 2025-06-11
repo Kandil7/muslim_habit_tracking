@@ -5,26 +5,16 @@ import '../../domain/entities/hadith.dart';
 class HadithModel extends Hadith {
   /// Creates a new HadithModel instance
   const HadithModel({
-    required String id,
-    required String text,
-    required String narrator,
-    required String source,
-    required String book,
-    required String number,
-    required String grade,
-    bool isBookmarked = false,
-    List<String> tags = const [],
-  }) : super(
-          id: id,
-          text: text,
-          narrator: narrator,
-          source: source,
-          book: book,
-          number: number,
-          grade: grade,
-          isBookmarked: isBookmarked,
-          tags: tags,
-        );
+    required super.id,
+    required super.text,
+    required super.narrator,
+    required super.source,
+    required super.book,
+    required super.number,
+    required super.grade,
+    super.isBookmarked,
+    super.tags,
+  });
 
   /// Creates a HadithModel from a JSON map
   factory HadithModel.fromJson(Map<String, dynamic> json) {
@@ -37,7 +27,8 @@ class HadithModel extends Hadith {
       number: json['number'] as String,
       grade: json['grade'] as String,
       isBookmarked: json['isBookmarked'] as bool? ?? false,
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           const [],
     );
   }
@@ -53,7 +44,8 @@ class HadithModel extends Hadith {
       number: hiveObject['number'] as String,
       grade: hiveObject['grade'] as String,
       isBookmarked: hiveObject['isBookmarked'] as bool? ?? false,
-      tags: (hiveObject['tags'] as List<dynamic>?)
+      tags:
+          (hiveObject['tags'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],

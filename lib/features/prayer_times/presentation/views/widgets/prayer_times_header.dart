@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/localization/bloc/language_cubit.dart';
 import '/core/utils/assets.dart';
-import '/core/utils/styles.dart';
 import 'package:muslim_habbit/core/localization/app_localizations_extension.dart';
 
 class PrayerTimesHeader extends StatelessWidget {

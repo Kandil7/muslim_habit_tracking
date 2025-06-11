@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/presentation/widgets/widgets.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/localization/app_localizations_extension.dart';
 import '../../domain/entities/hadith.dart';
 import '../bloc/hadith_bloc.dart';

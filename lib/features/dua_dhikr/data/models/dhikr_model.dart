@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../domain/entities/dhikr.dart';
 
 /// Model class for Dhikr entity
@@ -14,7 +12,7 @@ class DhikrModel extends Dhikr {
     required super.recommendedCount,
     required super.isFavorite,
   });
-  
+
   /// Create a DhikrModel from a JSON map
   factory DhikrModel.fromJson(Map<String, dynamic> json) {
     return DhikrModel(
@@ -28,7 +26,7 @@ class DhikrModel extends Dhikr {
       isFavorite: json['isFavorite'],
     );
   }
-  
+
   /// Convert this DhikrModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
@@ -42,7 +40,7 @@ class DhikrModel extends Dhikr {
       'isFavorite': isFavorite,
     };
   }
-  
+
   /// Create a DhikrModel from a Dhikr entity
   factory DhikrModel.fromEntity(Dhikr dhikr) {
     return DhikrModel(
@@ -56,7 +54,7 @@ class DhikrModel extends Dhikr {
       isFavorite: dhikr.isFavorite,
     );
   }
-  
+
   /// Create a copy of this DhikrModel with the given fields replaced with the new values
   @override
   DhikrModel copyWith({
