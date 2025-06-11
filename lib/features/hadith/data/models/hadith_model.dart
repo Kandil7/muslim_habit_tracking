@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import '../../domain/entities/hadith.dart';
 
 /// Model class for Hadith with JSON serialization/deserialization
