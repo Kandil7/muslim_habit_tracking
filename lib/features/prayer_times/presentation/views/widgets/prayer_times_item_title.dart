@@ -26,22 +26,15 @@ class PrayerTimesItemTitle extends StatelessWidget {
         children: [
           Image.asset(prayerItemModel.prayerImage, height: 22, width: 20),
           const SizedBox(width: 10),
-          Text(
-            local ? prayerItemModel.arName : prayerItemModel.enName,
-            style: TextStyle(color: Colors.white),
-          ),
+          Text(local ? prayerItemModel.arName : prayerItemModel.enName),
           Spacer(),
           Text(
             local
                 ? Helper.convertToArabicNumbers(prayerItemModel.prayerTime)
                 : prayerItemModel.prayerTime,
-            style: TextStyle(color: Colors.white),
           ),
           Spacer(),
-          Text(
-            context.tr.translate('prayer.time'),
-            style: TextStyle(color: Colors.white),
-          ),
+          Text(context.tr.translate('prayer.time')),
           Spacer(),
         ],
       ),

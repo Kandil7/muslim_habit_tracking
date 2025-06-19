@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Color palette for the app
 class AppColors {
@@ -262,17 +261,20 @@ class AppTheme {
         displaySmall: AppTextStyles.headingSmall.copyWith(
           fontWeight: FontWeight.w600,
         ),
-        headlineMedium: GoogleFonts.lato(
+        headlineMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleLarge: GoogleFonts.lato(
+        titleLarge: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleMedium: GoogleFonts.lato(
+        titleMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
@@ -289,7 +291,8 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: GoogleFonts.lato(
+        contentTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,
@@ -422,25 +425,30 @@ class AppTheme {
           horizontal: 20,
           vertical: 18,
         ),
-        hintStyle: GoogleFonts.lato(
+        hintStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           color: AppColors.darkTextHint,
         ),
-        labelStyle: GoogleFonts.lato(
+        labelStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           color: AppColors.darkTextSecondary,
           fontWeight: FontWeight.w500,
         ),
-        floatingLabelStyle: GoogleFonts.lato(
+        floatingLabelStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           color: AppColors.darkPrimary,
           fontWeight: FontWeight.w600,
         ),
-        helperStyle: GoogleFonts.lato(
+        helperStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 12,
           color: AppColors.darkTextTertiary,
         ),
-        errorStyle: GoogleFonts.lato(
+        errorStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 12,
           color: AppColors.error,
           fontWeight: FontWeight.w500,
@@ -463,22 +471,26 @@ class AppTheme {
           color: AppColors.darkTextPrimary,
           fontWeight: FontWeight.w600,
         ),
-        headlineMedium: GoogleFonts.lato(
+        headlineMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
         ),
-        titleLarge: GoogleFonts.lato(
+        titleLarge: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
         ),
-        titleMedium: GoogleFonts.lato(
+        titleMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextPrimary,
         ),
-        titleSmall: GoogleFonts.lato(
+        titleSmall: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextSecondary,
@@ -495,17 +507,20 @@ class AppTheme {
           color: AppColors.darkTextTertiary,
           height: 1.5,
         ),
-        labelLarge: GoogleFonts.lato(
+        labelLarge: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextPrimary,
         ),
-        labelMedium: GoogleFonts.lato(
+        labelMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextSecondary,
         ),
-        labelSmall: GoogleFonts.lato(
+        labelSmall: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextTertiary,
@@ -568,13 +583,15 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.darkCardBackground,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        titleTextStyle: GoogleFonts.lato(
+        titleTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
           letterSpacing: 0.15,
         ),
-        contentTextStyle: GoogleFonts.lato(
+        contentTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           fontWeight: FontWeight.normal,
           color: AppColors.darkTextSecondary,
@@ -586,7 +603,9 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
-        contentTextStyle: GoogleFonts.lato(
+        contentTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
+
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextPrimary,
