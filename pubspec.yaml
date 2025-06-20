@@ -92,7 +92,8 @@ dependencies:
   flutter_timezone: ^4.1.0
 
   # Quran
-  quran_library: ^0.1.7
+  quran_library:
+    path: ./package/quran_library
   wakelock_plus: ^1.1.4
   get_storage: ^2.1.1
   get: ^4.6.6
