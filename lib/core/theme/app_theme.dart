@@ -1,78 +1,146 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Color palette for the app
 class AppColors {
-  // Primary colors
-  static const Color primary = Color(0xFF1F7A5D);
-  static const Color primaryLight = Color(0xFF4CAF8D);
-  static const Color primaryDark = Color(0xFF005B3F);
+  // Primary colors - Enhanced green palette inspired by Islamic nature themes
+  static const Color primary = Color(0xFF1B7F5A); // Deep emerald
+  static const Color primaryLight = Color(0xFF52C93F); // Vibrant green
+  static const Color primaryDark = Color(0xFF0D5D42); // Forest green
+  static const Color primaryVariant = Color(0xFF2E8B57); // Sea green accent
 
-  // Secondary colors
-  static const Color secondary = Color(0xFFD4AF37);
-  static const Color secondaryLight = Color(0xFFFFDF64);
-  static const Color secondaryDark = Color(0xFFA08000);
+  // Secondary colors - Refined gold palette
+  static const Color secondary = Color(0xFFD4AF37); // Classic gold
+  static const Color secondaryLight = Color(0xFFFFE082); // Light gold
+  static const Color secondaryDark = Color(0xFFB8860B); // Dark goldenrod
+  static const Color secondaryVariant = Color(0xFFF4A460); // Sandy brown accent
 
-  // Tertiary colors
-  static const Color tertiary = Color(0xFF9575CD);
+  // Tertiary colors - Spiritual purple with blue accents
+  static const Color tertiary = Color(0xFF7986CB); // Soft indigo
+  static const Color tertiaryLight = Color(0xFFB39DDB); // Light purple
+  static const Color tertiaryDark = Color(0xFF5C6BC0); // Deep indigo
 
-  // Neutral colors (Light mode)
-  static const Color background = Color(0xFFF5F5F5);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color error = Color(0xFFB00020);
+  // Neutral colors (Light mode) - Warmer, softer palette
+  static const Color background = Color(0xFFFAFAFA); // Soft white
+  static const Color surface = Color(0xFFFFFFFF); // Pure white
+  static const Color surfaceVariant = Color(0xFFF5F5F5); // Light gray
+  static const Color outline = Color(0xFFE0E0E0); // Subtle border
+  static const Color shadow = Color(0x1A000000); // Subtle shadow
 
-  // Text colors (Light mode)
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
-  static const Color textHint = Color(0xFF9E9E9E);
-  static const Color textTertiary = Color(0xFFBDBDBD);
-  static const Color lightGrey = Color(0xFFD3D3D3);
+  // Status colors - More vibrant and accessible
+  static const Color success = Color(0xFF2E7D32); // Success green
+  static const Color warning = Color(0xFFFF8F00); // Warm orange
+  static const Color error = Color(0xFFD32F2F); // Error red
+  static const Color info = Color(0xFF1976D2); // Info blue
 
-  // Dark mode colors
-  static const Color darkBackground = Color(0xFF192734);
-  static const Color darkSurface = Color(0xFF15202b);
-  static const Color darkSurfaceVariant = Color(0xFF22303c);
-  static const Color darkPrimary = Color(
-    0xFF4CAF8D,
-  ); // Using primaryLight for better visibility
-  static const Color darkSecondary = Color(
-    0xFFFFDF64,
-  ); // Using secondaryLight for better visibility
+  // Text colors (Light mode) - Better contrast ratios
+  static const Color textPrimary = Color(0xFF1A1A1A); // Near black
+  static const Color textSecondary = Color(0xFF666666); // Medium gray
+  static const Color textTertiary = Color(0xFF999999); // Light gray
+  static const Color textHint = Color(0xFFBBBBBB); // Hint gray
+  static const Color textDisabled = Color(0xFFCCCCCC); // Disabled gray
 
-  // Dark mode text colors - improved for better readability
-  static const Color darkTextPrimary = Color(
-    0xFFFFFFFF,
-  ); // Pure white for primary text
-  static const Color darkTextSecondary = Color(
-    0xFFE0E0E0,
-  ); // Lighter gray for better contrast
-  static const Color darkTextTertiary = Color(
-    0xFFBDBDBD,
-  ); // Medium gray for less important text
-  static const Color darkTextHint = Color(0xFF9E9E9E); // Brighter hint text
-  static const Color darkTextDisabled = Color(0xFF757575); // For disabled text
+  // Dark mode colors - Refined dark palette
+  static const Color darkBackground = Color(0xFF0D1B2A); // Deep navy
+  static const Color darkSurface = Color(0xFF1B263B); // Dark blue-gray
+  static const Color darkSurfaceVariant = Color(0xFF283545); // Medium blue-gray
+  static const Color darkOutline = Color(0xFF415A77); // Dark outline
+  static const Color darkShadow = Color(0x40000000); // Darker shadow
 
-  static const Color darkDivider = Color(0xFF2C2C2C);
-  static const Color darkCardBackground = Color(0xFF15202b);
+  // Dark mode primary colors - Optimized for dark backgrounds
+  static const Color darkPrimary = Color(0xFF66BB6A); // Bright green
+  static const Color darkPrimaryLight = Color(0xFF81C784); // Light green
+  static const Color darkPrimaryDark = Color(0xFF4CAF50); // Medium green
 
-  // Status colors
-  static const Color success = Color(0xFF4CAF50);
-  static const Color warning = Color(0xFFFFC107);
-  static const Color info = Color(0xFF2196F3);
+  // Dark mode secondary colors
+  static const Color darkSecondary = Color(0xFFFFD54F); // Bright gold
+  static const Color darkSecondaryLight = Color(0xFFFFE082); // Light gold
+  static const Color darkSecondaryDark = Color(0xFFFFC107); // Medium gold
 
-  // Prayer time colors
-  static const Color fajrColor = Color(0xFF81D4FA);
-  static const Color dhuhrColor = Color(0xFFFFD54F);
-  static const Color asrColor = Color(0xFFFFB74D);
-  static const Color maghribColor = Color(0xFFFF8A65);
-  static const Color ishaColor = Color(0xFF9575CD);
+  // Dark mode text colors - Enhanced readability
+  static const Color darkTextPrimary = Color(0xFFFFFFFF); // Pure white
+  static const Color darkTextSecondary = Color(0xFFE1E1E1); // Light gray
+  static const Color darkTextTertiary = Color(0xFFBBBBBB); // Medium gray
+  static const Color darkTextHint = Color(0xFF888888); // Dark hint
+  static const Color darkTextDisabled = Color(0xFF555555); // Dark disabled
 
-  // Dark mode prayer time colors (slightly adjusted for dark theme)
-  static const Color darkFajrColor = Color(0xFF64B5F6);
-  static const Color darkDhuhrColor = Color(0xFFFFD54F);
-  static const Color darkAsrColor = Color(0xFFFFB74D);
-  static const Color darkMaghribColor = Color(0xFFFF8A65);
-  static const Color darkIshaColor = Color(0xFFA78BFA);
+  // Prayer time colors - More distinctive and meaningful
+  static const Color fajrColor = Color(0xFF64B5F6); // Dawn blue
+  static const Color sunriseColor = Color(0xFFFFB74D); // Golden sunrise
+  static const Color dhuhrColor = Color(0xFFFFD54F); // Noon yellow
+  static const Color asrColor = Color(0xFFFF8A65); // Afternoon orange
+  static const Color maghribColor = Color(0xFFE57373); // Sunset red
+  static const Color ishaColor = Color(0xFF9575CD); // Night purple
+
+  // Dark mode prayer time colors - Adjusted for dark theme
+  static const Color darkFajrColor = Color(0xFF42A5F5); // Deep dawn
+  static const Color darkSunriseColor = Color(0xFFFFB74D); // Bright sunrise
+  static const Color darkDhuhrColor = Color(0xFFFFEB3B); // Bright noon
+  static const Color darkAsrColor = Color(0xFFFF7043); // Warm afternoon
+  static const Color darkMaghribColor = Color(0xFFEF5350); // Vibrant sunset
+  static const Color darkIshaColor = Color(0xFFAB47BC); // Deep night
+
+  // Qibla and Islamic feature colors
+  static const Color qiblaColor = Color(0xFF2E7D32); // Direction green
+  static const Color dhikrColor = Color(0xFF7B1FA2); // Meditation purple
+  static const Color quranColor = Color(0xFF1565C0); // Quran blue
+  static const Color hadithColor = Color(0xFFD84315); // Hadith orange
+
+  // Interactive colors
+  static const Color buttonPrimary = Color(0xFF1B7F5A); // Primary button
+  static const Color buttonSecondary = Color(0xFFE8F5E8); // Secondary button
+  static const Color buttonDisabled = Color(0xFFE0E0E0); // Disabled button
+  static const Color rippleLight = Color(0x1F1B7F5A); // Light ripple
+  static const Color rippleDark = Color(0x1FFFFFFF); // Dark ripple
+
+  // Card and container colors
+  static const Color cardLight = Color(0xFFFFFFFF); // Light card
+  static const Color cardDark = Color(0xFF1B263B); // Dark card
+  static const Color darkCardBackground = Color(
+    0xFF1B263B,
+  ); // Dark card background
+  static const Color containerLight = Color(0xFFF5F5F5); // Light container
+  static const Color containerDark = Color(0xFF283545); // Dark container
+
+  // Gradient colors for enhanced UI
+  static const List<Color> primaryGradient = [
+    Color(0xFF1B7F5A),
+    Color(0xFF52C93F),
+  ];
+
+  static const List<Color> secondaryGradient = [
+    Color(0xFFD4AF37),
+    Color(0xFFFFE082),
+  ];
+
+  static const List<Color> prayerTimeGradient = [
+    Color(0xFF64B5F6),
+    Color(0xFF9575CD),
+  ];
+
+  static const lightGrey = Color(0xFFD9D9D9);
+
+  // Divider color for dark mode
+  static const Color darkDivider = Color(0xFF415A77);
+
+  // Helper method to get color based on theme
+  static Color getColor(Color lightColor, Color darkColor, bool isDark) {
+    return isDark ? darkColor : lightColor;
+  }
+
+  // Method to get prayer time color by prayer name
+  static Color getPrayerTimeColor(String prayerName, {bool isDark = false}) {
+    final colorMap = {
+      'fajr': isDark ? darkFajrColor : fajrColor,
+      'sunrise': isDark ? darkSunriseColor : sunriseColor,
+      'dhuhr': isDark ? darkDhuhrColor : dhuhrColor,
+      'asr': isDark ? darkAsrColor : asrColor,
+      'maghrib': isDark ? darkMaghribColor : maghribColor,
+      'isha': isDark ? darkIshaColor : ishaColor,
+    };
+
+    return colorMap[prayerName.toLowerCase()] ??
+        (isDark ? darkPrimary : primary);
+  }
 }
 
 /// Text styles for the app
@@ -262,17 +330,20 @@ class AppTheme {
         displaySmall: AppTextStyles.headingSmall.copyWith(
           fontWeight: FontWeight.w600,
         ),
-        headlineMedium: GoogleFonts.lato(
+        headlineMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleLarge: GoogleFonts.lato(
+        titleLarge: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleMedium: GoogleFonts.lato(
+        titleMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
@@ -289,7 +360,8 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: GoogleFonts.lato(
+        contentTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,
@@ -422,25 +494,30 @@ class AppTheme {
           horizontal: 20,
           vertical: 18,
         ),
-        hintStyle: GoogleFonts.lato(
+        hintStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           color: AppColors.darkTextHint,
         ),
-        labelStyle: GoogleFonts.lato(
+        labelStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           color: AppColors.darkTextSecondary,
           fontWeight: FontWeight.w500,
         ),
-        floatingLabelStyle: GoogleFonts.lato(
+        floatingLabelStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           color: AppColors.darkPrimary,
           fontWeight: FontWeight.w600,
         ),
-        helperStyle: GoogleFonts.lato(
+        helperStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 12,
           color: AppColors.darkTextTertiary,
         ),
-        errorStyle: GoogleFonts.lato(
+        errorStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 12,
           color: AppColors.error,
           fontWeight: FontWeight.w500,
@@ -463,22 +540,26 @@ class AppTheme {
           color: AppColors.darkTextPrimary,
           fontWeight: FontWeight.w600,
         ),
-        headlineMedium: GoogleFonts.lato(
+        headlineMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
         ),
-        titleLarge: GoogleFonts.lato(
+        titleLarge: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
         ),
-        titleMedium: GoogleFonts.lato(
+        titleMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextPrimary,
         ),
-        titleSmall: GoogleFonts.lato(
+        titleSmall: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextSecondary,
@@ -495,17 +576,20 @@ class AppTheme {
           color: AppColors.darkTextTertiary,
           height: 1.5,
         ),
-        labelLarge: GoogleFonts.lato(
+        labelLarge: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextPrimary,
         ),
-        labelMedium: GoogleFonts.lato(
+        labelMedium: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextSecondary,
         ),
-        labelSmall: GoogleFonts.lato(
+        labelSmall: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextTertiary,
@@ -568,13 +652,15 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.darkCardBackground,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        titleTextStyle: GoogleFonts.lato(
+        titleTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
           letterSpacing: 0.15,
         ),
-        contentTextStyle: GoogleFonts.lato(
+        contentTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
           fontSize: 16,
           fontWeight: FontWeight.normal,
           color: AppColors.darkTextSecondary,
@@ -586,7 +672,9 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
-        contentTextStyle: GoogleFonts.lato(
+        contentTextStyle: TextStyle(
+          fontFamily: AppTextStyles.latoFontFamily,
+
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.darkTextPrimary,

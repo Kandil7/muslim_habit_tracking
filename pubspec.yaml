@@ -56,7 +56,6 @@ dependencies:
   fl_chart: ^0.71.0
   flutter_svg: ^2.0.17
   intl: ^0.20.2
-  google_fonts: ^6.2.0
   shimmer: ^3.0.0
   iconly: ^1.0.1
 
@@ -93,7 +92,8 @@ dependencies:
   flutter_timezone: ^4.1.0
 
   # Quran
-  quran_library: ^0.1.7
+  quran_library:
+    path: ./package/quran_library
   wakelock_plus: ^1.1.4
   get_storage: ^2.1.1
   get: ^4.6.6
@@ -153,7 +153,7 @@ flutter:
     - family: ScheherazadeNew
       fonts:
         - asset: assets/fonts/ScheherazadeNew-Regular.ttf
-        - asset: assets/fonts/ScheherazadeNew-Bold.ttf
+        # - asset: assets/fonts/ScheherazadeNew-Bold.ttf
           weight: 700
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

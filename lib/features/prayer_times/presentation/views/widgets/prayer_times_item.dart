@@ -138,16 +138,16 @@ class _PrayerTimesItemState extends State<PrayerTimesItem>
             children: [
               const SizedBox(width: 16),
               // Prayer icon
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: prayerColor.withAlpha(isDarkMode ? 40 : 20),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(_getPrayerIcon(), color: prayerColor, size: 20),
-              ),
-              const SizedBox(width: 16),
+              // Container(
+              //   width: 40,
+              //   height: 40,
+              //   decoration: BoxDecoration(
+              //     color: prayerColor.withAlpha(isDarkMode ? 40 : 20),
+              //     shape: BoxShape.circle,
+              //   ),
+              //   child: Icon(_getPrayerIcon(), color: prayerColor, size: 20),
+              // ),
+              // const SizedBox(width: 16),
               // Prayer name and time
               PrayerTimesItemTitle(
                 prayerItemModel: widget.prayerItemModel,

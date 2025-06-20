@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quran_library/quran_library.dart' as ql;
+import 'package:quran_library/quran_library.dart' hide QuranState;
 
-import '../../../../../core/utils/constants.dart';
 import '../../bloc/quran_bloc.dart';
 import '../../bloc/quran_event.dart';
 import '../../bloc/quran_state.dart';
@@ -59,14 +59,14 @@ class QuranViewBody extends StatelessWidget {
             ),
           );
         }
+        final List<String> surahs = QuranLibrary().getAllSurahs();
 
         return ListView.builder(
-          itemCount: Constants.quranList.length,
+          itemCount: surahs.length,
           itemBuilder: (context, index) {
-            final surah = ql.QuranLibrary().getSurahInfo(
-              surahNumber: index + 1,
-            );
-            final int pageNumber = ql.QuranCtrl.instance.surahsStart[index + 1];
+            final int pageNumber = ql.QuranCtrl.instance.surahsStart[index] + 1;
+
+            final surah = ql.QuranLibrary().getSurahInfo(surahNumber: index);
 
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -76,13 +76,15 @@ class QuranViewBody extends StatelessWidget {
               ),
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SuraView(initialPage: pageNumber),
-                      ),
+                onTap: () {
+                  ql.QuranLibrary().jumpToSurah(index + 1);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SuraView(initialPage: index + 1),
                     ),
+                  );
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -151,8 +153,9 @@ class QuranViewBody extends StatelessWidget {
                                   ),
                                   decoration: BoxDecoration(
                                     color:
-                                        surah.revelationType == 'Meccan'
-                                            ? Colors.orange.withAlpha(50)
+                                        surah.revelationType == 'Meccan' ||
+                                                surah.revelationType == 'مكية'
+                                            ? Colors.teal.withAlpha(50)
                                             : Colors.green.withAlpha(50),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -161,8 +164,9 @@ class QuranViewBody extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       color:
-                                          surah.revelationType == 'Meccan'
-                                              ? Colors.orange.shade800
+                                          surah.revelationType == 'Meccan' ||
+                                                  surah.revelationType == 'مكية'
+                                              ? Colors.teal.shade400
                                               : Colors.green.shade800,
                                       fontWeight: FontWeight.bold,
                                     ),

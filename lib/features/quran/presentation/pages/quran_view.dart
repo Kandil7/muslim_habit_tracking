@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/quran/presentation/views/widgets/sura_list_widget.dart';
 
 import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';

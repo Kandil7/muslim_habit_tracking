@@ -11,202 +11,143 @@ import 'widgets/sura_view_body.dart';
 
 /// Widget for displaying a Quran surah
 class SuraView extends StatelessWidget {
-  /// Initial page to display
+  static const minPage = 1;
+  static const maxPage = 604;
+
   final int initialPage;
 
-  /// Constructor
   const SuraView({super.key, required this.initialPage});
+
+  int get _validPage => initialPage.clamp(minPage, maxPage);
 
   @override
   Widget build(BuildContext context) {
-    // Ensure the page number is within valid range (1-604)
-    final validPage = initialPage.clamp(1, 604);
-
     return BlocProvider(
-      create: (context) {
-        // Create the QuranBloc and initialize it
-        final quranBloc = di.sl<QuranBloc>();
+      create: (context) => _createAndInitBloc(context),
+      child: Scaffold(body: _buildBody(context)),
+    );
+  }
 
-        // Add events to initialize the bloc
-        quranBloc
+  QuranBloc _createAndInitBloc(BuildContext context) {
+    final quranBloc =
+        di.sl<QuranBloc>()
           ..add(const GetBookmarksEvent())
-          ..add(InitQuranPageControllerEvent(initialPage: validPage - 1));
+          ..add(InitQuranPageControllerEvent(initialPage: _validPage));
 
-        // Set the current page directly in the bloc
-        quranBloc.currentPage = validPage;
+    quranBloc.currentPage = _validPage;
+    _saveReadingHistory(quranBloc, _validPage);
 
-        // Save reading history
-        final timestamp = DateTime.now();
-        final history = QuranReadingHistory(
-          id: timestamp.millisecondsSinceEpoch,
-          pageNumber: validPage,
-          timestamp: timestamp,
-        );
-        quranBloc.add(UpdateLastReadPositionEvent(history: history));
+    return quranBloc;
+  }
 
-        // Return the initialized QuranBloc
-        return quranBloc;
-      },
-      child: Builder(
-        builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              title: BlocBuilder<QuranBloc, QuranState>(
-                buildWhen: (previous, current) => current is QuranPageChanged,
-                builder: (context, state) {
-                  if (state is QuranPageChanged) {
-                    return Text(
-                      'Page ${state.pageNumber}',
-                      style: const TextStyle(fontSize: 16),
-                    );
-                  }
-                  return Text(
-                    'Page $validPage',
-                    style: const TextStyle(fontSize: 16),
-                  );
-                },
-              ),
-              actions: [
-                IconButton(
-                  icon: BlocBuilder<QuranBloc, QuranState>(
-                    buildWhen:
-                        (previous, current) => current is BookmarksLoaded,
-                    builder: (context, state) {
-                      if (state is BookmarksLoaded) {
-                        final isBookmarked = state.bookmarks.any(
-                          (b) => b.page == validPage,
-                        );
-                        return Icon(
-                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.amber : null,
-                        );
-                      }
-                      return const Icon(Icons.bookmark_border);
-                    },
-                  ),
-                  onPressed: () => _handleBookmarkAction(context),
-                  tooltip: 'Bookmark',
-                ),
-              ],
-            ),
-            body: BlocConsumer<QuranBloc, QuranState>(
-              listenWhen:
-                  (previous, current) =>
-                      current is QuranPageControllerCreated ||
-                      current is QuranPageChanged,
-              listener: (context, state) {
-                // When page changes, update reading history
-                if (state is QuranPageChanged &&
-                    state.pageNumber != validPage) {
-                  final timestamp = DateTime.now();
-                  final history = QuranReadingHistory(
-                    id: timestamp.millisecondsSinceEpoch,
-                    pageNumber: state.pageNumber,
-                    timestamp: timestamp,
-                  );
+  void _saveReadingHistory(QuranBloc bloc, int page) {
+    final history = QuranReadingHistory(
+      id: DateTime.now().millisecondsSinceEpoch,
+      pageNumber: page,
+      timestamp: DateTime.now(),
+    );
+    bloc.add(UpdateLastReadPositionEvent(history: history));
+  }
 
-                  // Only add event if the context is still mounted
-                  if (context.mounted) {
-                    try {
-                      context.read<QuranBloc>().add(
-                        UpdateLastReadPositionEvent(history: history),
-                      );
-                    } catch (e) {
-                      debugPrint('Error updating last read position: $e');
-                    }
-                  }
-                }
-              },
-              builder: (context, state) {
-                // Only show loading indicator when we're in the initial state
-                // and haven't created the page controller yet
-                if (state is QuranInitial) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                // In all other cases, show the SuraViewBody
-                return SuraViewBody(initialPage: validPage);
-              },
-            ),
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      title: BlocBuilder<QuranBloc, QuranState>(
+        builder: (context, state) {
+          final currentPage = context.read<QuranBloc>().currentPage;
+          return Text(
+            'Page $currentPage',
+            style: const TextStyle(fontSize: 16),
           );
+        },
+      ),
+      actions: [_buildBookmarkButton(context)],
+    );
+  }
+
+  Widget _buildBookmarkButton(BuildContext context) {
+    return BlocSelector<QuranBloc, QuranState, bool>(
+      selector: (state) {
+        if (state is! BookmarksLoaded) return false;
+        final currentPage = context.read<QuranBloc>().currentPage;
+        return state.bookmarks.any((b) => b.page == currentPage);
+      },
+      builder: (context, isBookmarked) {
+        return IconButton(
+          icon: Icon(
+            isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+            color: isBookmarked ? Colors.amber : null,
+          ),
+          onPressed: () => _handleBookmarkAction(context),
+          tooltip: 'Bookmark',
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return BlocListener<QuranBloc, QuranState>(
+      listenWhen:
+          (previous, current) =>
+              current is QuranPageControllerCreated ||
+              current is QuranPageChanged,
+      listener: (context, state) {
+        if (state is QuranPageChanged && state.pageNumber != _validPage) {
+          _saveReadingHistory(context.read<QuranBloc>(), state.pageNumber);
+        }
+      },
+      child: BlocBuilder<QuranBloc, QuranState>(
+        builder: (context, state) {
+          if (state is QuranInitial) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return SuraViewBody(initialPage: initialPage);
         },
       ),
     );
   }
 
-  void _handleBookmarkAction(BuildContext context) async {
-    // Ensure the page number is within valid range (1-604)
-    final validPage = initialPage.clamp(1, 604);
-
-    // Only proceed if the context is still mounted
-    if (!context.mounted) return;
-
+  void _handleBookmarkAction(BuildContext context) {
     final quranBloc = context.read<QuranBloc>();
+    final currentPage = quranBloc.currentPage!.clamp(minPage, maxPage);
     final state = quranBloc.state;
 
     if (state is BookmarksLoaded) {
-      final isBookmarked = state.bookmarks.any((b) => b.page == validPage);
+      final isBookmarked = state.bookmarks.any((b) => b.page == currentPage);
 
       if (isBookmarked) {
-        // Remove bookmark
-        final bookmark = state.bookmarks.firstWhere((b) => b.page == validPage);
+        final bookmark = state.bookmarks.firstWhere(
+          (b) => b.page == currentPage,
+        );
         _showRemoveBookmarkDialog(context, bookmark.id);
       } else {
-        // Add bookmark
-        _showAddBookmarkDialog(context, validPage);
+        _showAddBookmarkDialog(context, currentPage);
       }
     } else {
-      // If state is not BookmarksLoaded, load bookmarks first
-      // Only add event if the bloc is not closed
-      try {
-        quranBloc.add(const GetBookmarksEvent());
-        // Then show add dialog
-        _showAddBookmarkDialog(context, validPage);
-      } catch (e) {
-        debugPrint('Error adding event to QuranBloc: $e');
-        // Fallback to showing the dialog without loading bookmarks
-        _showAddBookmarkDialog(context, validPage);
-      }
+      quranBloc.add(const GetBookmarksEvent());
+      _showAddBookmarkDialog(context, currentPage);
     }
   }
 
-  void _showAddBookmarkDialog(BuildContext context, [int? pageNumber]) async {
-    // Only proceed if the context is still mounted
-    if (!context.mounted) return;
-
-    // Get the QuranBloc from the current context before showing the dialog
+  Future<void> _showAddBookmarkDialog(
+    BuildContext context,
+    int pageNumber,
+  ) async {
     final quranBloc = context.read<QuranBloc>();
-
-    // Use the provided page number or fall back to initialPage
-    final validPage = (pageNumber ?? initialPage).clamp(1, 604);
-
-    // We'll just use the page number for now
-    // In a real app, you would get the surah name and ayah number from the Quran library
+    final validPage = pageNumber.clamp(minPage, maxPage);
 
     final result = await showDialog<bool>(
       context: context,
       builder:
-          (dialogContext) => AddBookmarkDialog(
+          (context) => AddBookmarkDialog(
             pageNumber: validPage,
-            // We'll pass null for surahName and ayahNumber for now
             onBookmarkAdded: (bookmark) {
-              // Use the quranBloc instance we got from the parent context
-              // Only add event if the bloc is not closed
-              try {
-                quranBloc.add(AddBookmarkEvent(bookmark: bookmark));
-              } catch (e) {
-                debugPrint('Error adding bookmark event: $e');
-              }
+              quranBloc.add(AddBookmarkEvent(bookmark: bookmark));
             },
           ),
     );
@@ -215,64 +156,34 @@ class SuraView extends StatelessWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Bookmark added')));
-
-      // Refresh bookmarks using the quranBloc instance
-      // Only add event if the bloc is not closed
-      try {
-        quranBloc.add(const GetBookmarksEvent());
-      } catch (e) {
-        debugPrint('Error refreshing bookmarks: $e');
-      }
+      quranBloc.add(const GetBookmarksEvent());
     }
   }
 
   void _showRemoveBookmarkDialog(BuildContext context, int bookmarkId) {
-    // Only proceed if the context is still mounted
-    if (!context.mounted) return;
-
-    // Get the QuranBloc from the current context before showing the dialog
     final quranBloc = context.read<QuranBloc>();
 
     showDialog(
       context: context,
       builder:
-          (dialogContext) => AlertDialog(
+          (context) => AlertDialog(
             title: const Text('Remove Bookmark'),
             content: const Text(
               'Are you sure you want to remove this bookmark?',
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
+                onPressed: () => Navigator.of(context).pop(),
                 child: const Text('CANCEL'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(dialogContext).pop();
-
-                  // Only proceed if the context is still mounted
-                  if (!context.mounted) return;
-
-                  // Use the quranBloc instance we got from the parent context
-                  // Only add event if the bloc is not closed
-                  try {
-                    quranBloc.add(RemoveBookmarkEvent(id: bookmarkId));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Bookmark removed')),
-                    );
-
-                    // Refresh bookmarks using the quranBloc instance
-                    quranBloc.add(const GetBookmarksEvent());
-                  } catch (e) {
-                    debugPrint('Error removing bookmark: $e');
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Error removing bookmark'),
-                        ),
-                      );
-                    }
-                  }
+                  Navigator.of(context).pop();
+                  quranBloc.add(RemoveBookmarkEvent(id: bookmarkId));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Bookmark removed')),
+                  );
+                  quranBloc.add(const GetBookmarksEvent());
                 },
                 child: const Text('REMOVE'),
               ),
