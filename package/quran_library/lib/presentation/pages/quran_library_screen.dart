@@ -33,7 +33,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isDark = false,
     this.juzName,
     this.languageCode = 'ar',
-    this.onAyahLongPress,
+    this.onDefaultAyahLongPress,
+    this.onFontsAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
     this.onSurahBannerPress,
@@ -51,8 +52,6 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -140,15 +139,25 @@ class QuranLibraryScreen extends StatelessWidget {
   /// such as deleting the shading from the verse and others
   final VoidCallback? onPagePress;
 
+  /// * تُستخدم مع الخطوط الأساسية *
+  /// عند الضغط المطوّل على أي آية باستخدام الخطوط الأساسية، يمكنك تفعيل ميزات إضافية
+  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onDefaultAyahLongPress].
+  ///
+  /// * Used with default fonts *
+  /// When long-pressing on any verse with the default fonts, you can enable additional features
+  /// such as copying the verse, sharing it, and more using [onDefaultAyahLongPress].
+  final void Function(LongPressStartDetails details, AyahModel ayah)?
+      onDefaultAyahLongPress;
+
   /// * تُستخدم مع الخطوط المحملة *
   /// عند الضغط المطوّل على أي آية باستخدام الخطوط المحملة، يمكنك تفعيل ميزات إضافية
-  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onAyahLongPress].
+  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onFontsAyahLongPress].
   ///
   /// * Used with loaded fonts *
   /// When long-pressing on any verse with the loaded fonts, you can enable additional features
-  /// such as copying the verse, sharing it, and more using [onAyahLongPress].
-  final void Function(LongPressStartDetails details, AyahModel ayah)?
-      onAyahLongPress;
+  /// such as copying the verse, sharing it, and more using [onFontsAyahLongPress].
+  final void Function(LongPressStartDetails details, AyahFontsModel ayah)?
+      onFontsAyahLongPress;
 
   /// * تُستخدم مع الخطوط المحملة *
   /// عند الضغط على أي لافتة سورة باستخدام الخطوط المحملة، يمكنك إضافة بعض التفاصيل حول السورة [onSurahBannerPress]
@@ -207,23 +216,10 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
   final bool withPageView;
 
-  /// إذا كنت تريد استخدام خطوط موجودة مسبقًا في التطبيق، اجعل هذا المتغيير true [isFontsLocal]
-  ///
-  /// [isFontsLocal] If you want to use fonts that exists in the app, make this variable true
   final bool? isFontsLocal;
 
-  /// قم بتمرير إسم الخط الموجود في التطبيق لكي تستطيع إستخدامه [fontsName]
-  ///
-  /// [fontsName] Pass the name of the font that exists in the app so you can use it
   final String? fontsName;
-
-  /// قم بتمرير قائمة الآيات المحفوظة [ayahBookmarked]
-  ///
-  /// [ayahBookmarked] Pass the list of bookmarked ayahs
   final List<int>? ayahBookmarked;
-
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -236,13 +232,13 @@ class QuranLibraryScreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           backgroundColor: backgroundColor ??
-              (isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3)),
+              (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
           appBar: appBar ??
               (useDefaultAppBar
                   ? AppBar(
                       backgroundColor: backgroundColor ??
                           (isDark
-                              ? const Color(0xff1E1E1E)
+                              ? const Color(0xff202020)
                               : const Color(0xfffaf7f3)),
                       leading: Builder(
                         builder: (context) => IconButton(
@@ -273,7 +269,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                 downloadButtonBackgroundColor: Colors.blue,
                                 downloadingText: 'جارِ التحميل',
                                 backgroundColor: isDark
-                                    ? Color(0xff1E1E1E)
+                                    ? Color(0xff202020)
                                     : const Color(0xFFF7EFE0),
                               ),
                           languageCode: languageCode,
@@ -361,14 +357,13 @@ class QuranLibraryScreen extends StatelessWidget {
                         isRight: pageIndex.isEven ? true : false,
                         topTitleChild: topTitleChild,
                         child: _QuranFontsPage(
-                          context: context,
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
                           textColor: ayahSelectedFontColor ?? textColor,
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           bookmarks: bookmarkCtrl.bookmarks,
-                          onAyahLongPress: onAyahLongPress,
+                          onFontsAyahLongPress: onFontsAyahLongPress,
                           bookmarksColor: bookmarksColor,
                           surahInfoStyle: surahInfoStyle,
                           surahNameStyle: surahNameStyle,
@@ -385,8 +380,6 @@ class QuranLibraryScreen extends StatelessWidget {
                           isFontsLocal: isFontsLocal,
                           fontsName: fontsName,
                           ayahBookmarked: ayahBookmarked!,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -394,12 +387,11 @@ class QuranLibraryScreen extends StatelessWidget {
                       child: circularProgressWidget ??
                           const CircularProgressIndicator())
                   : _QuranLinePage(
-                      context: context,
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
                       textColor: textColor,
                       languageCode: languageCode,
-                      onAyahLongPress: onAyahLongPress,
+                      onAyahLongPress: onDefaultAyahLongPress,
                       bookmarksColor: bookmarksColor,
                       surahInfoStyle: surahInfoStyle,
                       surahNameStyle: surahNameStyle,
@@ -416,8 +408,6 @@ class QuranLibraryScreen extends StatelessWidget {
                       topTitleChild: topTitleChild,
                       isDark: isDark,
                       ayahBookmarked: ayahBookmarked!,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -431,14 +421,13 @@ class QuranLibraryScreen extends StatelessWidget {
                   isRight: pageIndex.isEven ? true : false,
                   topTitleChild: topTitleChild,
                   child: _QuranTextScale(
-                    context: context,
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
                     textColor: ayahSelectedFontColor ?? textColor,
                     ayahIconColor: ayahIconColor,
                     showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                     bookmarks: bookmarkCtrl.bookmarks,
-                    onAyahLongPress: onAyahLongPress,
+                    onFontsAyahLongPress: onFontsAyahLongPress,
                     bookmarksColor: bookmarksColor,
                     surahInfoStyle: surahInfoStyle,
                     surahNameStyle: surahNameStyle,
@@ -453,8 +442,6 @@ class QuranLibraryScreen extends StatelessWidget {
                     isDark: isDark,
                     circularProgressWidget: circularProgressWidget,
                     ayahBookmarked: ayahBookmarked!,
-                    anotherMenuChild: anotherMenuChild,
-                    anotherMenuChildOnTap: anotherMenuChildOnTap,
                   ),
                 ),
         ),

@@ -29,100 +29,91 @@ class TafsirCtrl extends GetxController {
   var isLoading = false.obs;
   var translationLangCode = 'en'.obs;
 
-  /// شرح: متغير لحفظ اسم قاعدة البيانات الحالية
-  /// Explanation: Variable to store the current database name
-  String? currentDbFileName;
-
   @override
   Future<void> onInit() async {
     super.onInit();
     await initTafsir();
   }
 
-  /// شرح: تهيئة التفسير مع التأكد من عدم تكرار إنشاء قاعدة البيانات
-  /// Explanation: Initialize tafsir and avoid redundant DB creation
   Future<void> initTafsir() async {
     initializeTafsirDownloadStatus();
-    await loadTafseer();
-    await initializeDatabase();
+    await loadTafseer().then((_) async {
+      database.value?.close();
+      database = Rx<TafsirDatabase?>(TafsirDatabase(
+          tafsirAndTranslateNames[radioValue.value].databaseName));
+      await initializeDatabase();
+    });
   }
 
   Future<void> loadTafseer() async {
     isTafsir.value = box.read(_StorageConstants().isTafsir) ?? true;
     radioValue.value = box.read(_StorageConstants().radioValue) ?? 3;
+    // selectedTableName.value = box.read(_StorageConstants().tafsirTableValue) ??
+    //     MufaserName.saadi.name;
+
     translationLangCode.value =
         box.read(_StorageConstants().translationLangCode) ?? 'en';
-    TafsirCtrl.instance.fontSizeArabic.value =
-        box.read(_StorageConstants().fontSize) ?? 20.0;
   }
 
-  /// شرح: تهيئة قاعدة البيانات فقط إذا تغير الاسم
-  /// Explanation: Only initialize DB if name changed
   Future<void> initializeDatabase() async {
-    String dbName = tafsirAndTranslateNames[radioValue.value].databaseName;
-    if (database.value == null || currentDbFileName != dbName) {
-      await database.value?.close();
-      database.value = TafsirDatabase(dbName);
-      currentDbFileName = dbName;
-      log('Database object created.', name: 'TafsirCtrl');
-    }
-    log('Database initialized.', name: 'TafsirCtrl');
+    log('Initializing database...');
+    database.value =
+        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
+    log('Database object created.');
+    log('Database initialized.');
   }
 
   Future<void> closeCurrentDatabase() async {
     if (database.value != null) {
-      await database.value!.close();
-      database.value = null; // شرح: إعادة تعيين الكائن بعد الإغلاق
-      log('Closed current database!', name: 'TafsirCtrl');
+      await database.value!.close(); // إغلاق قاعدة البيانات الحالية
+      log('Closed current database!');
     }
   }
 
   /// ------------[FetchingMethod]------------
-  /// شرح: جلب بيانات التفسير للصفحة المطلوبة
-  /// Explanation: Fetch tafsir data for the requested page
   Future<void> fetchData(int pageNum) async {
-    await initializeDatabase();
+    final db =
+        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
+
     try {
-      final List<TafsirTableData> tafsir =
-          await database.value!.getTafsirByPage(pageNum);
-      log('Fetched tafsir: [32m${tafsir.length} entries', name: 'TafsirCtrl');
+      final List<TafsirTableData> tafsir = await db.getTafsirByPage(pageNum);
+      log('Fetched tafsir: ${tafsir.length} entries');
+
       if (tafsir.isNotEmpty) {
-        tafseerList.assignAll(tafsir);
+        tafseerList.assignAll(tafsir); // تحديث القائمة في الواجهة
       } else {
-        log('No data found for this page.', name: 'TafsirCtrl');
-        tafseerList.clear();
+        log('No data found for this page.');
+        tafseerList.clear(); // مسح القائمة إذا لم يكن هناك تفسير
       }
     } catch (e) {
-      log('Error fetching data: $e', name: 'TafsirCtrl');
+      log('Error fetching data: $e');
     }
   }
 
-  /// شرح: جلب التفسير حسب رقم الصفحة
-  /// Explanation: Fetch tafsir by page number
+  // استخدام getTafsirByPage لجلب التفسير حسب رقم الصفحة
   Future<List<TafsirTableData>> fetchTafsirPage(int pageNum,
       {String? databaseName}) async {
-    await initializeDatabase();
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
-    return await database.value!
-        .getTafsirByPage(pageNum, databaseName: databaseName);
+    initializeDatabase();
+    List<TafsirTableData> tafsir = await database.value!
+        .getTafsirByPage(pageNum, databaseName: databaseName!);
+    return tafsir;
   }
 
-  /// شرح: جلب التفسير حسب رقم الآية
-  /// Explanation: Fetch tafsir by ayah number
   Future<List<TafsirTableData>> fetchTafsirAyah(int ayahUQNumber,
       {String? databaseName}) async {
-    await initializeDatabase();
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
-    return await database.value!
-        .getTafsirByAyah(ayahUQNumber, databaseName: databaseName);
+    initializeDatabase();
+    // fetchData(pageIndex + 1);
+    List<TafsirTableData> tafsir = await database.value!
+        .getTafsirByAyah(ayahUQNumber, databaseName: databaseName!);
+    return tafsir;
   }
 
-  /// شرح: جلب الترجمة
-  /// Explanation: Fetch translation
   Future<void> fetchTranslate() async {
     try {
       Directory databasePath = await getApplicationDocumentsDirectory();
@@ -130,8 +121,11 @@ class TafsirCtrl extends GetxController {
           ? 'packages/quran_library/assets/en.json'
           : join(databasePath.path, '${translationLangCode.value}.json');
       isLoading.value = true;
+
       String jsonString;
+
       if (radioValue.value == 5) {
+        // استخدم rootBundle للوصول إلى الملف المضمن
         jsonString = await rootBundle
             .loadString('packages/quran_library/assets/en.json');
       } else {
@@ -141,12 +135,13 @@ class TafsirCtrl extends GetxController {
           throw Exception('File not found');
         }
       }
+
       Map<String, dynamic> showData = json.decode(jsonString);
       translationList.value = (showData['translations'] as List)
           .map((item) => TranslationModel.fromJson(item))
           .toList();
     } catch (e) {
-      log('Error loading translation file: $e', name: 'TafsirCtrl');
+      log('Error loading translation file: $e');
     } finally {
       isLoading.value = false;
     }
@@ -154,12 +149,11 @@ class TafsirCtrl extends GetxController {
   }
 
   /// ------------[DownloadMethods]------------
-  /// شرح: تحميل قاعدة بيانات التفسير أو الترجمة
-  /// Explanation: Download tafsir or translation database
   Future<void> tafsirDownload(int i) async {
     Directory databasePath = await getApplicationDocumentsDirectory();
     String path;
     String fileUrl;
+
     if (isTafsir.value) {
       path = join(databasePath.path, tafsirAndTranslateNames[i].databaseName);
       fileUrl =
@@ -170,50 +164,46 @@ class TafsirCtrl extends GetxController {
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${tafsirAndTranslateNames[i].bookName}.json';
     }
+
     if (!onDownloading.value) {
       await downloadFile(path, fileUrl).then((_) async {
         onDownloadSuccess(i);
-        await saveTafsirDownloadIndex(i);
-        await loadTafsirDownloadIndices();
+        saveTafsirDownloadIndex(i);
+        loadTafsirDownloadIndices();
         if (isTafsir.value) {
           await handleRadioValueChanged(i);
           await fetchData(QuranCtrl.instance.state.currentPageNumber.value + 1);
+          update(['change_tafsir']);
         } else {
           await handleRadioValueChanged(i);
           await fetchTranslate();
+          update(['change_tafsir']);
         }
-        update(['change_tafsir']);
       });
-      log('Downloading from URL: $fileUrl', name: 'TafsirCtrl');
+      log("Downloading from URL: $fileUrl");
     }
   }
 
-  /// شرح: تهيئة حالة تحميل التفسير
-  /// Explanation: Initialize tafsir download status
   void initializeTafsirDownloadStatus() async {
     Map<int, bool> initialStatus = await checkAllTafsirDownloaded();
+
     tafsirDownloadStatus.value = initialStatus;
-    await loadTafsirDownloadIndices();
+    loadTafsirDownloadIndices();
   }
 
-  /// شرح: تحديث حالة التحميل
-  /// Explanation: Update download status
   void updateDownloadStatus(int tafsirNumber, bool downloaded) {
     final newStatus = Map<int, bool>.from(tafsirDownloadStatus.value);
     newStatus[tafsirNumber] = downloaded;
     tafsirDownloadStatus.value = newStatus;
   }
 
-  /// شرح: عند نجاح التحميل
-  /// Explanation: On download success
   void onDownloadSuccess(int tafsirNumber) {
     updateDownloadStatus(tafsirNumber, true);
   }
 
-  /// شرح: فحص جميع ملفات التفسير
-  /// Explanation: Check all tafsir files
   Future<Map<int, bool>> checkAllTafsirDownloaded() async {
     Directory? directory = await getApplicationDocumentsDirectory();
+
     for (int i = 0; i <= 4; i++) {
       String filePath = '${directory.path}/${tafsirAndTranslateNames[i].name}';
       File file = File(filePath);
@@ -222,8 +212,6 @@ class TafsirCtrl extends GetxController {
     return tafsirDownloadStatus.value;
   }
 
-  /// شرح: حفظ أرقام التفسير المحملة
-  /// Explanation: Save downloaded tafsir indices
   Future<void> saveTafsirDownloadIndex(int tafsirNumber) async {
     List<dynamic> savedIndices = box.read('tafsirDownloadIndices') ?? [3, 5];
     if (!savedIndices.contains(tafsirNumber)) {
@@ -232,12 +220,12 @@ class TafsirCtrl extends GetxController {
     }
   }
 
-  /// شرح: تحميل أرقام التفسير المحملة
-  /// Explanation: Load downloaded tafsir indices
   Future<void> loadTafsirDownloadIndices() async {
     var rawList = box.read('tafsirDownloadIndices');
+
     List<int> savedIndices =
         rawList is List ? rawList.map((e) => e as int).toList() : [3, 5];
+
     tafsirDownloadIndexList.value = savedIndices;
   }
 }

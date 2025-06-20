@@ -10,16 +10,13 @@ class AyahLongClickDialog extends StatelessWidget {
   /// This widget shows a dialog at a specified position with options to bookmark the Ayah in different colors
   /// or copy the Ayah text to the clipboard. The appearance and behavior are influenced by the state of QuranCtrl.
   const AyahLongClickDialog({
-    required this.context,
     super.key,
     this.ayah,
-    // this.ayahFonts,
+    this.ayahFonts,
     required this.position,
+    required this.context,
     required this.index,
     required this.pageIndex,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    required this.isDark,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -30,18 +27,15 @@ class AyahLongClickDialog extends StatelessWidget {
   /// The AyahFontsModel that is the target of the long click event.
   ///
   /// This is for the downloaded fonts.
-  // final AyahFontsModel? ayahFonts;
+  final AyahFontsModel? ayahFonts;
 
   /// The position where the dialog should appear on the screen.
   ///
   /// This is typically the position of the long click event.
   final Offset position;
+  final BuildContext context;
   final int index;
   final int pageIndex;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final BuildContext context;
-  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -78,21 +72,22 @@ class AyahLongClickDialog extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: GestureDetector(
                       onTap: () {
-                        if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
+                        if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                           BookmarksCtrl.instance.saveBookmark(
                             surahName: QuranCtrl.instance
-                                .getSurahDataByAyah(ayah!)
+                                .getSurahDataByAyah(ayahFonts!)
                                 .arabicName,
-                            ayahNumber: ayah!.ayahNumber,
-                            ayahId: ayah!.ayahUQNumber,
-                            page: ayah!.page,
+                            ayahNumber: ayahFonts!.ayahNumber,
+                            ayahId: ayahFonts!.ayahUQNumber,
+                            page: ayahFonts!.page,
                             colorCode: colorCode,
                           );
                         } else {
                           BookmarksCtrl.instance.saveBookmark(
-                            surahName: ayah!.arabicName!,
+                            surahName: ayah!.arabicName,
                             ayahNumber: ayah!.ayahNumber,
                             ayahId: ayah!.ayahUQNumber,
                             page: ayah!.page,
@@ -112,8 +107,8 @@ class AyahLongClickDialog extends StatelessWidget {
                   height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
-                  if (QuranCtrl.instance.state.fontsSelected.value == 1) {
-                    Clipboard.setData(ClipboardData(text: ayah!.text));
+                  if (QuranCtrl.instance.state.fontsSelected2.value == 1) {
+                    Clipboard.setData(ClipboardData(text: ayahFonts!.text));
                     _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {
                     Clipboard.setData(ClipboardData(
@@ -132,77 +127,44 @@ class AyahLongClickDialog extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              context.verticalDivider(
-                  height: 30, color: const Color(0xffe8decb)),
-              GestureDetector(
-                onTap: () {
-                  showTafsirOnTap(
-                    context: context,
-                    isDark: isDark,
-                    surahNum: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? QuranCtrl.instance
-                            .getSurahDataByAyah(ayah!)
-                            .surahNumber
-                        : ayah!.surahNumber!,
-                    ayahNum: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.ayahNumber
-                        : ayah!.ayahNumber,
-                    ayahText: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.text
-                        : ayah!.text,
-                    pageIndex: pageIndex,
-                    ayahTextN: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.ayaTextEmlaey
-                        : ayah!.ayaTextEmlaey,
-                    ayahUQNum: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.ayahUQNumber
-                        : ayah!.ayahUQNumber,
-                    ayahNumber: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.ayahNumber
-                        : ayah!.ayahNumber,
-                  );
-                  QuranCtrl.instance.state.overlayEntry?.remove();
-                  QuranCtrl.instance.state.overlayEntry = null;
-                },
-                child: const Icon(
-                  Icons.text_snippet_rounded,
-                  color: Colors.grey,
-                ),
-              ),
-              anotherMenuChild != null
-                  ? context.verticalDivider(
-                      height: 30, color: const Color(0xffe8decb))
-                  : const SizedBox(),
-              anotherMenuChild != null
-                  ? GestureDetector(
-                      onTap: () {
-                        if (anotherMenuChildOnTap != null) {
-                          anotherMenuChildOnTap!(ayah!);
-                        }
-                        QuranCtrl.instance.state.overlayEntry?.remove();
-                        QuranCtrl.instance.state.overlayEntry = null;
-                      },
-                      child: anotherMenuChild ?? const SizedBox(),
-                    )
-                  : const SizedBox(),
+              // context.verticalDivider(
+              //     height: 30, color: const Color(0xffe8decb)),
+              // GestureDetector(
+              //   onTap: () {
+              //     if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+              //         QuranCtrl.instance.state.fontsSelected2.value == 2 ||
+              //         QuranCtrl.instance.state.scaleFactor.value > 1.3) {
+              //       // TafsirCtrl.instance.showTafsirOnTap2(
+              //       //   context: context,
+              //       //   surahNum: QuranCtrl.instance
+              //       //       .getSurahDataByAyah(ayahFonts!)
+              //       //       .surahNumber,
+              //       //   ayahNum: ayahFonts!.ayahNumber,
+              //       //   ayahText: ayahFonts!.text,
+              //       //   pageIndex: pageIndex,
+              //       //   ayahTextN: ayahFonts!.ayaTextEmlaey,
+              //       //   ayahUQNum: ayahFonts!.ayahUQNumber,
+              //       //   index: ayahFonts!.ayahNumber,
+              //       // );
+              //     } else {
+              //       // TafsirCtrl.instance.showTafsirOnTap2(
+              //       //     context: context,
+              //       //     surahNum: ayah!.surahNumber,
+              //       //     ayahNum: ayah!.ayahNumber,
+              //       //     ayahText: ayah!.text,
+              //       //     pageIndex: pageIndex,
+              //       //     ayahTextN: ayah!.ayaTextEmlaey,
+              //       //     ayahUQNum: ayah!.ayahUQNumber,
+              //       //     index: ayah!.ayahNumber);
+              //     }
+              //     QuranCtrl.instance.state.overlayEntry?.remove();
+              //     QuranCtrl.instance.state.overlayEntry = null;
+              //   },
+              //   child: const Icon(
+              //     Icons.insert_page_break_outlined,
+              //     color: Colors.grey,
+              //   ),
+              // ),
             ],
           ),
         ),

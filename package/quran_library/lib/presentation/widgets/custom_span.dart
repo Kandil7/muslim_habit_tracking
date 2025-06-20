@@ -21,7 +21,6 @@ TextSpan _span({
   required bool isFontsLocal,
   required String fontsName,
   required List<int> ayahBookmarked,
-  required bool isDark,
 }) {
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
@@ -56,7 +55,7 @@ TextSpan _span({
     final String lastCharacter = text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final quranCtrl = QuranCtrl.instance;
-    ayahBookmarked.isEmpty
+    ayahBookmarked == false
         ? (bookmarksAyahs.contains(ayahUQNum) ? true : false)
         : ayahBookmarked;
     TextSpan? first;
@@ -69,11 +68,9 @@ TextSpan _span({
           fontSize: fontSize,
           height: 2.1,
           letterSpacing: pageSpacing ? -5 : 30,
-          color: quranCtrl.state.fontsSelected.value == 1
+          color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
-              : isDark
-                  ? Colors.white
-                  : Colors.black,
+              : null,
           backgroundColor: ayahBookmarked.contains(ayahUQNum)
               ? bookmarksColor
               : (bookmarksAyahs.contains(ayahUQNum)
@@ -88,6 +85,7 @@ TextSpan _span({
                       ? ayahSelectedBackgroundColor ??
                           const Color(0xffCDAD80).withValues(alpha: 0.25)
                       : null),
+
         ),
         recognizer: LongPressGestureRecognizer(
             duration: const Duration(milliseconds: 500))
@@ -101,11 +99,9 @@ TextSpan _span({
           height: 2.1,
           letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
-          color: quranCtrl.state.fontsSelected.value == 1
+          color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
-              : isDark
-                  ? Colors.white
-                  : Colors.black,
+              : null,
           backgroundColor: ayahBookmarked.contains(ayahUQNum)
               ? bookmarksColor
               : (bookmarksAyahs.contains(ayahUQNum)
@@ -120,6 +116,7 @@ TextSpan _span({
                       ? ayahSelectedBackgroundColor ??
                           const Color(0xffCDAD80).withValues(alpha: 0.25)
                       : null),
+
         ),
         recognizer: LongPressGestureRecognizer(
             duration: const Duration(milliseconds: 500))
@@ -134,11 +131,9 @@ TextSpan _span({
         fontSize: fontSize,
         height: 2.1,
         letterSpacing: 0,
-        color: quranCtrl.state.fontsSelected.value == 1
+        color: quranCtrl.state.fontsSelected2.value == 1
             ? textColor ?? Colors.transparent
-            : isDark
-                ? Colors.white
-                : Colors.black,
+            : null,
         backgroundColor: ayahBookmarked.contains(ayahUQNum)
             ? bookmarksColor
             : (bookmarksAyahs.contains(ayahUQNum)
@@ -153,6 +148,7 @@ TextSpan _span({
                     ? ayahSelectedBackgroundColor ??
                         const Color(0xffCDAD80).withValues(alpha: 0.25)
                     : null),
+
       ),
       recognizer: LongPressGestureRecognizer(
           duration: const Duration(milliseconds: 500))
@@ -167,7 +163,7 @@ TextSpan _span({
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: SvgPicture.asset(
-                AssetsPath().ayahBookmarked,
+                _AssetsPath().ayahBookmarked,
                 height: 100,
                 width: 100,
               ),
@@ -187,7 +183,7 @@ TextSpan _span({
                           pageIndex == 498)
                   ? 20
                   : null,
-              color: ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+              color: ayahIconColor,
               backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
@@ -238,9 +234,9 @@ TextSpan _customSpan({
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
+  Color? ayahSelectedFontColor,
   String? languageCode,
   required bool hasBookmark,
-  required bool isDark,
 }) {
   final allBookmarks = bookmarks.values.expand((list) => list).toList();
   hasBookmark == false
@@ -255,7 +251,7 @@ TextSpan _customSpan({
             fontFamily: 'hafs',
             fontSize: fontSize,
             height: 2.1,
-            color: textColor ?? (isDark ? Colors.white : Colors.black),
+            color: textColor ?? Colors.black,
             backgroundColor: hasBookmark
                 ? bookmarksColor
                 : (bookmarksAyahs.contains(ayahUQNum)
@@ -270,6 +266,7 @@ TextSpan _customSpan({
                         ? ayahSelectedBackgroundColor ??
                             const Color(0xffCDAD80).withValues(alpha: 0.25)
                         : null),
+
             package: "quran_library",
           ),
           recognizer: LongPressGestureRecognizer(
@@ -283,7 +280,7 @@ TextSpan _customSpan({
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SvgPicture.asset(
-                    AssetsPath().ayahBookmarked,
+                    _AssetsPath().ayahBookmarked,
                     height: 35,
                   ),
                 ))
@@ -295,9 +292,9 @@ TextSpan _customSpan({
                   fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2.1,
-                  color:
-                      ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+                  color: ayahIconColor,
                   backgroundColor: hasBookmark
+
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)
                           ? bookmarksColor ??

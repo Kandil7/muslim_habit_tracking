@@ -2,7 +2,6 @@ part of '../../quran.dart';
 
 class _QuranTextScale extends StatelessWidget {
   _QuranTextScale({
-    required this.context,
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,
@@ -11,7 +10,7 @@ class _QuranTextScale extends StatelessWidget {
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
-    this.onAyahLongPress,
+    this.onFontsAyahLongPress,
     this.onAyahPress,
     this.bookmarksColor,
     this.textColor,
@@ -20,16 +19,14 @@ class _QuranTextScale extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.languageCode,
     this.circularProgressWidget,
     required this.isDark,
     required this.ayahBookmarked,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
-  final BuildContext context;
   final int pageIndex;
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
@@ -39,8 +36,8 @@ class _QuranTextScale extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final List<int> ayahBookmarked;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
-  final Function(LongPressStartDetails details, AyahModel ayah)?
-      onAyahLongPress;
+  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+      onFontsAyahLongPress;
   final VoidCallback? onAyahPress;
   final Color? bookmarksColor;
   final Color? textColor;
@@ -48,12 +45,11 @@ class _QuranTextScale extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final String? languageCode;
   final Widget? circularProgressWidget;
   final bool isDark;
   final bool showAyahBookmarkedIcon;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +83,7 @@ class _QuranTextScale extends StatelessWidget {
                             ayahs.first.ayahNumber == 1 &&
                                     (!quranCtrl._topOfThePageIndex
                                             .contains(pageIndex) ||
-                                        quranCtrl.state.fontsSelected.value ==
+                                        quranCtrl.state.fontsSelected2.value ==
                                             0)
                                 ? SurahHeaderWidget(
                                     surahNumber ??
@@ -98,8 +94,8 @@ class _QuranTextScale extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? AssetsPath().surahSvgBannerDark
-                                              : AssetsPath().surahSvgBanner,
+                                              ? _AssetsPath().surahSvgBannerDark
+                                              : _AssetsPath().surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',
@@ -120,7 +116,7 @@ class _QuranTextScale extends StatelessWidget {
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
                                           backgroundColor: isDark
-                                              ? const Color(0xff1E1E1E)
+                                              ? const Color(0xff202020)
                                               : const Color(0xfffaf7f3),
                                           closeIconColor: isDark
                                               ? Colors.white
@@ -205,7 +201,6 @@ class _QuranTextScale extends StatelessWidget {
                                         .toList();
                                     return _customSpan(
                                       text: ayahs[ayahIndex].text,
-                                      isDark: isDark,
                                       pageIndex: pageIndex,
                                       isSelected: quranCtrl
                                           .selectedAyahsByUnequeNumber
@@ -220,8 +215,8 @@ class _QuranTextScale extends StatelessWidget {
                                       hasBookmark: ayahBookmarked.contains(
                                           ayahs[ayahIndex].ayahUQNumber),
                                       onLongPressStart: (details) {
-                                        if (onAyahLongPress != null) {
-                                          onAyahLongPress!(
+                                        if (onFontsAyahLongPress != null) {
+                                          onFontsAyahLongPress!(
                                               details, ayahs[ayahIndex]);
                                           quranCtrl.toggleAyahSelection(
                                               ayahs[ayahIndex].ayahUQNumber);
@@ -258,16 +253,11 @@ class _QuranTextScale extends StatelessWidget {
                                               builder: (context) =>
                                                   AyahLongClickDialog(
                                                 context: context,
-                                                isDark: isDark,
-                                                ayah: ayahs[ayahIndex],
+                                                ayahFonts: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,
                                                 index: ayahIndex,
                                                 pageIndex: pageIndex,
-                                                anotherMenuChild:
-                                                    anotherMenuChild,
-                                                anotherMenuChildOnTap:
-                                                    anotherMenuChildOnTap,
                                               ),
                                             );
 
@@ -295,6 +285,8 @@ class _QuranTextScale extends StatelessWidget {
                                       bookmarksColor: bookmarksColor,
                                       ayahSelectedBackgroundColor:
                                           ayahSelectedBackgroundColor,
+                                      ayahSelectedFontColor:
+                                          ayahSelectedFontColor,
                                       ayahNumber: ayahs[ayahIndex].ayahNumber,
                                       languageCode: languageCode,
                                     );
@@ -303,7 +295,7 @@ class _QuranTextScale extends StatelessWidget {
                               ),
                             ),
                             quranCtrl._downThePageIndex.contains(pageIndex) &&
-                                    quranCtrl.state.fontsSelected.value == 1
+                                    quranCtrl.state.fontsSelected2.value == 1
                                 ? SurahHeaderWidget(
                                     surahNumber ??
                                         quranCtrl
@@ -314,8 +306,8 @@ class _QuranTextScale extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? AssetsPath().surahSvgBannerDark
-                                              : AssetsPath().surahSvgBanner,
+                                              ? _AssetsPath().surahSvgBannerDark
+                                              : _AssetsPath().surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',
@@ -336,7 +328,7 @@ class _QuranTextScale extends StatelessWidget {
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
                                           backgroundColor: isDark
-                                              ? const Color(0xff1E1E1E)
+                                              ? const Color(0xff202020)
                                               : const Color(0xfffaf7f3),
                                           closeIconColor: isDark
                                               ? Colors.white

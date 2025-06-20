@@ -31,6 +31,8 @@ class QuranLibrary {
 
     await GetStorage.init();
 
+    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+
     // Initialize state values
     final storage = GetStorage();
     final storageConstants = _StorageConstants();
@@ -38,7 +40,7 @@ class QuranLibrary {
     quranCtrl.state.isDownloadedV2Fonts.value =
         storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
     quranCtrl.state.isBold.value = storage.read(storageConstants.isBold) ?? 0;
-    quranCtrl.state.fontsSelected.value =
+    quranCtrl.state.fontsSelected2.value =
         storage.read(storageConstants.fontsSelected) ?? 0;
     quranCtrl.state.fontsDownloadedList.value = (storage
             .read<List<dynamic>>(storageConstants.fontsDownloadedList)
@@ -71,8 +73,6 @@ class QuranLibrary {
   /// This instance is used to access the functionalities provided by the
   /// `QuranCtrl` class throughout the application.
   final quranCtrl = QuranCtrl.instance;
-
-  static final Assets = AssetsPath();
 
   /// [currentPageNumber] تعيد رقم الصفحة التي يكون المستخدم عليها حاليًا.
   /// أرقام الصفحات تبدأ من 1، لذا فإن الصفحة الأولى من القرآن هي الصفحة رقم 1.
@@ -209,9 +209,8 @@ class QuranLibrary {
       return _cache[cacheKey] as List<String>;
     }
     final surahList = quranCtrl.surahs
-        .map((surah) => isArabic
-            ? 'سورة ${surah.arabicName}'
-            : 'Surah ${surah.englishName}')
+        .map((surah) =>
+            isArabic ? 'سورة ${surah.nameAr}' : 'Surah ${surah.nameEn}')
         .toList();
     _cache[cacheKey] = surahList;
     return surahList;
@@ -225,19 +224,7 @@ class QuranLibrary {
       return _cache['allSurahsArtPath'] as List<String>;
     }
     final paths = List.generate(quranCtrl.surahs.length,
-        (i) => 'packages/quran_library/assets/svg/surah_name/00$i.svg');
-    _cache['allSurahsArtPath'] = paths;
-    return paths;
-  }
-
-  /// [getSurahArtPath] يعيد مسار المخطوطة الخاصة بإسم السور.
-  ///
-  /// [getSurahArtPath] returns Quran surah' name artistic manuscript path
-  String getSurahArtPath({required int index}) {
-    if (_cache.containsKey('allSurahsArtPath')) {
-      return _cache['allSurahsArtPath'] as String;
-    }
-    final paths = 'packages/quran_library/assets/svg/surah_name/00$index.svg';
+        (i) => 'packages/quran_library/lib/assets/svg/surah_name/00$i.svg');
     _cache['allSurahsArtPath'] = paths;
     return paths;
   }
@@ -271,22 +258,22 @@ class QuranLibrary {
     return bookmarks;
   }
 
-  /// للحصول على معلومات السورة في نافذة حوار، قم فقط باستدعاء: [getSurahInfoBottomSheet].
+  /// للحصول على معلومات السورة في نافذة حوار، قم فقط باستدعاء: [getSurahInfoDialog].
   ///
   /// مطلوب تمرير رقم السورة [surahNumber].
   /// كما أن التمرير الاختياري لنمط [SurahInfoStyle] ممكن.
   ///
-  /// to get the Surah information bottomSheet just call [getSurahInfoBottomSheet]
+  /// to get the Surah information dialog just call [getSurahInfoDialog]
   ///
   /// and required to pass the Surah number [surahNumber]
   /// and style [SurahInfoStyle] is optional.
-  void getSurahInfoBottomSheet(
+  void getSurahInfoDialog(
           {required int surahNumber,
           required BuildContext context,
           SurahInfoStyle? surahInfoStyle,
           String? languageCode,
           bool isDark = false}) =>
-      surahInfoBottomSheetWidget(context, surahNumber - 1,
+      surahInfoDialogWidget(context, surahNumber - 1,
           surahStyle: surahInfoStyle,
           languageCode: languageCode,
           isDark: isDark);
@@ -339,77 +326,47 @@ class QuranLibrary {
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
   ///
   /// to get the fonts download method just call [fontsDownloadMethod]
-  Future<void> getFontsDownloadMethod({required int fontIndex}) async {
-    await quranCtrl.downloadAllFontsZipFile(fontIndex);
-  }
+  void getFontsDownloadMethod({required int fontIndex}) =>
+      quranCtrl.downloadAllFontsZipFile(fontIndex);
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
   /// مطلوب تمرير رقم الصفحة [pageIndex]
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
   /// required to pass [pageIndex]
-  Future<void> getFontsPrepareMethod(
-      {required int pageIndex, bool isFontsLocal = false}) async {
-    await quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
-  }
+  void getFontsPrepareMethod(
+          {required int pageIndex, bool isFontsLocal = false}) =>
+      quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
 
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///
   /// to delete the fonts just call [deleteFontsMethod]
-  Future<void> getDeleteFontsMethod() async {
-    await quranCtrl.deleteFonts();
-  }
+  void getDeleteFontsMethod() => quranCtrl.deleteFonts();
 
   /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
   ///
   /// to get fonts download progress just call [fontsDownloadProgress]
-  double get fontsDownloadProgress {
-    // قيمة تقدم التحميل كنسبة مئوية من 0 إلى 100
-    // Download progress value as a percentage from 0 to 100
-    double progress = quranCtrl.state.fontsDownloadProgress.value;
-    // التحويل إلى قيمة بين 0 و 1 للاستخدام في LinearProgressIndicator
-    // Convert to a value between 0 and 1 for use in LinearProgressIndicator
-    return progress / 100;
-  }
+  double get fontsDownloadProgress =>
+      quranCtrl.state.fontsDownloadProgress.value;
 
   /// لمعرفة ما إذا كانت الخطوط محملة او لا، ما عليك سوى إستدعاء [isFontsDownloaded]
   ///
   /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
-  bool get isFontsDownloaded {
-    // التحقق من قيمة isDownloadedV2Fonts في GetStorage
-    // Check the value of isDownloadedV2Fonts in GetStorage
-    final storageValue =
-        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV2Fonts);
-    // تحديث قيمة المتغير في state ليتوافق مع قيمة التخزين
-    // Update the state variable to match storage value
-    quranCtrl.state.isDownloadedV2Fonts.value = storageValue ?? false;
-    // إرجاع القيمة المحدثة
-    // Return the updated value
-    return quranCtrl.state.isDownloadedV2Fonts.value;
-  }
+  bool get isFontsDownloaded =>
+      GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///
   /// To find out which font has been selected, just call [currentFontsSelected]
-  int get currentFontsSelected => quranCtrl.state.fontsSelected.value;
-
-  /// لتبديل نوع الخط مع تحميله إذا لم يكن محملاً من قبل
-  /// هذه الدالة تلقائيًا ستقوم بتحميل الخط إذا كان غير متوفر ثم تعيينه
-  ///
-  /// To switch font type with downloading if not already downloaded
-  /// This function will automatically download the font if not available then set it
-  Future<void> switchFontType({required int fontIndex}) async {
-    await quranCtrl.switchFontType(fontIndex: fontIndex);
-  }
+  int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
 
   /// لتحديد نوع الخط الذي تريد إستخدامه، ما عليك سوى إعطاء قيمة [setFontsSelected]
   ///
   /// To set the font type you want to use, just give a value to [setFontsSelected]
   ///
   set setFontsSelected(int index) {
-    quranCtrl.state.fontsSelected.value = index;
+    quranCtrl.state.fontsSelected2.value = index;
     GetStorage().write(_StorageConstants().fontsSelected, index);
-    Get.forceAppUpdate(); // تحديث إجباري للواجهة بعد تغيير نوع الخط
   }
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
@@ -452,7 +409,8 @@ class QuranLibrary {
   ///
   /// To know the names of the surahs on any page, just call [getAllSurahInPageByPageNumber]
   /// And just pass the page number to it.
-  List<SurahModel> getAllSurahInPageByPageNumber({required int pageNumber}) =>
+  List<SurahFontsModel> getAllSurahInPageByPageNumber(
+          {required int pageNumber}) =>
       quranCtrl.getSurahsByPage(pageNumber);
 
   /// لجلب بيانات السورة الحالية عن طريق رقم الصفحة
@@ -460,7 +418,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Surah data by page number,
   /// you can use [getCurrentSurahDataByPageNumber].
-  SurahModel getCurrentSurahDataByPageNumber({required int pageNumber}) =>
+  SurahFontsModel getCurrentSurahDataByPageNumber({required int pageNumber}) =>
       quranCtrl.getCurrentSurahByPage(pageNumber);
 
   /// لجلب بيانات السورة الحالية عن طريق بيانات الآية
@@ -468,7 +426,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Surah data by Ayah data,
   /// you can use [getCurrentSurahDataByAyah].
-  SurahModel getCurrentSurahDataByAyah({required AyahModel ayah}) =>
+  SurahFontsModel getCurrentSurahDataByAyah({required AyahFontsModel ayah}) =>
       quranCtrl.getSurahDataByAyah(ayah);
 
   /// لجلب بيانات السورة الحالية عن طريق رقم الآية الفريد
@@ -476,7 +434,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Surah data by Ayah unique number,
   /// you can use [getCurrentSurahDataByAyahUniqueNumber].
-  SurahModel getCurrentSurahDataByAyahUniqueNumber(
+  SurahFontsModel getCurrentSurahDataByAyahUniqueNumber(
           {required int ayahUniqueNumber}) =>
       quranCtrl.getSurahDataByAyahUQ(ayahUniqueNumber);
 
@@ -485,7 +443,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Juz number by page number,
   /// you can use [getJuzByPageNumber].
-  AyahModel getJuzByPageNumber({required int pageNumber}) =>
+  AyahFontsModel getJuzByPageNumber({required int pageNumber}) =>
       quranCtrl.getJuzByPage(pageNumber);
 
   /// لجلب آيات الصفحة عن طريق رقم الصفحة
@@ -493,7 +451,7 @@ class QuranLibrary {
   ///
   /// To fetch the Ayahs in the page by page number,
   /// you can use [getPageAyahsByPageNumber].
-  List<AyahModel> getPageAyahsByPageNumber({required int pageNumber}) =>
+  List<AyahFontsModel> getPageAyahsByPageNumber({required int pageNumber}) =>
       quranCtrl.getPageAyahsByIndex(pageNumber);
 
   /// لجلب آيات الصفحة عن طريق رقم الصفحة
@@ -508,10 +466,7 @@ class QuranLibrary {
 
   /// تهيئة بيانات التفسير عند بدء التطبيق.
   /// Initialize tafsir data when the app starts.
-  Future<void> initTafsir() async {
-    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-    return TafsirCtrl.instance.initTafsir();
-  }
+  Future<void> initTafsir() async => TafsirCtrl.instance.initTafsir();
 
   /// إظهار قائمة منبثقة لتغيير نوع التفسير.
   /// Show a popup menu to change the tafsir style.
@@ -567,29 +522,6 @@ class QuranLibrary {
   /// Fetch tafsir for a specific page by its page number.
   Future<void> fetchTafsir({required int pageNumber}) async =>
       await TafsirCtrl.instance.fetchData(pageNumber);
-
-  /// لعرض التفسير، يمكنك استخدام [showTafsir].
-  ///
-  /// To show the tafsir, you can use [showTafsir].
-  Future<void> showTafsir({
-    required BuildContext context,
-    required int surahNum,
-    required int ayahNum,
-    required String ayahText,
-    required int pageIndex,
-    required String ayahTextN,
-    required int ayahUQNum,
-    required int ayahNumber,
-  }) async =>
-      await TafsirCtrl.instance.showTafsirOnTap(
-          context: context,
-          ayahNum: ayahNum,
-          ayahText: ayahText,
-          pageIndex: pageIndex,
-          ayahTextN: ayahTextN,
-          ayahUQNum: ayahUQNum,
-          ayahNumber: ayahNumber,
-          surahNum: surahNum);
 
   /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
   /// Close and re-initialize the database (usually when changing the tafsir).

@@ -2,7 +2,6 @@ part of '../../quran.dart';
 
 class QuranLine extends StatelessWidget {
   QuranLine(
-    this.context,
     this.line,
     this.bookmarksAyahs,
     this.bookmarks, {
@@ -16,16 +15,12 @@ class QuranLine extends StatelessWidget {
     this.onPagePress,
     required this.pageIndex,
     required this.ayahBookmarked,
-    this.ayahSelectedFontColor,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    required this.isDark,
   });
+
 
   final quranCtrl = QuranCtrl.instance;
 
-  final BuildContext context;
-  final LineModel line;
+  final Line line;
   final List<int> bookmarksAyahs;
   final Map<int, List<BookmarkModel>> bookmarks;
   final BoxFit boxFit;
@@ -39,9 +34,6 @@ class QuranLine extends StatelessWidget {
   final List? bookmarkList;
   final int pageIndex;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +48,7 @@ class QuranLine extends StatelessWidget {
                   .contains(ayah.ayahUQNumber);
               final allBookmarks =
                   bookmarks.values.expand((list) => list).toList();
-              ayahBookmarked.isEmpty
+              ayahBookmarked == false
                   ? (bookmarksAyahs.contains(ayah.ayahUQNumber) ? true : false)
                   : ayahBookmarked;
               // final String lastCharacter =
@@ -95,13 +87,10 @@ class QuranLine extends StatelessWidget {
                         final newOverlayEntry = OverlayEntry(
                           builder: (context) => AyahLongClickDialog(
                             context: context,
-                            isDark: isDark,
                             ayah: ayah,
                             position: details.globalPosition,
                             index: ayah.ayahNumber,
                             pageIndex: pageIndex,
-                            anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
                           ),
                         );
 
@@ -136,9 +125,8 @@ class QuranLine extends StatelessWidget {
                         color: quranCtrl.selectedAyahsByUnequeNumber
                                 .contains(ayah.ayahUQNumber)
                             ? ayahSelectedFontColor
-                            : textColor ??
-                                (isDark ? Colors.white : Colors.black),
-                        fontSize: 22.55,
+                            : textColor ?? Colors.black,
+                        fontSize: 23.55,
                         fontFamily: "hafs",
                         height: 1.3,
                         package: "quran_library",

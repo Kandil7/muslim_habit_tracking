@@ -1,7 +1,6 @@
 part of '../../quran.dart';
 
 class _QuranLinePage extends StatelessWidget {
-  final BuildContext context;
   final int pageIndex;
   final int? surahNumber;
   final BannerStyle? bannerStyle;
@@ -16,6 +15,7 @@ class _QuranLinePage extends StatelessWidget {
   final Color? textColor;
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final VoidCallback? onPagePress;
   final List<String> newSurahs;
   final String? languageCode;
@@ -24,11 +24,8 @@ class _QuranLinePage extends StatelessWidget {
   final Widget? topTitleChild;
   final bool isDark;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   _QuranLinePage({
-    required this.context,
     required this.pageIndex,
     this.surahNumber,
     this.bannerStyle,
@@ -42,6 +39,7 @@ class _QuranLinePage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     required this.newSurahs,
     this.languageCode,
@@ -50,8 +48,6 @@ class _QuranLinePage extends StatelessWidget {
     this.topTitleChild,
     required this.isDark,
     required this.ayahBookmarked,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -85,6 +81,7 @@ class _QuranLinePage extends StatelessWidget {
                 ? SingleChildScrollView(child: _firstTwoSurahs(context))
                 : _firstTwoSurahs(context)
             : _firstTwoSurahs(context));
+
   }
 
   Widget otherSurahs(BuildContext context) {
@@ -120,21 +117,19 @@ class _QuranLinePage extends StatelessWidget {
       padding: EdgeInsets.symmetric(
           vertical: context.currentOrientation(
               MediaQuery.sizeOf(context).width * .16,
-              MediaQuery.sizeOf(context).height * .01),
-          horizontal: context.currentOrientation(
-              MediaQuery.sizeOf(context).width * .12, 0.0)),
+              MediaQuery.sizeOf(context).height * .01)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SurahHeaderWidget(
             surahNumber ??
-                quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber!,
+                quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber,
             bannerStyle: bannerStyle ??
                 BannerStyle(
                   isImage: false,
                   bannerSvgPath: isDark
-                      ? AssetsPath().surahSvgBannerDark
-                      : AssetsPath().surahSvgBanner,
+                      ? _AssetsPath().surahSvgBannerDark
+                      : _AssetsPath().surahSvgBanner,
                   bannerSvgHeight: 40.0,
                   bannerSvgWidth: 150.0,
                   bannerImagePath: '',
@@ -144,7 +139,7 @@ class _QuranLinePage extends StatelessWidget {
             surahNameStyle: surahNameStyle ??
                 SurahNameStyle(
                   surahNameWidth: 70,
-                  surahNameHeight: 30,
+                  surahNameHeight: 37,
                   surahNameColor: isDark ? Colors.white : Colors.black,
                 ),
             surahInfoStyle: surahInfoStyle ??
@@ -153,7 +148,7 @@ class _QuranLinePage extends StatelessWidget {
                   secondTabText: 'عن السورة',
                   firstTabText: 'أسماء السورة',
                   backgroundColor: isDark
-                      ? const Color(0xff1E1E1E)
+                      ? const Color(0xff202020)
                       : const Color(0xfffaf7f3),
                   closeIconColor: isDark ? Colors.white : Colors.black,
                   indicatorColor: Colors.amber.withValues(alpha: .2),
@@ -169,48 +164,41 @@ class _QuranLinePage extends StatelessWidget {
           if (pageIndex == 1)
             BasmallahWidget(
               surahNumber:
-                  quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber!,
+                  quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber,
               basmalaStyle: basmalaStyle ??
                   BasmalaStyle(
                     basmalaColor: isDark ? Colors.white : Colors.black,
                     basmalaWidth: 160.0,
-                    basmalaHeight: 30.0,
+                    basmalaHeight: 40.0,
                   ),
             ),
           ...quranCtrl.staticPages[pageIndex].lines.map((line) {
-            return FittedBox(
-              fit: BoxFit.fitWidth,
-              child: GetBuilder<BookmarksCtrl>(
-                builder: (bookmarkCtrl) {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        width: deviceSize.width - 32,
-                        child: QuranLine(
-                          context,
-                          line,
-                          isDark: isDark,
-                          bookmarkCtrl.bookmarksAyahs,
-                          bookmarkCtrl.bookmarks,
-                          boxFit: BoxFit.scaleDown,
-                          onDefaultAyahLongPress: onAyahLongPress,
-                          bookmarksColor: bookmarksColor,
-                          textColor: textColor ??
-                              (isDark ? Colors.white : Colors.black),
-                          bookmarkList: bookmarkList,
-                          pageIndex: pageIndex,
-                          ayahSelectedBackgroundColor:
-                              ayahSelectedBackgroundColor,
-                          onPagePress: onPagePress,
-                          ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                        ),
+            return GetBuilder<BookmarksCtrl>(
+              builder: (bookmarkCtrl) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: deviceSize.width - 32,
+                      child: QuranLine(
+                        line,
+                        bookmarkCtrl.bookmarksAyahs,
+                        bookmarkCtrl.bookmarks,
+                        boxFit: BoxFit.scaleDown,
+                        onDefaultAyahLongPress: onAyahLongPress,
+                        bookmarksColor: bookmarksColor,
+                        textColor:
+                            textColor ?? (isDark ? Colors.white : Colors.black),
+                        bookmarkList: bookmarkList,
+                        pageIndex: pageIndex,
+                        ayahSelectedBackgroundColor:
+                            ayahSelectedBackgroundColor,
+                        onPagePress: onPagePress,
+                        ayahBookmarked: ayahBookmarked,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    ),
+                  ],
+                );
+              },
             );
           }),
         ],
@@ -228,7 +216,7 @@ class _QuranLinePage extends StatelessWidget {
               bool firstAyah = false;
               if (line.ayahs[0].ayahNumber == 1 &&
                   !newSurahs.contains(line.ayahs[0].arabicName)) {
-                newSurahs.add(line.ayahs[0].arabicName!);
+                newSurahs.add(line.ayahs[0].arabicName);
                 firstAyah = true;
               }
               return GetBuilder<BookmarksCtrl>(
@@ -237,13 +225,13 @@ class _QuranLinePage extends StatelessWidget {
                     children: [
                       if (firstAyah)
                         SurahHeaderWidget(
-                          surahNumber ?? line.ayahs[0].surahNumber!,
+                          surahNumber ?? line.ayahs[0].surahNumber,
                           bannerStyle: bannerStyle ??
                               BannerStyle(
                                 isImage: false,
                                 bannerSvgPath: isDark
-                                    ? AssetsPath().surahSvgBannerDark
-                                    : AssetsPath().surahSvgBanner,
+                                    ? _AssetsPath().surahSvgBannerDark
+                                    : _AssetsPath().surahSvgBanner,
                                 bannerSvgHeight: 40.0,
                                 bannerSvgWidth: 150.0,
                                 bannerImagePath: '',
@@ -263,7 +251,7 @@ class _QuranLinePage extends StatelessWidget {
                                 secondTabText: 'عن السورة',
                                 firstTabText: 'أسماء السورة',
                                 backgroundColor: isDark
-                                    ? const Color(0xff1E1E1E)
+                                    ? const Color(0xff202020)
                                     : const Color(0xfffaf7f3),
                                 closeIconColor:
                                     isDark ? Colors.white : Colors.black,
@@ -278,6 +266,7 @@ class _QuranLinePage extends StatelessWidget {
                                 textColor: isDark ? Colors.white : Colors.black,
                                 titleColor:
                                     isDark ? Colors.white : Colors.black,
+
                               ),
                           onSurahBannerPress: onSurahBannerPress,
                           isDark: isDark,
@@ -308,12 +297,10 @@ class _QuranLinePage extends StatelessWidget {
                             0.97 /
                             quranCtrl.staticPages[pageIndex].lines.length,
                         child: QuranLine(
-                          context,
                           line,
-                          isDark: isDark,
                           bookmarkCtrl.bookmarksAyahs,
                           bookmarkCtrl.bookmarks,
-                          boxFit: line.ayahs.last.centered!
+                          boxFit: line.ayahs.last.centered
                               ? BoxFit.scaleDown
                               : BoxFit.fill,
                           onDefaultAyahLongPress: onAyahLongPress,
@@ -326,8 +313,6 @@ class _QuranLinePage extends StatelessWidget {
                               ayahSelectedBackgroundColor,
                           onPagePress: onPagePress,
                           ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
                         ),
                       ),
                     ],

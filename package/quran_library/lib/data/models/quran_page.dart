@@ -1,19 +1,17 @@
 part of '../../../quran.dart';
 
-/// هذا الموديل يمثل صفحة من صفحات القرآن ويحتوي على قائمة من الآيات (AyahModel) والأسطر (LineModel)
-/// This model represents a Quran page and contains a list of ayahs (AyahModel) and lines (LineModel)
-class QuranPageModel {
+class QuranPage {
   final int pageNumber;
   int numberOfNewSurahs;
-  List<AyahModel> ayahs; // قائمة الآيات الموحدة
-  List<LineModel> lines; // قائمة الأسطر، كل سطر يحتوي على آيات موحدة
+  List<AyahModel> ayahs;
+  List<Line> lines;
   int? hizb;
   bool hasSajda, lastLine;
 
-  QuranPageModel({
+  QuranPage({
     required this.pageNumber,
-    required this.ayahs, // يجب أن تكون من نوع AyahModel
-    required this.lines, // يجب أن تحتوي كل LineModel على AyahModel
+    required this.ayahs,
+    required this.lines,
     this.hizb,
     this.hasSajda = false,
     this.lastLine = false,
@@ -21,11 +19,9 @@ class QuranPageModel {
   });
 }
 
-/// هذا الموديل يمثل سطر في صفحة القرآن ويحتوي على قائمة من الآيات الموحدة
-/// This model represents a line in a Quran page and contains a list of unified ayahs
-class LineModel {
-  List<AyahModel> ayahs; // قائمة الآيات الموحدة في السطر
+class Line {
+  List<AyahModel> ayahs;
   bool centered;
 
-  LineModel(this.ayahs, {this.centered = false});
+  Line(this.ayahs, {this.centered = false});
 }

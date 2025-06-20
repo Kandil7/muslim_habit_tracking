@@ -48,46 +48,36 @@ class AllQuranWidget extends StatelessWidget {
                                 color: const Color(0xff77554B)),
                           ),
                           const Spacer(),
-                          quranCtrl.getSurahsByPage(pageIndex).isNotEmpty
-                              ? Row(
-                                  children: List.generate(
-                                      quranCtrl
-                                          .getSurahsByPage(pageIndex)
-                                          .length,
-                                      (i) => Text(
-                                            ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                            style: TextStyle(
-                                                fontSize:
-                                                    context.currentOrientation(
-                                                        18.0, 22.0),
-                                                // fontWeight: FontWeight.bold,
-                                                fontFamily: 'naskh',
-                                                color: const Color(0xff77554B)),
-                                          )),
-                                )
-                              : const SizedBox.shrink(),
+                          Row(
+                            children: List.generate(
+                                quranCtrl.getSurahsByPage(pageIndex).length,
+                                (i) => Text(
+                                      ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
+                                      style: TextStyle(
+                                          fontSize: context.currentOrientation(
+                                              18.0, 22.0),
+                                          // fontWeight: FontWeight.bold,
+                                          fontFamily: 'naskh',
+                                          color: const Color(0xff77554B)),
+                                    )),
+                          ),
                         ],
                       )
                     : Row(
                         children: [
-                          quranCtrl.getSurahsByPage(pageIndex).isNotEmpty
-                              ? Row(
-                                  children: List.generate(
-                                      quranCtrl
-                                          .getSurahsByPage(pageIndex)
-                                          .length,
-                                      (i) => Text(
-                                            ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                            style: TextStyle(
-                                                fontSize:
-                                                    context.currentOrientation(
-                                                        18.0, 22.0),
-                                                // fontWeight: FontWeight.bold,
-                                                fontFamily: 'naskh',
-                                                color: const Color(0xff77554B)),
-                                          )),
-                                )
-                              : const SizedBox.shrink(),
+                          Row(
+                            children: List.generate(
+                                quranCtrl.getSurahsByPage(pageIndex).length,
+                                (i) => Text(
+                                      ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
+                                      style: TextStyle(
+                                          fontSize: context.currentOrientation(
+                                              18.0, 22.0),
+                                          // fontWeight: FontWeight.bold,
+                                          fontFamily: 'naskh',
+                                          color: const Color(0xff77554B)),
+                                    )),
+                          ),
                           const Spacer(),
                           Text(
                             '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'

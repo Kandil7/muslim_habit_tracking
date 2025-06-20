@@ -1,7 +1,6 @@
 part of '../../../quran.dart';
 
 class _QuranFontsPage extends StatelessWidget {
-  final BuildContext context;
   final int pageIndex;
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
@@ -10,8 +9,8 @@ class _QuranFontsPage extends StatelessWidget {
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
-  final Function(LongPressStartDetails details, AyahModel ayah)?
-      onAyahLongPress;
+  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+      onFontsAyahLongPress;
 
   final VoidCallback? onPagePress;
   final Color? bookmarksColor;
@@ -20,17 +19,15 @@ class _QuranFontsPage extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? circularProgressWidget;
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   const _QuranFontsPage({
-    required this.context,
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,
@@ -39,7 +36,7 @@ class _QuranFontsPage extends StatelessWidget {
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
-    this.onAyahLongPress,
+    this.onFontsAyahLongPress,
     this.bookmarksColor,
     this.textColor,
     this.ayahIconColor,
@@ -47,14 +44,13 @@ class _QuranFontsPage extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
     this.isFontsLocal,
     this.fontsName,
     required this.ayahBookmarked,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
   });
 
   @override
@@ -119,18 +115,18 @@ class _QuranFontsPage extends StatelessWidget {
                             BannerStyle(
                               isImage: false,
                               bannerSvgPath: isDark
-                                  ? AssetsPath().surahSvgBannerDark
-                                  : AssetsPath().surahSvgBanner,
-                              bannerSvgHeight: 100.0,
+                                  ? _AssetsPath().surahSvgBannerDark
+                                  : _AssetsPath().surahSvgBanner,
+                              bannerSvgHeight: 40.0,
                               bannerSvgWidth: 150.0,
                               bannerImagePath: '',
-                              bannerImageHeight: 100.0,
+                              bannerImageHeight: 50,
                               bannerImageWidth: double.infinity,
                             ),
                         surahNameStyle: surahNameStyle ??
                             SurahNameStyle(
                               surahNameWidth: 70,
-                              surahNameHeight: 80,
+                              surahNameHeight: 37,
                               surahNameColor:
                                   isDark ? Colors.white : Colors.black,
                             ),
@@ -140,7 +136,7 @@ class _QuranFontsPage extends StatelessWidget {
                               secondTabText: 'عن السورة',
                               firstTabText: 'أسماء السورة',
                               backgroundColor: isDark
-                                  ? const Color(0xff1E1E1E)
+                                  ? const Color(0xff202020)
                                   : const Color(0xfffaf7f3),
                               closeIconColor:
                                   isDark ? Colors.white : Colors.black,
@@ -174,22 +170,15 @@ class _QuranFontsPage extends StatelessWidget {
                                       basmalaColor:
                                           isDark ? Colors.white : Colors.black,
                                       basmalaWidth: 160.0,
-                                      basmalaHeight: 140.0,
+                                      basmalaHeight: 45.0,
                                     ),
                               )
                             : const SizedBox.shrink(),
                       ),
                 FittedBox(
                   fit: BoxFit.fitWidth,
-                  child: Obx(() => _richTextWidget(
-                      context,
-                      quranCtrl,
-                      ayahs,
-                      isFontsLocal!,
-                      fontsName!,
-                      ayahBookmarked,
-                      anotherMenuChild,
-                      anotherMenuChildOnTap)),
+                  child: Obx(() => _richTextWidget(context, quranCtrl, ayahs,
+                      isFontsLocal!, fontsName!, ayahBookmarked)),
                 ),
                 quranCtrl._downThePageIndex.contains(pageIndex)
                     ? SurahHeaderWidget(
@@ -202,18 +191,18 @@ class _QuranFontsPage extends StatelessWidget {
                             BannerStyle(
                               isImage: false,
                               bannerSvgPath: isDark
-                                  ? AssetsPath().surahSvgBannerDark
-                                  : AssetsPath().surahSvgBanner,
-                              bannerSvgHeight: 140.0,
+                                  ? _AssetsPath().surahSvgBannerDark
+                                  : _AssetsPath().surahSvgBanner,
+                              bannerSvgHeight: 40.0,
                               bannerSvgWidth: 150.0,
                               bannerImagePath: '',
-                              bannerImageHeight: 100.0,
+                              bannerImageHeight: 50,
                               bannerImageWidth: double.infinity,
                             ),
                         surahNameStyle: surahNameStyle ??
                             SurahNameStyle(
                               surahNameWidth: 70,
-                              surahNameHeight: 100,
+                              surahNameHeight: 37,
                               surahNameColor:
                                   isDark ? Colors.white : Colors.black,
                             ),
@@ -223,7 +212,7 @@ class _QuranFontsPage extends StatelessWidget {
                               secondTabText: 'عن السورة',
                               firstTabText: 'أسماء السورة',
                               backgroundColor: isDark
-                                  ? const Color(0xff1E1E1E)
+                                  ? const Color(0xff202020)
                                   : const Color(0xfffaf7f3),
                               closeIconColor:
                                   isDark ? Colors.white : Colors.black,
@@ -251,15 +240,12 @@ class _QuranFontsPage extends StatelessWidget {
   }
 
   Widget _richTextWidget(
-    BuildContext context,
-    QuranCtrl quranCtrl,
-    List<AyahModel> ayahs,
-    bool isFontsLocal,
-    String fontsName,
-    List<int> ayahBookmarked,
-    Widget? anotherMenuChild,
-    Function(AyahModel ayah)? anotherMenuChildOnTap,
-  ) {
+      BuildContext context,
+      QuranCtrl quranCtrl,
+      List<AyahFontsModel> ayahs,
+      bool isFontsLocal,
+      String fontsName,
+      List<int> ayahBookmarked) {
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.center,
@@ -289,12 +275,11 @@ class _QuranFontsPage extends StatelessWidget {
                       .getSurahDataByAyah(ayahs[ayahIndex])
                       .surahNumber));
           String text = isFirstAyah
-              ? '${ayahs[ayahIndex].codeV2![0]}${ayahs[ayahIndex].codeV2!.substring(1)}'
-              : ayahs[ayahIndex].codeV2!;
+              ? '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}'
+              : ayahs[ayahIndex].codeV2;
           return _span(
             isFirstAyah: isFirstAyah,
             text: text,
-            isDark: isDark,
             pageIndex: pageIndex,
             isSelected: quranCtrl.selectedAyahsByUnequeNumber
                 .contains(ayahs[ayahIndex].ayahUQNumber),
@@ -304,8 +289,8 @@ class _QuranFontsPage extends StatelessWidget {
             ayahNum: ayahs[ayahIndex].ayahNumber,
             ayahBookmarked: ayahBookmarked,
             onLongPressStart: (details) {
-              if (onAyahLongPress != null) {
-                onAyahLongPress!(details, ayahs[ayahIndex]);
+              if (onFontsAyahLongPress != null) {
+                onFontsAyahLongPress!(details, ayahs[ayahIndex]);
                 quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
                 quranCtrl.state.overlayEntry?.remove();
                 quranCtrl.state.overlayEntry = null;
@@ -329,13 +314,10 @@ class _QuranFontsPage extends StatelessWidget {
                   final newOverlayEntry = OverlayEntry(
                     builder: (context) => AyahLongClickDialog(
                       context: context,
-                      isDark: isDark,
-                      ayah: ayahs[ayahIndex],
+                      ayahFonts: ayahs[ayahIndex],
                       position: details.globalPosition,
                       index: ayahIndex,
                       pageIndex: pageIndex,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
                     ),
                   );
 
@@ -357,6 +339,7 @@ class _QuranFontsPage extends StatelessWidget {
             ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
             isFontsLocal: isFontsLocal,
             fontsName: fontsName,
+
           );
         }),
       ),

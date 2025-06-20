@@ -1,6 +1,6 @@
 part of '../../quran.dart';
 
-class AssetsPath {
+class _AssetsPath {
   final surahSvgBanner = 'packages/quran_library/assets/svg/surah_banner.svg';
   final surahSvgBannerDark =
       'packages/quran_library/assets/svg/surah_banner_dark.svg';
@@ -12,11 +12,11 @@ class AssetsPath {
   final suraNum = 'packages/quran_library/assets/svg/sora_num.svg';
 
   ///Singleton factory
-  static final AssetsPath _instance = AssetsPath._internal();
+  static final _AssetsPath _instance = _AssetsPath._internal();
 
-  factory AssetsPath() {
+  factory _AssetsPath() {
     return _instance;
   }
 
-  AssetsPath._internal();
+  _AssetsPath._internal();
 }

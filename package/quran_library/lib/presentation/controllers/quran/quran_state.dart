@@ -2,9 +2,9 @@ part of '../../../quran.dart';
 
 class QuranState {
   /// -------- [Variables] ----------
-  List<SurahModel> surahs = [];
-  List<List<AyahModel>> pages = [];
-  List<AyahModel> allAyahs = [];
+  List<SurahFontsModel> surahs = [];
+  List<List<AyahFontsModel>> pages = [];
+  List<AyahFontsModel> allAyahs = [];
 
   /// Page Controller
   PageController quranPageController = PageController();
@@ -12,9 +12,11 @@ class QuranState {
   RxInt currentPageNumber = 1.obs;
   RxInt lastReadSurahNumber = 1.obs;
   var selectedAyahIndexes = <int>[].obs;
+  // bool isSelected = false;
   final ScrollController scrollIndicatorController = ScrollController();
   final ScrollController ayahsScrollController = ScrollController();
   RxInt selectedIndicatorIndex = 0.obs;
+  // PreferDirection preferDirection = PreferDirection.topCenter;
   RxDouble textWidgetPosition = (-240.0).obs;
   RxBool isPlayExpanded = false.obs;
   RxBool isSajda = false.obs;
@@ -38,17 +40,16 @@ class QuranState {
 
   RxBool isScrolling = false.obs;
   bool isQuranLoaded = false;
+  // RxBool isFontsDownloaded = false.obs;
   RxBool isDownloadingFonts = false.obs;
   RxBool isDownloadedV2Fonts = false.obs;
   RxList<int> fontsDownloadedList = <int>[].obs;
-  RxInt fontsSelected = 0.obs;
+  // RxInt fontsSelected = 0.obs;
+  RxInt fontsSelected2 = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;
   OverlayEntry? overlayEntry;
-
-  // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
-  // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 
   void dispose() {
     quranPageController.dispose();
@@ -77,7 +78,7 @@ class QuranState {
     isDownloadingFonts.close();
     isDownloadedV2Fonts.close();
     fontsDownloadedList.close();
-    fontsSelected.close();
+    fontsSelected2.close();
     fontsDownloadProgress.close();
     selectedAyahNumber.close();
     selectedSurahNumber.close();
