@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/widgets/continue_reading_button.dart';
 import 'package:muslim_habbit/features/quran/presentation/views/widgets/sura_list_widget.dart';
+import 'package:quran_library/quran_library.dart' as ql;
 
 import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';
@@ -75,38 +77,7 @@ class QuranView extends StatelessWidget {
           ],
         ),
         body: const QuranViewBody(),
-        floatingActionButton: BlocBuilder<QuranBloc, QuranState>(
-          buildWhen:
-              (previous, current) =>
-                  current is LastReadPositionLoaded ||
-                  current is LastReadPositionUpdated,
-          builder: (context, state) {
-            if ((state is LastReadPositionLoaded &&
-                    state.lastPosition != null) ||
-                state is LastReadPositionUpdated) {
-              final lastPosition =
-                  state is LastReadPositionLoaded
-                      ? state.lastPosition!
-                      : (state as LastReadPositionUpdated).lastPosition;
-
-              return FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              SuraView(initialPage: lastPosition.pageNumber),
-                    ),
-                  );
-                },
-                label: const Text('Continue Reading'),
-                icon: const Icon(Icons.book),
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+        floatingActionButton: ContinueReadingButton(),
       ),
     );
   }
