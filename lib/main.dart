@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:quran_library/quran_library.dart';
-
 import 'core/utils/animation_utils.dart';
 import 'core/utils/custom_bloc_observer.dart';
 import 'core/di/injection_container.dart' as di;

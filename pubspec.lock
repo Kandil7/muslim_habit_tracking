@@ -1136,7 +1136,7 @@ packages:
       path: "package/quran_library"
       relative: true
     source: path
-    version: "1.0.3"
+    version: "0.1.4"
   rxdart:
     dependency: transitive
     description:
