@@ -7,8 +7,11 @@ class AppIcons {
   static const IconData home = IconlyBold.home;
   static const IconData homeOutlined = IconlyLight.home;
   
+  static const IconData habbit = Icons.track_changes;
+  static const IconData habbitOutlined = Icons.track_changes_outlined;
   static const IconData prayer = IconlyBold.time_circle;
   static const IconData prayerOutlined = IconlyLight.time_circle;
+  
   
   static const IconData dua = IconlyBold.paper;
   static const IconData duaOutlined = IconlyLight.paper;
