@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:muslim_habbit/core/theme/bloc/theme_bloc_exports.dart';
-import 'package:muslim_habbit/features/quran/presentation/pages/quran_view.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../core/di/injection_container.dart' as di;
-import '../../../home/presentation/bloc/home_dashboard_bloc.dart';
 
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 
 import '../../../../core/theme/app_icons.dart';
-import '../../../analytics/presentation/pages/analytics_page.dart';
 import '../../../dua_dhikr/domain/entities/dua.dart';
 import '../../../dua_dhikr/domain/entities/dhikr.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
@@ -20,8 +15,6 @@ import '../../../dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
 import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 
-import '../../../home/presentation/pages/home_dashboard_page.dart';
-import '../../../prayer_times/presentation/views/prayer_view.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
 import '../bloc/habit_bloc.dart';
@@ -29,99 +22,8 @@ import '../bloc/habit_event.dart';
 import '../bloc/habit_state.dart';
 import 'add_habit_page.dart';
 import 'habit_details_page.dart';
-import 'settings_page.dart';
 
 /// The main home page of the application
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    BlocProvider<HomeDashboardBloc>(
-      create: (context) => di.sl<HomeDashboardBloc>(),
-      child: const HomeDashboardPage(),
-    ),
-    const HabitDashboardPage(),
-    const PrayerView(),
-    const QuranView(),
-    const DuaDhikrPage(),
-    const AnalyticsPage(),
-    const SettingsPage(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(15),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          animationDuration: const Duration(milliseconds: 500),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.homeOutlined),
-              selectedIcon: Icon(AppIcons.home),
-              label: 'Habits',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.prayerOutlined),
-              selectedIcon: Icon(AppIcons.prayer),
-              label: 'Prayer',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.menu_book_outlined),
-              selectedIcon: Icon(Icons.menu_book),
-              label: 'Quran',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.duaOutlined),
-              selectedIcon: Icon(AppIcons.dua),
-              label: 'Dua',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.analyticsOutlined),
-              selectedIcon: Icon(AppIcons.analytics),
-              label: 'Analytics',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.settingsOutlined),
-              selectedIcon: Icon(AppIcons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Habit Dashboard page
 class HabitDashboardPage extends StatelessWidget {
