@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim_habbit/core/theme/app_theme.dart';
 import 'package:muslim_habbit/core/theme/bloc/theme_bloc.dart';
 import 'package:quran_library/quran_library.dart' hide QuranState;
 

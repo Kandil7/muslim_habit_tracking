@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Dua entity representing a supplication
 class Dua extends Equatable {
   final String id;
   final String title;
@@ -10,7 +9,7 @@ class Dua extends Equatable {
   final String reference;
   final String category;
   final bool isFavorite;
-  
+
   const Dua({
     required this.id,
     required this.title,
@@ -21,20 +20,7 @@ class Dua extends Equatable {
     required this.category,
     required this.isFavorite,
   });
-  
-  @override
-  List<Object> get props => [
-    id,
-    title,
-    arabicText,
-    transliteration,
-    translation,
-    reference,
-    category,
-    isFavorite,
-  ];
-  
-  /// Create a copy of this Dua with the given fields replaced with the new values
+
   Dua copyWith({
     String? id,
     String? title,
@@ -56,4 +42,16 @@ class Dua extends Equatable {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+
+  @override
+  List<Object> get props => [
+    id,
+    title,
+    arabicText,
+    transliteration,
+    translation,
+    reference,
+    category,
+    isFavorite,
+  ];
 }

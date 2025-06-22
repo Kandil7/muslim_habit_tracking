@@ -1,54 +1,49 @@
-import 'package:equatable/equatable.dart';
+part of 'dua_dhikr_bloc.dart';
 
-/// Events for the dua & dhikr feature
-abstract class DuaDhikrEvent extends Equatable {
+@immutable
+sealed class DuaDhikrEvent {
   const DuaDhikrEvent();
-  
-  @override
-  List<Object?> get props => [];
 }
 
-/// Event to get all duas
-class GetAllDuasEvent extends DuaDhikrEvent {}
+final class LoadInitialData extends DuaDhikrEvent {
+  const LoadInitialData();
+}
 
-/// Event to get duas by category
-class GetDuasByCategoryEvent extends DuaDhikrEvent {
+final class LoadDuaCategories extends DuaDhikrEvent {
+  const LoadDuaCategories();
+}
+
+final class LoadDuasByCategory extends DuaDhikrEvent {
   final String category;
-  
-  const GetDuasByCategoryEvent({required this.category});
-  
-  @override
-  List<Object?> get props => [category];
+  const LoadDuasByCategory(this.category);
 }
 
-/// Event to get favorite duas
-class GetFavoriteDuasEvent extends DuaDhikrEvent {}
-
-/// Event to toggle dua favorite status
-class ToggleDuaFavoriteEvent extends DuaDhikrEvent {
-  final String id;
-  
-  const ToggleDuaFavoriteEvent({required this.id});
-  
-  @override
-  List<Object?> get props => [id];
+final class LoadAllDhikrs extends DuaDhikrEvent {
+  const LoadAllDhikrs();
 }
 
-/// Event to get all dhikrs
-class GetAllDhikrsEvent extends DuaDhikrEvent {}
-
-/// Event to get favorite dhikrs
-class GetFavoriteDhikrsEvent extends DuaDhikrEvent {}
-
-/// Event to toggle dhikr favorite status
-class ToggleDhikrFavoriteEvent extends DuaDhikrEvent {
-  final String id;
-  
-  const ToggleDhikrFavoriteEvent({required this.id});
-  
-  @override
-  List<Object?> get props => [id];
+final class LoadFavoriteDuas extends DuaDhikrEvent {
+  const LoadFavoriteDuas();
 }
 
-/// Event to get dua categories
-class GetDuaCategoriesEvent extends DuaDhikrEvent {}
+final class LoadFavoriteDhikrs extends DuaDhikrEvent {
+  const LoadFavoriteDhikrs();
+}
+
+final class ToggleDuaFavoriteStatus extends DuaDhikrEvent {
+  final String duaId;
+  const ToggleDuaFavoriteStatus(this.duaId);
+}
+
+final class ToggleDhikrFavoriteStatus extends DuaDhikrEvent {
+  final String dhikrId;
+  const ToggleDhikrFavoriteStatus(this.dhikrId);
+}
+
+final class RefreshData extends DuaDhikrEvent {
+  const RefreshData();
+}
+
+final class ResetState extends DuaDhikrEvent {
+  const ResetState();
+}

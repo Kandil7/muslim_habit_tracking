@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/dua_dhikr/presentation/pages/dua_dhikr_page.dart';
 
 import 'package:muslim_habbit/features/habit_tracking/presentation/pages/habit_page.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/quran_view.dart';
+import 'package:muslim_habbit/features/settings/presentation/pages/app_settings_page.dart';
 import 'package:muslim_habbit/features/settings/presentation/pages/settings_page.dart';
 
 import '../../../../core/di/injection_container.dart' as di;
@@ -34,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     const QuranView(),
     const DuaDhikrPage(),
     const AnalyticsPage(),
-    const SettingsPage(),
+    const AppSettingsPage(),
   ];
 
   @override

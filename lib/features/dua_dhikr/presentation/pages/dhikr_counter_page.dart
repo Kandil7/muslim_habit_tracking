@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/dhikr.dart';
 import '../bloc/dua_dhikr_bloc.dart';
-import '../bloc/dua_dhikr_event.dart';
 
 /// Page for counting dhikr repetitions
 class DhikrCounterPage extends StatefulWidget {
@@ -299,7 +298,7 @@ class _DhikrCounterPageState extends State<DhikrCounterPage>
                 IconButton(
                   onPressed: () {
                     context.read<DuaDhikrBloc>().add(
-                      ToggleDhikrFavoriteEvent(id: widget.dhikr.id),
+                      ToggleDhikrFavoriteStatus(widget.dhikr.id),
                     );
                   },
                   icon: Icon(

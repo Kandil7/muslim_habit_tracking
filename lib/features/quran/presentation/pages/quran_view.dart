@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/widgets/continue_reading_button.dart';
-import 'package:muslim_habbit/features/quran/presentation/views/widgets/sura_list_widget.dart';
-import 'package:quran_library/quran_library.dart' as ql;
 
 import '../bloc/quran_bloc.dart';
 import '../bloc/quran_event.dart';
-import '../bloc/quran_state.dart';
-import '../views/sura_view.dart';
 import 'quran_bookmarks_page.dart';
 import 'quran_reading_history_page.dart';
 import 'quran_search_page.dart';

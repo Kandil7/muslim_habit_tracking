@@ -251,24 +251,11 @@ Future<void> _initDuaDhikrFeature() async {
 
   // Repositories
   sl.registerLazySingleton<DuaDhikrRepository>(
-    () => DuaDhikrRepositoryImpl(localDataSource: sl(), cacheManager: sl()),
+    () => DuaDhikrRepositoryImpl(localDataSource: sl()),
   );
-
-  // Use cases
-  sl.registerLazySingleton(() => GetDuasByCategory(sl()));
-  sl.registerLazySingleton(() => GetAllDhikrs(sl()));
-  sl.registerLazySingleton(() => ToggleDuaFavorite(sl()));
-  sl.registerLazySingleton(() => ToggleDhikrFavorite(sl()));
 
   // BLoC
-  sl.registerFactory(
-    () => DuaDhikrBloc(
-      getDuasByCategory: sl(),
-      getAllDhikrs: sl(),
-      toggleDuaFavorite: sl(),
-      toggleDhikrFavorite: sl(),
-    ),
-  );
+  sl.registerFactory(() => DuaDhikrBloc(repository: sl()));
 }
 
 /// Initialize analytics feature dependencies

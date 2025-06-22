@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:muslim_habbit/features/settings/presentation/pages/app_settings_page.dart';
 import 'package:provider/provider.dart';
 import 'package:quran_library/quran_library.dart';
 import 'core/utils/animation_utils.dart';
@@ -22,7 +23,6 @@ import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'features/dua_dhikr/domain/entities/dhikr.dart';
 import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
-import 'features/dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
 import 'features/dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
@@ -192,7 +192,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
       '/add-habit': (context) => const AddHabitPage(),
       '/hadith-collection': (context) => const HadithCollectionPage(),
       '/quran': (context) => const QuranView(),
-      '/settings': (context) => const SettingsPage(),
+      '/settings': (context) => const AppSettingsPage(),
     };
 
     // Get the builder for the requested route
@@ -287,7 +287,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
               ),
         ),
         BlocProvider<DuaDhikrBloc>(
-          create: (context) => di.sl<DuaDhikrBloc>()..add(GetAllDhikrsEvent()),
+          create: (context) => di.sl<DuaDhikrBloc>()..add(LoadInitialData()),
         ),
         BlocProvider<AnalyticsBloc>(
           create: (context) => di.sl<AnalyticsBloc>(),

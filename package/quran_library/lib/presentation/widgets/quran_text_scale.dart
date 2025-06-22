@@ -19,11 +19,11 @@ class _QuranTextScale extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
-    this.ayahSelectedFontColor,
     this.languageCode,
     this.circularProgressWidget,
     required this.isDark,
     required this.ayahBookmarked,
+    this.ayahSelectedFontColor,
   });
 
   final quranCtrl = QuranCtrl.instance;

@@ -1,50 +1,21 @@
 import 'package:dartz/dartz.dart';
+import 'package:muslim_habbit/core/error/exceptions.dart';
+import 'package:muslim_habbit/core/error/failures.dart';
+import 'package:muslim_habbit/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dhikr.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dua.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/repositories/dua_dhikr_repository.dart';
 
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/services/cache_manager.dart';
-import '../models/dua_model.dart';
-import '../models/dhikr_model.dart';
-import '../../domain/entities/dua.dart';
-import '../../domain/entities/dhikr.dart';
-import '../../domain/repositories/dua_dhikr_repository.dart';
-import '../datasources/dua_dhikr_local_data_source.dart';
-
-/// Implementation of DuaDhikrRepository
 class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   final DuaDhikrLocalDataSource localDataSource;
-  final CacheManager cacheManager;
 
-  DuaDhikrRepositoryImpl({
-    required this.localDataSource,
-    required this.cacheManager,
-  });
+  DuaDhikrRepositoryImpl({required this.localDataSource});
 
   @override
   Future<Either<Failure, List<Dua>>> getAllDuas() async {
     try {
-      // Try to get from memory cache first
-      final cachedDuas = await cacheManager.getFromCache<List<dynamic>>(
-        'all_duas',
-      );
-      if (cachedDuas != null) {
-        return Right(
-          cachedDuas
-              .map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>))
-              .toList(),
-        );
-      }
-
-      // Get from local data source
-      final duas = await localDataSource.getAllDuas();
-
-      // Save to memory cache
-      await cacheManager.saveToCache(
-        'all_duas',
-        duas.map((dua) => dua.toJson()).toList(),
-      );
-
-      return Right(duas);
+      final duaModels = await localDataSource.getAllDuas();
+      return Right(duaModels.map((model) => model.toEntity()).toList());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -53,29 +24,8 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, List<Dua>>> getDuasByCategory(String category) async {
     try {
-      // Try to get from memory cache first
-      final cacheKey = 'duas_category_$category';
-      final cachedDuas = await cacheManager.getFromCache<List<dynamic>>(
-        cacheKey,
-      );
-      if (cachedDuas != null) {
-        return Right(
-          cachedDuas
-              .map((dua) => DuaModel.fromJson(dua as Map<String, dynamic>))
-              .toList(),
-        );
-      }
-
-      // Get from local data source
-      final duas = await localDataSource.getDuasByCategory(category);
-
-      // Save to memory cache
-      await cacheManager.saveToCache(
-        cacheKey,
-        duas.map((dua) => dua.toJson()).toList(),
-      );
-
-      return Right(duas);
+      final duaModels = await localDataSource.getDuasByCategory(category);
+      return Right(duaModels.map((model) => model.toEntity()).toList());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -84,8 +34,8 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, List<Dua>>> getFavoriteDuas() async {
     try {
-      final duas = await localDataSource.getFavoriteDuas();
-      return Right(duas);
+      final duaModels = await localDataSource.getFavoriteDuas();
+      return Right(duaModels.map((model) => model.toEntity()).toList());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -94,8 +44,8 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, Dua>> toggleDuaFavorite(String id) async {
     try {
-      final dua = await localDataSource.toggleDuaFavorite(id);
-      return Right(dua);
+      final duaModel = await localDataSource.toggleDuaFavorite(id);
+      return Right(duaModel.toEntity());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -104,30 +54,8 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, List<Dhikr>>> getAllDhikrs() async {
     try {
-      // Try to get from memory cache first
-      final cachedDhikrs = await cacheManager.getFromCache<List<dynamic>>(
-        'all_dhikrs',
-      );
-      if (cachedDhikrs != null) {
-        return Right(
-          cachedDhikrs
-              .map(
-                (dhikr) => DhikrModel.fromJson(dhikr as Map<String, dynamic>),
-              )
-              .toList(),
-        );
-      }
-
-      // Get from local data source
-      final dhikrs = await localDataSource.getAllDhikrs();
-
-      // Save to memory cache
-      await cacheManager.saveToCache(
-        'all_dhikrs',
-        dhikrs.map((dhikr) => dhikr.toJson()).toList(),
-      );
-
-      return Right(dhikrs);
+      final dhikrModels = await localDataSource.getAllDhikrs();
+      return Right(dhikrModels.map((model) => model.toEntity()).toList());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -136,8 +64,8 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, List<Dhikr>>> getFavoriteDhikrs() async {
     try {
-      final dhikrs = await localDataSource.getFavoriteDhikrs();
-      return Right(dhikrs);
+      final dhikrModels = await localDataSource.getFavoriteDhikrs();
+      return Right(dhikrModels.map((model) => model.toEntity()).toList());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -146,8 +74,8 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, Dhikr>> toggleDhikrFavorite(String id) async {
     try {
-      final dhikr = await localDataSource.toggleDhikrFavorite(id);
-      return Right(dhikr);
+      final dhikrModel = await localDataSource.toggleDhikrFavorite(id);
+      return Right(dhikrModel.toEntity());
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -156,22 +84,7 @@ class DuaDhikrRepositoryImpl implements DuaDhikrRepository {
   @override
   Future<Either<Failure, List<String>>> getDuaCategories() async {
     try {
-      // Try to get from memory cache first
-      final cachedCategories = await cacheManager.getFromCache<List<dynamic>>(
-        'dua_categories',
-      );
-      if (cachedCategories != null) {
-        return Right(
-          cachedCategories.map((category) => category.toString()).toList(),
-        );
-      }
-
-      // Get from local data source
       final categories = await localDataSource.getDuaCategories();
-
-      // Save to memory cache
-      await cacheManager.saveToCache('dua_categories', categories);
-
       return Right(categories);
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
