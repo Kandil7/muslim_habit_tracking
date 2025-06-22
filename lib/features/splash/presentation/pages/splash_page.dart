@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:muslim_habbit/features/home/presentation/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../habit_tracking/presentation/pages/home_page.dart';
 import '../../../onboarding/presentation/pages/onboarding_page.dart';
 
 /// Splash screen shown when the app starts
@@ -14,56 +14,54 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     // Setup animation
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
-    
+
     _animationController.forward();
-    
+
     // Navigate to the appropriate screen after a delay
     Timer(const Duration(seconds: 2), () {
       _checkOnboardingStatus();
     });
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _checkOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-    
+
     if (!mounted) return;
-    
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => onboardingCompleted
-            ? const HomePage()
-            : const OnboardingPage(),
+        builder:
+            (context) =>
+                onboardingCompleted ? const HomePage() : const OnboardingPage(),
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,10 +107,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               // Tagline
               const Text(
                 'Build Consistent Islamic Habits',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
               const SizedBox(height: 48),
               // Loading indicator

@@ -44,13 +44,13 @@ class _QuranFontsPage extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
-    this.ayahSelectedFontColor,
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
     this.isFontsLocal,
     this.fontsName,
     required this.ayahBookmarked,
+    this.ayahSelectedFontColor,
   });
 
   @override
@@ -339,7 +339,6 @@ class _QuranFontsPage extends StatelessWidget {
             ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
             isFontsLocal: isFontsLocal,
             fontsName: fontsName,
-
           );
         }),
       ),

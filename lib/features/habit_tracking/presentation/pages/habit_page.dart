@@ -2,26 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:muslim_habbit/core/theme/bloc/theme_bloc_exports.dart';
-import 'package:muslim_habbit/features/quran/presentation/pages/quran_view.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../core/di/injection_container.dart' as di;
-import '../../../home/presentation/bloc/home_dashboard_bloc.dart';
 
 import '../../../../core/presentation/widgets/widgets.dart';
 import '../../../../core/theme/app_theme.dart';
 
 import '../../../../core/theme/app_icons.dart';
-import '../../../analytics/presentation/pages/analytics_page.dart';
-import '../../../dua_dhikr/domain/entities/dua.dart';
-import '../../../dua_dhikr/domain/entities/dhikr.dart';
-import '../../../dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
-import '../../../dua_dhikr/presentation/bloc/dua_dhikr_event.dart';
-import '../../../dua_dhikr/presentation/bloc/dua_dhikr_state.dart';
-import '../../../dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 
-import '../../../home/presentation/pages/home_dashboard_page.dart';
-import '../../../prayer_times/presentation/views/prayer_view.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/entities/habit_log.dart';
 import '../bloc/habit_bloc.dart';
@@ -29,99 +16,8 @@ import '../bloc/habit_event.dart';
 import '../bloc/habit_state.dart';
 import 'add_habit_page.dart';
 import 'habit_details_page.dart';
-import 'settings_page.dart';
 
 /// The main home page of the application
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    BlocProvider<HomeDashboardBloc>(
-      create: (context) => di.sl<HomeDashboardBloc>(),
-      child: const HomeDashboardPage(),
-    ),
-    const HabitDashboardPage(),
-    const PrayerView(),
-    const QuranView(),
-    const DuaDhikrPage(),
-    const AnalyticsPage(),
-    const SettingsPage(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(15),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          animationDuration: const Duration(milliseconds: 500),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.homeOutlined),
-              selectedIcon: Icon(AppIcons.home),
-              label: 'Habits',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.prayerOutlined),
-              selectedIcon: Icon(AppIcons.prayer),
-              label: 'Prayer',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.menu_book_outlined),
-              selectedIcon: Icon(Icons.menu_book),
-              label: 'Quran',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.duaOutlined),
-              selectedIcon: Icon(AppIcons.dua),
-              label: 'Dua',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.analyticsOutlined),
-              selectedIcon: Icon(AppIcons.analytics),
-              label: 'Analytics',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.settingsOutlined),
-              selectedIcon: Icon(AppIcons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Habit Dashboard page
 class HabitDashboardPage extends StatelessWidget {
@@ -460,7 +356,8 @@ class HabitDashboardPage extends StatelessWidget {
         // Check if habit is completed today
         final now = DateTime.now();
         final isCompletedToday =
-            false; // This would come from habit logs in a real implementation
+            habit.lastCompletedDate != null &&
+            now.day == habit.lastCompletedDate!.day;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
@@ -542,249 +439,6 @@ class HabitDashboardPage extends StatelessWidget {
                 ),
               );
             },
-          ),
-        );
-      },
-    );
-  }
-}
-
-/// Dua & Dhikr page
-class DuaDhikrPage extends StatefulWidget {
-  const DuaDhikrPage({super.key});
-
-  @override
-  State<DuaDhikrPage> createState() => _DuaDhikrPageState();
-}
-
-class _DuaDhikrPageState extends State<DuaDhikrPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dua & Dhikr'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [Tab(text: 'Duas'), Tab(text: 'Dhikr')],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildDuasTab(), _buildDhikrTab()],
-      ),
-    );
-  }
-
-  Widget _buildDuasTab() {
-    return BlocBuilder<DuaDhikrBloc, DuaDhikrState>(
-      builder: (context, state) {
-        if (state is DuaDhikrLoading) {
-          return const LoadingIndicator(text: 'Loading duas...');
-        } else if (state is DuasLoaded) {
-          return _buildDuasList(state.duas);
-        } else {
-          // Trigger loading of duas by category
-          context.read<DuaDhikrBloc>().add(
-            const GetDuasByCategoryEvent(category: 'Morning'),
-          );
-          return const LoadingIndicator(text: 'Loading duas...');
-        }
-      },
-    );
-  }
-
-  Widget _buildDuasList(List<Dua> duas) {
-    if (duas.isEmpty) {
-      return const EmptyState(
-        title: 'No Duas Available',
-        message: 'Please check your connection and try again',
-        icon: Icons.menu_book,
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: duas.length,
-      itemBuilder: (context, index) {
-        final dua = duas[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          child: ExpansionTile(
-            title: Text(dua.title, style: AppTextStyles.headingSmall),
-            subtitle: Text(dua.category, style: AppTextStyles.bodySmall),
-            trailing: IconButton(
-              icon: Icon(
-                dua.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: dua.isFavorite ? AppColors.secondary : null,
-              ),
-              onPressed: () {
-                context.read<DuaDhikrBloc>().add(
-                  ToggleDuaFavoriteEvent(id: dua.id),
-                );
-              },
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Arabic text
-                    Text(
-                      dua.arabicText,
-                      style: AppTextStyles.arabicText,
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                    ),
-                    const SizedBox(height: 16),
-                    // Transliteration
-                    Text(
-                      dua.transliteration,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Translation
-                    Text(dua.translation, style: AppTextStyles.bodyMedium),
-                    const SizedBox(height: 8),
-                    // Reference
-                    Text(
-                      dua.reference,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildDhikrTab() {
-    return BlocBuilder<DuaDhikrBloc, DuaDhikrState>(
-      builder: (context, state) {
-        if (state is DuaDhikrLoading) {
-          return const LoadingIndicator(text: 'Loading dhikrs...');
-        } else if (state is DhikrsLoaded) {
-          return _buildDhikrList(state.dhikrs);
-        } else {
-          // Trigger loading of dhikrs
-          context.read<DuaDhikrBloc>().add(GetAllDhikrsEvent());
-          return const LoadingIndicator(text: 'Loading dhikrs...');
-        }
-      },
-    );
-  }
-
-  Widget _buildDhikrList(List<Dhikr> dhikrs) {
-    if (dhikrs.isEmpty) {
-      return const EmptyState(
-        title: 'No Dhikrs Available',
-        message: 'Please check your connection and try again',
-        icon: Icons.repeat,
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: dhikrs.length,
-      itemBuilder: (context, index) {
-        final dhikr = dhikrs[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          child: ExpansionTile(
-            title: Text(dhikr.title, style: AppTextStyles.headingSmall),
-            subtitle: Text(
-              'Recommended: ${dhikr.recommendedCount} times',
-              style: AppTextStyles.bodySmall,
-            ),
-            trailing: IconButton(
-              icon: Icon(
-                dhikr.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: dhikr.isFavorite ? AppColors.secondary : null,
-              ),
-              onPressed: () {
-                context.read<DuaDhikrBloc>().add(
-                  ToggleDhikrFavoriteEvent(id: dhikr.id),
-                );
-              },
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Arabic text
-                    Text(
-                      dhikr.arabicText,
-                      style: AppTextStyles.arabicText,
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                    ),
-                    const SizedBox(height: 16),
-                    // Transliteration
-                    Text(
-                      dhikr.transliteration,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Translation
-                    Text(dhikr.translation, style: AppTextStyles.bodyMedium),
-                    const SizedBox(height: 8),
-                    // Reference
-                    Text(
-                      dhikr.reference,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Counter
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.add),
-                          label: const Text('Count'),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => DhikrCounterPage(dhikr: dhikr),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
         );
       },

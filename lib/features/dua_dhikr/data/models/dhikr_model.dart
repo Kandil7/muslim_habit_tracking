@@ -1,6 +1,5 @@
-import '../../domain/entities/dhikr.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dhikr.dart';
 
-/// Model class for Dhikr entity
 class DhikrModel extends Dhikr {
   const DhikrModel({
     required super.id,
@@ -13,21 +12,19 @@ class DhikrModel extends Dhikr {
     required super.isFavorite,
   });
 
-  /// Create a DhikrModel from a JSON map
   factory DhikrModel.fromJson(Map<String, dynamic> json) {
     return DhikrModel(
-      id: json['id'],
-      title: json['title'],
-      arabicText: json['arabicText'],
-      transliteration: json['transliteration'],
-      translation: json['translation'],
-      reference: json['reference'],
-      recommendedCount: json['recommendedCount'],
-      isFavorite: json['isFavorite'],
+      id: json['id'] as String,
+      title: json['title'] as String,
+      arabicText: json['arabicText'] as String,
+      transliteration: json['transliteration'] as String,
+      translation: json['translation'] as String,
+      reference: json['reference'] as String,
+      recommendedCount: json['recommendedCount'] as int,
+      isFavorite: json['isFavorite'] as bool,
     );
   }
 
-  /// Convert this DhikrModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -41,22 +38,17 @@ class DhikrModel extends Dhikr {
     };
   }
 
-  /// Create a DhikrModel from a Dhikr entity
-  factory DhikrModel.fromEntity(Dhikr dhikr) {
-    return DhikrModel(
-      id: dhikr.id,
-      title: dhikr.title,
-      arabicText: dhikr.arabicText,
-      transliteration: dhikr.transliteration,
-      translation: dhikr.translation,
-      reference: dhikr.reference,
-      recommendedCount: dhikr.recommendedCount,
-      isFavorite: dhikr.isFavorite,
-    );
-  }
+  Dhikr toEntity() => Dhikr(
+    id: id,
+    title: title,
+    arabicText: arabicText,
+    transliteration: transliteration,
+    translation: translation,
+    reference: reference,
+    recommendedCount: recommendedCount,
+    isFavorite: isFavorite,
+  );
 
-  /// Create a copy of this DhikrModel with the given fields replaced with the new values
-  @override
   DhikrModel copyWith({
     String? id,
     String? title,
@@ -77,5 +69,36 @@ class DhikrModel extends Dhikr {
       recommendedCount: recommendedCount ?? this.recommendedCount,
       isFavorite: isFavorite ?? this.isFavorite,
     );
+  }
+
+  @override
+  String toString() {
+    return 'DhikrModel(id: $id, title: $title, arabicText: $arabicText, transliteration: $transliteration, translation: $translation, reference: $reference, recommendedCount: $recommendedCount, isFavorite: $isFavorite)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DhikrModel &&
+        other.id == id &&
+        other.title == title &&
+        other.arabicText == arabicText &&
+        other.transliteration == transliteration &&
+        other.translation == translation &&
+        other.reference == reference &&
+        other.recommendedCount == recommendedCount &&
+        other.isFavorite == isFavorite;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        title.hashCode ^
+        arabicText.hashCode ^
+        transliteration.hashCode ^
+        translation.hashCode ^
+        reference.hashCode ^
+        recommendedCount.hashCode ^
+        isFavorite.hashCode;
   }
 }

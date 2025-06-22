@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Dhikr entity representing a remembrance
 class Dhikr extends Equatable {
   final String id;
   final String title;
@@ -10,7 +9,7 @@ class Dhikr extends Equatable {
   final String reference;
   final int recommendedCount;
   final bool isFavorite;
-  
+
   const Dhikr({
     required this.id,
     required this.title,
@@ -21,20 +20,7 @@ class Dhikr extends Equatable {
     required this.recommendedCount,
     required this.isFavorite,
   });
-  
-  @override
-  List<Object> get props => [
-    id,
-    title,
-    arabicText,
-    transliteration,
-    translation,
-    reference,
-    recommendedCount,
-    isFavorite,
-  ];
-  
-  /// Create a copy of this Dhikr with the given fields replaced with the new values
+
   Dhikr copyWith({
     String? id,
     String? title,
@@ -56,4 +42,16 @@ class Dhikr extends Equatable {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+
+  @override
+  List<Object> get props => [
+    id,
+    title,
+    arabicText,
+    transliteration,
+    translation,
+    reference,
+    recommendedCount,
+    isFavorite,
+  ];
 }

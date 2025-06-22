@@ -39,7 +39,6 @@ class _QuranLinePage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
-    this.ayahSelectedFontColor,
     this.onPagePress,
     required this.newSurahs,
     this.languageCode,
@@ -48,6 +47,7 @@ class _QuranLinePage extends StatelessWidget {
     this.topTitleChild,
     required this.isDark,
     required this.ayahBookmarked,
+    this.ayahSelectedFontColor,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -81,7 +81,6 @@ class _QuranLinePage extends StatelessWidget {
                 ? SingleChildScrollView(child: _firstTwoSurahs(context))
                 : _firstTwoSurahs(context)
             : _firstTwoSurahs(context));
-
   }
 
   Widget otherSurahs(BuildContext context) {
@@ -266,7 +265,6 @@ class _QuranLinePage extends StatelessWidget {
                                 textColor: isDark ? Colors.white : Colors.black,
                                 titleColor:
                                     isDark ? Colors.white : Colors.black,
-
                               ),
                           onSurahBannerPress: onSurahBannerPress,
                           isDark: isDark,

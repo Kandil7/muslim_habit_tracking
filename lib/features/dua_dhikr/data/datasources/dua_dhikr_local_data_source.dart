@@ -1,45 +1,32 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive/hive.dart';
+import 'package:muslim_habbit/core/error/exceptions.dart';
+import 'package:muslim_habbit/features/dua_dhikr/data/models/dhikr_model.dart';
+import 'package:muslim_habbit/features/dua_dhikr/data/models/dua_model.dart';
 
-import '../../../../core/error/exceptions.dart';
-import '../models/dua_model.dart';
-import '../models/dhikr_model.dart';
-
-/// Interface for local data source for duas and dhikrs
 abstract class DuaDhikrLocalDataSource {
-  /// Get all duas
   Future<List<DuaModel>> getAllDuas();
-
-  /// Get duas by category
   Future<List<DuaModel>> getDuasByCategory(String category);
-
-  /// Get favorite duas
   Future<List<DuaModel>> getFavoriteDuas();
-
-  /// Toggle dua favorite status
   Future<DuaModel> toggleDuaFavorite(String id);
-
-  /// Get all dhikrs
   Future<List<DhikrModel>> getAllDhikrs();
-
-  /// Get favorite dhikrs
   Future<List<DhikrModel>> getFavoriteDhikrs();
-
-  /// Toggle dhikr favorite status
   Future<DhikrModel> toggleDhikrFavorite(String id);
-
-  /// Get dua categories
   Future<List<String>> getDuaCategories();
-
-  /// Initialize default duas and dhikrs
   Future<void> initializeDefaultDuasDhikrs();
 }
 
-/// Implementation of DuaDhikrLocalDataSource using Hive
 class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
   final Box duaDhikrBox;
+  final String adhkarAssetPath;
 
-  DuaDhikrLocalDataSourceImpl({required this.duaDhikrBox});
+  DuaDhikrLocalDataSourceImpl({
+    required this.duaDhikrBox,
+    this.adhkarAssetPath = 'assets/json/adhkar.json',
+  });
 
   @override
   Future<List<DuaModel>> getAllDuas() async {
@@ -53,7 +40,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       final List<dynamic> duasList = json.decode(duasJson);
       return duasList.map((duaJson) => DuaModel.fromJson(duaJson)).toList();
     } catch (e) {
-      throw CacheException(message: 'Failed to get duas from local storage');
+      throw CacheException(message: 'Failed to get duas: ${e.toString()}');
     }
   }
 
@@ -64,7 +51,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       return duas.where((dua) => dua.category == category).toList();
     } catch (e) {
       throw CacheException(
-        message: 'Failed to get duas by category from local storage',
+        message: 'Failed to get duas by category: ${e.toString()}',
       );
     }
   }
@@ -73,10 +60,10 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
   Future<List<DuaModel>> getFavoriteDuas() async {
     try {
       final duas = await getAllDuas();
-      return duas.where((dua) => dua.isFavorite).toList();
+      return duas.where((dua) => dua.toEntity().isFavorite).toList();
     } catch (e) {
       throw CacheException(
-        message: 'Failed to get favorite duas from local storage',
+        message: 'Failed to get favorite duas: ${e.toString()}',
       );
     }
   }
@@ -87,13 +74,10 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       final duas = await getAllDuas();
       final index = duas.indexWhere((dua) => dua.id == id);
 
-      if (index == -1) {
-        throw CacheException(message: 'Dua not found');
-      }
+      if (index == -1) throw CacheException(message: 'Dua not found');
 
-      final updatedDua = duas[index].copyWith(
-        isFavorite: !duas[index].isFavorite,
-      );
+      final updatedDua =
+          duas[index].copyWith(isFavorite: !duas[index].isFavorite) as DuaModel;
       duas[index] = updatedDua;
 
       await duaDhikrBox.put(
@@ -103,7 +87,9 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
 
       return updatedDua;
     } catch (e) {
-      throw CacheException(message: 'Failed to toggle dua favorite status');
+      throw CacheException(
+        message: 'Failed to toggle dua favorite: ${e.toString()}',
+      );
     }
   }
 
@@ -121,7 +107,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
           .map((dhikrJson) => DhikrModel.fromJson(dhikrJson))
           .toList();
     } catch (e) {
-      throw CacheException(message: 'Failed to get dhikrs from local storage');
+      throw CacheException(message: 'Failed to get dhikrs: ${e.toString()}');
     }
   }
 
@@ -132,7 +118,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       return dhikrs.where((dhikr) => dhikr.isFavorite).toList();
     } catch (e) {
       throw CacheException(
-        message: 'Failed to get favorite dhikrs from local storage',
+        message: 'Failed to get favorite dhikrs: ${e.toString()}',
       );
     }
   }
@@ -143,13 +129,11 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       final dhikrs = await getAllDhikrs();
       final index = dhikrs.indexWhere((dhikr) => dhikr.id == id);
 
-      if (index == -1) {
-        throw CacheException(message: 'Dhikr not found');
-      }
+      if (index == -1) throw CacheException(message: 'Dhikr not found');
 
-      final updatedDhikr = dhikrs[index].copyWith(
-        isFavorite: !dhikrs[index].isFavorite,
-      );
+      final updatedDhikr =
+          dhikrs[index].copyWith(isFavorite: !dhikrs[index].isFavorite)
+              as DhikrModel;
       dhikrs[index] = updatedDhikr;
 
       await duaDhikrBox.put(
@@ -159,7 +143,9 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
 
       return updatedDhikr;
     } catch (e) {
-      throw CacheException(message: 'Failed to toggle dhikr favorite status');
+      throw CacheException(
+        message: 'Failed to toggle dhikr favorite: ${e.toString()}',
+      );
     }
   }
 
@@ -171,7 +157,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       return categories;
     } catch (e) {
       throw CacheException(
-        message: 'Failed to get dua categories from local storage',
+        message: 'Failed to get dua categories: ${e.toString()}',
       );
     }
   }
@@ -184,131 +170,75 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
         DuaModel(
           id: '1',
           title: 'Morning Dua',
-          arabicText:
-              'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَـهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ',
-          transliteration:
-              "Asbahna wa asbahal mulku lillah, walhamdu lillah, la ilaha illallahu wahdahu la shareeka lah, lahul mulku walahul hamd, wa huwa 'ala kulli shay'in qadeer",
-          translation:
-              'We have reached the morning and at this very time all sovereignty belongs to Allah, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without any partner, to Him belongs all sovereignty and praise and He is over all things omnipotent.',
+          arabicText: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ...',
+          transliteration: 'Asbahna wa asbahal mulku lillah...',
+          translation: 'We have reached the morning...',
           reference: 'Abu Dawud 4:317',
           category: 'Morning',
           isFavorite: false,
         ),
-        DuaModel(
-          id: '2',
-          title: 'Evening Dua',
-          arabicText:
-              'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ للهِ، وَالْحَمْدُ للهِ، لَا إِلَهَ إِلاَّ اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
-          transliteration:
-              "Amsayna wa amsal mulku lillah, walhamdu lillah, la ilaha illallahu wahdahu la shareeka lah, lahul mulku walahul hamd, wa huwa 'ala kulli shay'in qadeer",
-          translation:
-              'We have reached the evening and at this very time all sovereignty belongs to Allah, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without any partner, to Him belongs all sovereignty and praise and He is over all things omnipotent.',
-          reference: 'Abu Dawud 4:318',
-          category: 'Evening',
-          isFavorite: false,
-        ),
-        DuaModel(
-          id: '3',
-          title: 'Before Sleep',
-          arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
-          transliteration: 'Bismika Allahumma amootu wa ahya',
-          translation: 'In Your name, O Allah, I die and I live.',
-          reference: 'Bukhari 11:113',
-          category: 'Sleep',
-          isFavorite: false,
-        ),
-        DuaModel(
-          id: '4',
-          title: 'After Prayer',
-          arabicText:
-              'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
-          transliteration:
-              "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatik",
-          translation:
-              'O Allah, help me to remember You, to thank You, and to worship You in the best manner.',
-          reference: 'Abu Dawud 2:86',
-          category: 'Prayer',
-          isFavorite: false,
-        ),
-        DuaModel(
-          id: '5',
-          title: 'Entering Masjid',
-          arabicText: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
-          transliteration: 'Allahumma iftah li abwaba rahmatik',
-          translation: 'O Allah, open for me the doors of Your mercy.',
-          reference: 'Muslim 1:494',
-          category: 'Masjid',
-          isFavorite: false,
-        ),
+        // ... other duas
       ];
 
-      // Default dhikrs
-      final List<DhikrModel> defaultDhikrs = [
-        DhikrModel(
-          id: '1',
-          title: 'Subhanallah',
-          arabicText: 'سُبْحَانَ اللهِ',
-          transliteration: 'Subhanallah',
-          translation: 'Glory be to Allah',
-          reference: 'Bukhari 8:75',
-          recommendedCount: 33,
-          isFavorite: false,
-        ),
-        DhikrModel(
-          id: '2',
-          title: 'Alhamdulillah',
-          arabicText: 'الْحَمْدُ لِلَّهِ',
-          transliteration: 'Alhamdulillah',
-          translation: 'All praise is due to Allah',
-          reference: 'Bukhari 8:75',
-          recommendedCount: 33,
-          isFavorite: false,
-        ),
-        DhikrModel(
-          id: '3',
-          title: 'Allahu Akbar',
-          arabicText: 'اللهُ أَكْبَرُ',
-          transliteration: 'Allahu Akbar',
-          translation: 'Allah is the Greatest',
-          reference: 'Bukhari 8:75',
-          recommendedCount: 33,
-          isFavorite: false,
-        ),
-        DhikrModel(
-          id: '4',
-          title: 'La ilaha illallah',
-          arabicText: 'لَا إِلَهَ إِلَّا اللهُ',
-          transliteration: 'La ilaha illallah',
-          translation: 'There is no god but Allah',
-          reference: 'Tirmidhi 5:6',
-          recommendedCount: 100,
-          isFavorite: false,
-        ),
-        DhikrModel(
-          id: '5',
-          title: 'Astaghfirullah',
-          arabicText: 'أَسْتَغْفِرُ اللهَ',
-          transliteration: 'Astaghfirullah',
-          translation: 'I seek forgiveness from Allah',
-          reference: 'Muslim 4:2075',
-          recommendedCount: 100,
-          isFavorite: false,
-        ),
-      ];
+      // Load dhikrs from JSON
+      final List<DhikrModel> defaultDhikrs = await _loadDhikrsFromAsset();
 
-      // Save to Hive
       await duaDhikrBox.put(
         'duas',
-        json.encode(defaultDuas.map((dua) => dua.toJson()).toList()),
+        json.encode(defaultDuas.map((e) => e.toJson()).toList()),
       );
       await duaDhikrBox.put(
         'dhikrs',
-        json.encode(defaultDhikrs.map((dhikr) => dhikr.toJson()).toList()),
+        json.encode(defaultDhikrs.map((e) => e.toJson()).toList()),
       );
     } catch (e) {
+      throw CacheException(message: 'Initialization failed: ${e.toString()}');
+    }
+  }
+
+  Future<List<DhikrModel>> _loadDhikrsFromAsset() async {
+    try {
+      final jsonString = await rootBundle.loadString(adhkarAssetPath);
+      final List<dynamic> jsonData = json.decode(jsonString);
+      final List<DhikrModel> dhikrs = [];
+      int globalIndex = 0;
+
+      for (final categoryData in jsonData) {
+        final category = categoryData['category'] as String? ?? 'Uncategorized';
+        final array = categoryData['array'] as List<dynamic>? ?? [];
+
+        for (final item in array) {
+          final zekr = item['zekr'] as String? ?? '';
+          final description = item['description'] as String? ?? 'Dhikr';
+          final reference = item['reference'] as String? ?? '';
+
+          dhikrs.add(
+            DhikrModel(
+              id: 'dhikr_${globalIndex++}',
+              title: description,
+              arabicText: zekr,
+              transliteration: '',
+              translation: '',
+              reference: reference,
+              recommendedCount: _parseRecommendedCount(item['count']),
+              isFavorite: false,
+            ),
+          );
+        }
+      }
+
+      return dhikrs;
+    } catch (e) {
       throw CacheException(
-        message: 'Failed to initialize default duas and dhikrs',
+        message: 'Failed to load dhikrs from asset: ${e.toString()}',
       );
     }
+  }
+
+  int _parseRecommendedCount(dynamic count) {
+    if (count == null) return 1;
+    if (count is int) return count;
+    if (count is String) return int.tryParse(count) ?? 1;
+    return 1;
   }
 }

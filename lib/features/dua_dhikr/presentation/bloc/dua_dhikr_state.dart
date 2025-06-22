@@ -1,78 +1,94 @@
-import 'package:equatable/equatable.dart';
+part of 'dua_dhikr_bloc.dart';
 
-import '../../domain/entities/dua.dart';
-import '../../domain/entities/dhikr.dart';
-
-/// States for the dua & dhikr feature
-abstract class DuaDhikrState extends Equatable {
+@immutable
+sealed class DuaDhikrState {
   const DuaDhikrState();
-  
-  @override
-  List<Object?> get props => [];
+
+  List<Object> get props => [];
 }
 
-/// Initial state
-class DuaDhikrInitial extends DuaDhikrState {}
-
-/// Loading state
-class DuaDhikrLoading extends DuaDhikrState {}
-
-/// State when duas are loaded
-class DuasLoaded extends DuaDhikrState {
-  final List<Dua> duas;
-  
-  const DuasLoaded({required this.duas});
-  
-  @override
-  List<Object?> get props => [duas];
+final class DuaDhikrInitial extends DuaDhikrState {
+  const DuaDhikrInitial();
 }
 
-/// State when dhikrs are loaded
-class DhikrsLoaded extends DuaDhikrState {
-  final List<Dhikr> dhikrs;
-  
-  const DhikrsLoaded({required this.dhikrs});
-  
-  @override
-  List<Object?> get props => [dhikrs];
+final class DataLoading extends DuaDhikrState {
+  const DataLoading();
 }
 
-/// State when dua categories are loaded
-class DuaCategoriesLoaded extends DuaDhikrState {
+final class DuaCategoriesLoaded extends DuaDhikrState {
   final List<String> categories;
-  
-  const DuaCategoriesLoaded({required this.categories});
-  
+  const DuaCategoriesLoaded(this.categories);
+
   @override
-  List<Object?> get props => [categories];
+  List<Object> get props => [categories];
 }
 
-/// State when a dua's favorite status is toggled
-class DuaFavoriteToggled extends DuaDhikrState {
-  final Dua dua;
-  
-  const DuaFavoriteToggled({required this.dua});
-  
+final class DuasByCategoryLoaded extends DuaDhikrState {
+  final List<Dua> duas;
+  const DuasByCategoryLoaded(this.duas);
+
   @override
-  List<Object?> get props => [dua];
+  List<Object> get props => [duas];
 }
 
-/// State when a dhikr's favorite status is toggled
-class DhikrFavoriteToggled extends DuaDhikrState {
-  final Dhikr dhikr;
-  
-  const DhikrFavoriteToggled({required this.dhikr});
-  
+final class FavoriteDuasLoaded extends DuaDhikrState {
+  final List<Dua> duas;
+  const FavoriteDuasLoaded(this.duas);
+
   @override
-  List<Object?> get props => [dhikr];
+  List<Object> get props => [duas];
 }
 
-/// Error state
-class DuaDhikrError extends DuaDhikrState {
+final class DuaFavoriteToggled extends DuaDhikrState {
+  final Dua updatedDua;
+  const DuaFavoriteToggled(this.updatedDua);
+
+  @override
+  List<Object> get props => [updatedDua];
+}
+
+final class DhikrsLoaded extends DuaDhikrState {
+  final List<Dhikr> dhikrs;
+  const DhikrsLoaded(this.dhikrs);
+
+  @override
+  List<Object> get props => [dhikrs];
+}
+
+final class FavoriteDhikrsLoaded extends DuaDhikrState {
+  final List<Dhikr> dhikrs;
+  const FavoriteDhikrsLoaded(this.dhikrs);
+
+  @override
+  List<Object> get props => [dhikrs];
+}
+
+final class DhikrFavoriteToggled extends DuaDhikrState {
+  final Dhikr updatedDhikr;
+  const DhikrFavoriteToggled(this.updatedDhikr);
+
+  @override
+  List<Object> get props => [updatedDhikr];
+}
+
+final class DataRefreshed extends DuaDhikrState {
+  const DataRefreshed();
+}
+
+final class OperationFailed extends DuaDhikrState {
   final String message;
-  
-  const DuaDhikrError({required this.message});
-  
+  const OperationFailed(this.message);
+
   @override
-  List<Object?> get props => [message];
+  List<Object> get props => [message];
+}
+
+class InitialDataLoaded extends DuaDhikrState {
+  final List<String> categories;
+  final List<Dhikr> dhikrs;
+
+  const InitialDataLoaded({required this.categories, required this.dhikrs});
+
+  @override
+  List<Object> get props => [categories, dhikrs];
 }

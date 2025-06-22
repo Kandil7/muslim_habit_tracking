@@ -1,94 +1,159 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 
-import '../../domain/usecases/get_all_dhikrs.dart';
-import '../../domain/usecases/get_duas_by_category.dart';
-import '../../domain/usecases/toggle_dua_favorite.dart';
-import '../../domain/usecases/toggle_dhikr_favorite.dart';
-import 'dua_dhikr_event.dart';
-import 'dua_dhikr_state.dart';
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dhikr.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dua.dart';
+import 'package:muslim_habbit/features/dua_dhikr/domain/repositories/dua_dhikr_repository.dart';
 
-/// BLoC for the dua & dhikr feature
+part 'dua_dhikr_event.dart';
+part 'dua_dhikr_state.dart';
+
 class DuaDhikrBloc extends Bloc<DuaDhikrEvent, DuaDhikrState> {
-  final GetDuasByCategory getDuasByCategory;
-  final GetAllDhikrs getAllDhikrs;
-  final ToggleDuaFavorite toggleDuaFavorite;
-  final ToggleDhikrFavorite toggleDhikrFavorite;
+  final DuaDhikrRepository repository;
 
-  DuaDhikrBloc({
-    required this.getDuasByCategory,
-    required this.getAllDhikrs,
-    required this.toggleDuaFavorite,
-    required this.toggleDhikrFavorite,
-  }) : super(DuaDhikrInitial()) {
-    on<GetDuasByCategoryEvent>(_onGetDuasByCategory);
-    on<GetAllDhikrsEvent>(_onGetAllDhikrs);
-    on<ToggleDuaFavoriteEvent>(_onToggleDuaFavorite);
-    on<ToggleDhikrFavoriteEvent>(_onToggleDhikrFavorite);
+  DuaDhikrBloc({required this.repository}) : super(const DuaDhikrInitial()) {
+    on<LoadInitialData>(_onLoadInitialData);
+    on<LoadDuaCategories>(_onLoadDuaCategories);
+    on<LoadDuasByCategory>(_onLoadDuasByCategory);
+    on<LoadAllDhikrs>(_onLoadAllDhikrs);
+    on<LoadFavoriteDuas>(_onLoadFavoriteDuas);
+    on<LoadFavoriteDhikrs>(_onLoadFavoriteDhikrs);
+    on<ToggleDuaFavoriteStatus>(_onToggleDuaFavorite);
+    on<ToggleDhikrFavoriteStatus>(_onToggleDhikrFavorite);
+    on<RefreshData>(_onRefreshData);
   }
 
-  /// Handle GetDuasByCategoryEvent
-  Future<void> _onGetDuasByCategory(
-    GetDuasByCategoryEvent event,
+  Future<void> _onLoadInitialData(
+    LoadInitialData event,
     Emitter<DuaDhikrState> emit,
   ) async {
-    emit(DuaDhikrLoading());
+    emit(const DataLoading());
+    try {
+      final categoriesResult = await repository.getDuaCategories();
+      final dhikrsResult = await repository.getAllDhikrs();
 
-    final result = await getDuasByCategory(
-      GetDuasByCategoryParams(category: event.category),
-    );
-
-    result.fold(
-      (failure) => emit(DuaDhikrError(message: failure.message)),
-      (duas) => emit(DuasLoaded(duas: duas)),
-    );
+      categoriesResult.fold(
+        (failure) => emit(OperationFailed(failure.message)),
+        (categories) {
+          dhikrsResult.fold(
+            (failure) => emit(OperationFailed(failure.message)),
+            (dhikrs) =>
+                emit(InitialDataLoaded(categories: categories, dhikrs: dhikrs)),
+          );
+        },
+      );
+    } catch (e) {
+      emit(OperationFailed('Failed to load initial data: $e'));
+    }
   }
 
-  /// Handle GetAllDhikrsEvent
-  Future<void> _onGetAllDhikrs(
-    GetAllDhikrsEvent event,
+  Future<void> _onLoadDuaCategories(
+    LoadDuaCategories event,
     Emitter<DuaDhikrState> emit,
   ) async {
-    emit(DuaDhikrLoading());
-
-    final result = await getAllDhikrs();
-
+    emit(const DataLoading());
+    final result = await repository.getDuaCategories();
     result.fold(
-      (failure) => emit(DuaDhikrError(message: failure.message)),
-      (dhikrs) => emit(DhikrsLoaded(dhikrs: dhikrs)),
+      (failure) => emit(OperationFailed(failure.message)),
+      (categories) => emit(DuaCategoriesLoaded(categories)),
     );
   }
 
-  /// Handle ToggleDuaFavoriteEvent
+  Future<void> _onLoadDuasByCategory(
+    LoadDuasByCategory event,
+    Emitter<DuaDhikrState> emit,
+  ) async {
+    emit(const DataLoading());
+    final result = await repository.getDuasByCategory(event.category);
+    result.fold(
+      (failure) => emit(OperationFailed(failure.message)),
+      (duas) => emit(DuasByCategoryLoaded(duas)),
+    );
+  }
+
+  Future<void> _onLoadAllDhikrs(
+    LoadAllDhikrs event,
+    Emitter<DuaDhikrState> emit,
+  ) async {
+    emit(const DataLoading());
+    final result = await repository.getAllDhikrs();
+    result.fold(
+      (failure) => emit(OperationFailed(failure.message)),
+      (dhikrs) => emit(DhikrsLoaded(dhikrs)),
+    );
+  }
+
+  Future<void> _onLoadFavoriteDuas(
+    LoadFavoriteDuas event,
+    Emitter<DuaDhikrState> emit,
+  ) async {
+    emit(const DataLoading());
+    final result = await repository.getFavoriteDuas();
+    result.fold(
+      (failure) => emit(OperationFailed(failure.message)),
+      (duas) => emit(FavoriteDuasLoaded(duas)),
+    );
+  }
+
+  Future<void> _onLoadFavoriteDhikrs(
+    LoadFavoriteDhikrs event,
+    Emitter<DuaDhikrState> emit,
+  ) async {
+    emit(const DataLoading());
+    final result = await repository.getFavoriteDhikrs();
+    result.fold(
+      (failure) => emit(OperationFailed(failure.message)),
+      (dhikrs) => emit(FavoriteDhikrsLoaded(dhikrs)),
+    );
+  }
+
   Future<void> _onToggleDuaFavorite(
-    ToggleDuaFavoriteEvent event,
+    ToggleDuaFavoriteStatus event,
     Emitter<DuaDhikrState> emit,
   ) async {
-    emit(DuaDhikrLoading());
-
-    final result = await toggleDuaFavorite(
-      ToggleDuaFavoriteParams(id: event.id),
-    );
-
+    final result = await repository.toggleDuaFavorite(event.duaId);
     result.fold(
-      (failure) => emit(DuaDhikrError(message: failure.message)),
-      (dua) => emit(DuaFavoriteToggled(dua: dua)),
+      (failure) => emit(OperationFailed(failure.message)),
+      (dua) => emit(DuaFavoriteToggled(dua)),
     );
   }
 
-  /// Handle ToggleDhikrFavoriteEvent
   Future<void> _onToggleDhikrFavorite(
-    ToggleDhikrFavoriteEvent event,
+    ToggleDhikrFavoriteStatus event,
     Emitter<DuaDhikrState> emit,
   ) async {
-    emit(DuaDhikrLoading());
-
-    final result = await toggleDhikrFavorite(
-      ToggleDhikrFavoriteParams(id: event.id),
-    );
-
+    final result = await repository.toggleDhikrFavorite(event.dhikrId);
     result.fold(
-      (failure) => emit(DuaDhikrError(message: failure.message)),
-      (dhikr) => emit(DhikrFavoriteToggled(dhikr: dhikr)),
+      (failure) => emit(OperationFailed(failure.message)),
+      (dhikr) => emit(DhikrFavoriteToggled(dhikr)),
     );
+  }
+
+  Future<void> _onRefreshData(
+    RefreshData event,
+    Emitter<DuaDhikrState> emit,
+  ) async {
+    emit(const DataLoading());
+    try {
+      // Refresh all necessary data
+      final categoriesResult = await repository.getDuaCategories();
+      final dhikrsResult = await repository.getAllDhikrs();
+      final favoriteDuasResult = await repository.getFavoriteDuas();
+      final favoriteDhikrsResult = await repository.getFavoriteDhikrs();
+
+      // Combine results
+      if (categoriesResult.isRight() &&
+          dhikrsResult.isRight() &&
+          favoriteDuasResult.isRight() &&
+          favoriteDhikrsResult.isRight()) {
+        emit(const DataRefreshed());
+      } else {
+        emit(const OperationFailed('Failed to refresh data'));
+      }
+    } catch (e) {
+      emit(OperationFailed('Refresh failed: $e'));
+    }
   }
 }

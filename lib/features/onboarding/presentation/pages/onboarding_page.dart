@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:muslim_habbit/features/home/presentation/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../habit_tracking/presentation/pages/home_page.dart';
 
 /// Onboarding page to introduce the app to new users
 class OnboardingPage extends StatefulWidget {
