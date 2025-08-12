@@ -77,7 +77,7 @@ class _SplashPageState extends State<SplashPage>
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  // color: Colors.white,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -87,11 +87,12 @@ class _SplashPageState extends State<SplashPage>
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.track_changes,
-                  size: 80,
-                  color: AppColors.primary,
-                ),
+                child: Image.asset('assets/images/app_logo_4.png'),
+                // child: const Icon(
+                //   Icons.track_changes,
+                //   size: 80,
+                //   color: AppColors.primary,
+                // ),
               ),
               const SizedBox(height: 24),
               // App name
