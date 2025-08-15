@@ -19,15 +19,15 @@ class LoggerService {
         lineLength: 120,
         colors: true,
         printEmojis: true,
-        printTime: true,
+        dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
       ),
-      level: Level.verbose,
+      level: Level.trace,
     );
   }
 
-  /// Log a verbose message
-  void v(String message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.v(message);
+  /// Log a trace message
+  void t(String message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.t(message);
   }
 
   /// Log a debug message
@@ -51,8 +51,8 @@ class LoggerService {
   }
 
   /// Log a fatal error message
-  void wtf(String message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.wtf(message);
+  void f(String message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.f(message);
   }
 
   /// Set the log level

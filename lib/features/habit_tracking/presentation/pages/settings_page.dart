@@ -386,10 +386,12 @@ class SettingsPage extends StatelessWidget {
 
       // Share the file
       if (context.mounted) {
-        await Share.shareXFiles(
-          [XFile(filePath)],
-          subject: 'SunnahTrack Backup',
-          text: 'SunnahTrack data backup created on ${DateTime.now()}',
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(filePath)],
+            subject: 'SunnahTrack Backup',
+            text: 'SunnahTrack data backup created on ${DateTime.now()}',
+          ),
         );
       }
     } catch (e) {

@@ -87,30 +87,20 @@ class AppListTile extends StatelessWidget {
         ? selectedColor ?? colorScheme.primaryContainer
         : backgroundColor ?? Colors.transparent;
     
-    final titleColor = isSelected
-        ? colorScheme.onPrimaryContainer
-        : isEnabled
-            ? colorScheme.onSurface
-            : colorScheme.onSurface.withOpacity(0.38);
-    
-    final subtitleColor = isSelected
-        ? colorScheme.onPrimaryContainer.withOpacity(0.7)
-        : isEnabled
-            ? colorScheme.onSurfaceVariant
-            : colorScheme.onSurfaceVariant.withOpacity(0.38);
+    // Build the list tile
 
     // Build the list tile
     Widget listTile = ListTile(
       title: Text(
         title,
-        style: titleStyle?.copyWith(color: titleColor) ??
-            theme.textTheme.bodyLarge?.copyWith(color: titleColor),
+        style: titleStyle?.copyWith(color: colorScheme.onSurface) ??
+            theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle!,
-              style: subtitleStyle?.copyWith(color: subtitleColor) ??
-                  theme.textTheme.bodySmall?.copyWith(color: subtitleColor),
+              style: subtitleStyle?.copyWith(color: colorScheme.onSurfaceVariant) ??
+                  theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
             )
           : null,
       leading: leading,

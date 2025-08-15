@@ -7,6 +7,6 @@ class CustomSvg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(svg, width: 30, height: 30, color: Colors.black);
+    return SvgPicture.asset(svg, width: 30, height: 30, colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn));
   }
 }

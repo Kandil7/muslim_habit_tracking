@@ -38,10 +38,7 @@ import '../../features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import '../../features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart';
 import '../../features/dua_dhikr/data/repositories/dua_dhikr_repository_impl.dart';
 import '../../features/dua_dhikr/domain/repositories/dua_dhikr_repository.dart';
-import '../../features/dua_dhikr/domain/usecases/get_all_dhikrs.dart';
-import '../../features/dua_dhikr/domain/usecases/get_duas_by_category.dart';
-import '../../features/dua_dhikr/domain/usecases/toggle_dua_favorite.dart';
-import '../../features/dua_dhikr/domain/usecases/toggle_dhikr_favorite.dart';
+
 import '../../features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import '../../features/analytics/data/datasources/analytics_data_source.dart';
 import '../../features/analytics/data/repositories/analytics_repository_impl.dart';
@@ -129,7 +126,7 @@ Future<void> _initExternalDependencies() async {
   sl.registerLazySingleton(() => http.Client());
 
   // Internet connection checker
-  sl.registerLazySingleton(() => InternetConnectionChecker());
+  sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
 
   // UUID
   sl.registerLazySingleton(() => const Uuid());

@@ -49,6 +49,7 @@ class DhikrModel extends Dhikr {
     isFavorite: isFavorite,
   );
 
+  @override
   DhikrModel copyWith({
     String? id,
     String? title,

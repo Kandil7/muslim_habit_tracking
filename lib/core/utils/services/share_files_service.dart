@@ -28,9 +28,8 @@ class ShareFilesService {
 
     await file.writeAsBytes(bytes);
 
-    final result = await Share.shareXFiles(
-      [(XFile(file.path))],
-      text: "Jumaa Ads",
+    final result = await SharePlus.instance.share(
+      ShareParams(files: [XFile(file.path)], text: "Jumaa Ads"),
     );
 
     if (result.status == ShareResultStatus.success) {

@@ -140,7 +140,7 @@ class AppBottomNavigationBar extends StatelessWidget {
       items: bottomNavItems,
       currentIndex: currentIndex,
       onTap: onTap,
-      backgroundColor: backgroundColor ?? colorScheme.surface,
+            backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
       selectedItemColor: selectedItemColor ?? colorScheme.primary,
       unselectedItemColor:
           unselectedItemColor ?? colorScheme.onSurface.withOpacity(0.6),

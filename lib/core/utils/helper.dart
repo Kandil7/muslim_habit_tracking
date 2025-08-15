@@ -92,18 +92,20 @@ abstract class Helper {
   }
 
   static Future<void> setLocationCountyAndCity() async {
-    double? latitude = Helper.getLatlng()['latitude'];
-    double? longitude = Helper.getLatlng()['longitude'];
+    double latitude = Helper.getLatlng()['latitude'] ?? 0.0;
+    double longitude = Helper.getLatlng()['longitude'] ?? 0.0;
 
     List<geocoding.Placemark> placemarksAr = await geocoding
         .placemarkFromCoordinates(
-          latitude!,
-          longitude!,
-          localeIdentifier: 'ar',
+          latitude,
+          longitude,
         );
 
     List<geocoding.Placemark> placemarksEn = await geocoding
-        .placemarkFromCoordinates(latitude, longitude, localeIdentifier: 'en');
+        .placemarkFromCoordinates(
+          latitude,
+          longitude,
+        );
 
     final counryAr = placemarksAr.first.country ?? "";
     final cityAr = placemarksAr.first.subAdministrativeArea ?? "";

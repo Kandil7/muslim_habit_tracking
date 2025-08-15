@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dhikr.dart';
 import 'package:muslim_habbit/features/dua_dhikr/domain/entities/dua.dart';

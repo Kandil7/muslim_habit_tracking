@@ -155,6 +155,6 @@ Narrated by: ${hadith.narrator}
 Source: ${hadith.source} ${hadith.number}
 ''';
 
-    Share.share(shareText);
+    SharePlus.instance.share(ShareParams(text: shareText));
   }
 }

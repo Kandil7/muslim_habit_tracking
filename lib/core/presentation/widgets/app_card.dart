@@ -119,7 +119,7 @@ class AppCard extends StatelessWidget {
           _buildHeader(context),
           if (showDivider && child != null)
             Divider(
-              color: dividerColor ?? colorScheme.outline.withOpacity(0.5),
+              color: dividerColor ?? colorScheme.outline.withValues(alpha: 0.5),
               thickness: dividerThickness,
               indent: dividerIndent,
               endIndent: dividerEndIndent,
