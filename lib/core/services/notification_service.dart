@@ -171,7 +171,7 @@ class NotificationService {
     if (!_isInitialized) await initialize();
 
     final now = DateTime.now();
-    final scheduledDate = DateTime(
+    var scheduledDate = DateTime(
       now.year,
       now.month,
       now.day,
@@ -180,10 +180,9 @@ class NotificationService {
     );
 
     // If the time has already passed today, schedule for tomorrow
-    final effectiveDate =
-        scheduledDate.isBefore(now)
-            ? scheduledDate.add(const Duration(days: 1))
-            : scheduledDate;
+    scheduledDate = scheduledDate.isBefore(now)
+        ? scheduledDate.add(const Duration(days: 1))
+        : scheduledDate;
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(

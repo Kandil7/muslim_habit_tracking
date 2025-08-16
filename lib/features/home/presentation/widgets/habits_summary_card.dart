@@ -115,7 +115,7 @@ class HabitsSummaryCard extends StatelessWidget {
 
   Widget _buildHabitItem(BuildContext context, Habit habit) {
     // Check if habit is completed today
-    final now = DateTime.now();
+    // final now = DateTime.now();
     final isCompletedToday =
         false; // This would come from habit logs in a real implementation
 

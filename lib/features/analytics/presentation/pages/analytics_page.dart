@@ -479,10 +479,12 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       listener: (context, state) {
         if (state is AnalyticsDataExported) {
           // Share the exported file
-          Share.shareXFiles(
-            [XFile(state.filePath)],
-            subject: 'Habit Analytics Data',
-            text: 'Here is your habit analytics data',
+          SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(state.filePath)],
+              subject: 'Habit Analytics Data',
+              text: 'Here is your habit analytics data',
+            ),
           );
         } else if (state is AnalyticsError) {
           ScaffoldMessenger.of(context).showSnackBar(

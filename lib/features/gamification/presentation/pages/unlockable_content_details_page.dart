@@ -22,8 +22,11 @@ class UnlockableContentDetailsPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
-              Share.share(
-                'Check out this ${content.contentType} from Muslim Habit Tracker: ${content.name}',
+                            SharePlus.instance.share(
+                ShareParams(
+                  text:
+                      'Check out this ${content.contentType} from Muslim Habit Tracker: ${content.name}',
+                ),
               );
             },
           ),
