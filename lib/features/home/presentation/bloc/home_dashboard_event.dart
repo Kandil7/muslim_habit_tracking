@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../domain/models/dashboard_card_model.dart';
 import '../../domain/models/quick_action_model.dart';
 
 /// Base class for home dashboard events
@@ -46,6 +47,16 @@ class ToggleCardVisibilityEvent extends HomeDashboardEvent {
   
   @override
   List<Object?> get props => [cardId, isVisible];
+}
+
+/// Event to update dashboard cards
+class UpdateDashboardCardsEvent extends HomeDashboardEvent {
+  final List<DashboardCardModel> updatedCards;
+  
+  const UpdateDashboardCardsEvent({required this.updatedCards});
+  
+  @override
+  List<Object?> get props => [updatedCards];
 }
 
 /// Event to update quick actions

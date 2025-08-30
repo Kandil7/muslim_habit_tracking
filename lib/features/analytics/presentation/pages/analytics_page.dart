@@ -8,6 +8,8 @@ import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_blo
 import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_event.dart';
 import 'package:muslim_habbit/features/analytics/presentation/bloc/analytics_state.dart';
 import 'package:muslim_habbit/features/analytics/presentation/pages/habit_stats_detail_page.dart';
+import 'package:muslim_habbit/features/analytics/presentation/widgets/habit_completion_chart.dart';
+import 'package:muslim_habbit/features/analytics/presentation/widgets/streak_visualization.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Analytics page with granular BlocBuilder widgets
@@ -232,6 +234,16 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  // Add the habit completion chart
+                  HabitCompletionChart(
+                    habitStats: habitStats,
+                    startDate: _startDate,
+                    endDate: _endDate,
+                  ),
+                  const SizedBox(height: 16),
+                  // Add streak visualization
+                  StreakVisualization(habitStats: habitStats),
                   const Divider(height: 32),
                   Text(
                     'Most Consistent',

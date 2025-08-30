@@ -4,7 +4,7 @@ import 'package:muslim_habbit/features/home/presentation/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../onboarding/presentation/pages/onboarding_page.dart';
+import '../../../onboarding/presentation/pages/enhanced_onboarding_page.dart';
 
 /// Splash screen shown when the app starts
 class SplashPage extends StatefulWidget {
@@ -57,7 +57,7 @@ class _SplashPageState extends State<SplashPage>
       MaterialPageRoute(
         builder:
             (context) =>
-                onboardingCompleted ? const HomePage() : const OnboardingPage(),
+                onboardingCompleted ? const HomePage() : const EnhancedOnboardingPage(),
       ),
     );
   }

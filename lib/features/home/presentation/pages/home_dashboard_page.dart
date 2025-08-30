@@ -21,12 +21,15 @@ import '../bloc/home_dashboard_state.dart';
 import '../widgets/animated_dashboard_card.dart';
 import '../widgets/customizable_quick_actions.dart';
 import '../widgets/dhikr_card.dart';
+import '../widgets/advanced_dashboard_customization.dart';
 // import '../widgets/hadith_card.dart'; // Using the new HadithOfTheDayCard instead
 import '../widgets/habits_summary_card.dart';
 import '../widgets/islamic_calendar_card.dart';
 import '../widgets/prayer_times_card.dart';
 import '../widgets/qibla_direction_card.dart';
 import '../widgets/quran_card.dart';
+import '../widgets/community_challenges_card.dart';
+import 'package:muslim_habbit/features/gamification/domain/entities/community_challenge.dart';
 
 /// The main home dashboard page
 class HomeDashboardPage extends StatefulWidget {
@@ -287,6 +290,28 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
             const SizedBox(height: 24),
           ],
         );
+      case 'challenges':
+        // Mock challenges data for demonstration
+        final mockChallenges = <CommunityChallenge>[];
+        return Column(
+          children: [
+            CommunityChallengesCard(
+              challenges: mockChallenges,
+              isReorderable: _isEditMode,
+              onReorder: () => _showReorderDialog(context, state),
+              onVisibilityToggle:
+                  () => _toggleCardVisibility(context, 'challenges'),
+              isVisible:
+                  state.dashboardCards
+                      .firstWhere(
+                        (c) => c.id == 'challenges',
+                        orElse: () => card,
+                      )
+                      .isVisible,
+            ),
+            const SizedBox(height: 24),
+          ],
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -429,10 +454,27 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
           children: [
             Text(greeting, style: AppTextStyles.headingMedium),
             if (_isEditMode)
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () => _showNameEditDialog(context, userName),
-                tooltip: 'Edit name',
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () => _showNameEditDialog(context, userName),
+                    tooltip: 'Edit name',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.dashboard_customize),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const AdvancedDashboardCustomization(),
+                        ),
+                      );
+                    },
+                    tooltip: 'Advanced customization',
+                  ),
+                ],
               ),
           ],
         ),

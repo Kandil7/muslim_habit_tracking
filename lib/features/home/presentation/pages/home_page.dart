@@ -11,6 +11,7 @@ import '../../../home/presentation/bloc/home_dashboard_bloc.dart';
 
 import '../../../../core/theme/app_icons.dart';
 import '../../../analytics/presentation/pages/analytics_page.dart';
+import '../../../gamification/presentation/pages/community_challenges_page.dart';
 
 import '../../../home/presentation/pages/home_dashboard_page.dart';
 import '../../../prayer_times/presentation/views/prayer_view.dart';
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     const PrayerView(),
     const QuranView(),
     const DuaDhikrPage(),
+    const CommunityChallengesPage(),
     const AnalyticsPage(),
     const AppSettingsPage(),
   ];
@@ -88,6 +90,11 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(AppIcons.duaOutlined),
               selectedIcon: Icon(AppIcons.dua),
               label: 'Dua',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.emoji_events_outlined),
+              selectedIcon: Icon(Icons.emoji_events),
+              label: 'Challenges',
             ),
             NavigationDestination(
               icon: Icon(AppIcons.analyticsOutlined),

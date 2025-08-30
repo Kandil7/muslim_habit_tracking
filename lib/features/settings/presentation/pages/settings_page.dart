@@ -7,6 +7,7 @@ import '../../../../core/localization/app_localizations_extension.dart';
 import '../../../../core/localization/bloc/language_bloc_exports.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/bloc/theme_bloc_exports.dart';
+import '../pages/backup_sync_page.dart';
 
 /// Settings page for the application
 class SettingsPage extends StatefulWidget {
@@ -304,6 +305,19 @@ class _SettingsPageState extends State<SettingsPage> {
       title: context.tr.translate('settings.dataManagement'),
       icon: Icons.storage,
       children: [
+        ListTile(
+          leading: const Icon(Icons.cloud_upload),
+          title: const Text('Backup & Sync'),
+          subtitle: const Text('Automatically backup your data to the cloud'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BackupSyncPage(),
+              ),
+            );
+          },
+        ),
         ListTile(
           leading: const Icon(Icons.upload),
           title: Text(context.tr.translate('settings.exportData')),
