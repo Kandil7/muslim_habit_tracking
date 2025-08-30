@@ -398,7 +398,6 @@ Future<void> _initQuranFeature() async {
   sl.registerLazySingleton(() => ClearReadingHistory(sl()));
   sl.registerLazySingleton(() => GetLastReadPosition(sl()));
   sl.registerLazySingleton(() => UpdateLastReadPosition(sl()));
-
   // Register QuranLibrary
   sl.registerLazySingleton<QuranLibrary>(() => QuranLibrary());
 
@@ -430,7 +429,8 @@ Future<void> _initQuranFeature() async {
       markItemAsReviewed: sl(),
       getMemorizationPreferences: sl(),
       updateMemorizationPreferences: sl(),
-      getMemorizationStatistics: sl(),
+      getMemorizationStatistics: sl(), 
+      getDetailedStatistics: sl(),
     ),
   );
 }
