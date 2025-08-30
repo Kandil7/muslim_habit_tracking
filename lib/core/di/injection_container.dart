@@ -83,6 +83,23 @@ import '../../features/quran/domain/usecases/update_bookmark.dart';
 import '../../features/quran/domain/usecases/update_last_read_position.dart';
 import '../../features/quran/presentation/bloc/quran_bloc.dart';
 
+// Memorization tracking imports
+import '../../features/quran/data/datasources/memorization_local_data_source.dart';
+import '../../features/quran/data/repositories/memorization_repository_impl.dart';
+import '../../features/quran/data/services/memorization_migration_service.dart';
+import '../../features/quran/data/services/quran_integration_service.dart';
+import '../../features/quran/domain/repositories/memorization_repository.dart';
+import '../../features/quran/domain/usecases/create_memorization_item.dart';
+import '../../features/quran/domain/usecases/delete_memorization_item.dart';
+import '../../features/quran/domain/usecases/get_daily_review_schedule.dart';
+import '../../features/quran/domain/usecases/get_memorization_items.dart';
+import '../../features/quran/domain/usecases/get_memorization_preferences.dart';
+import '../../features/quran/domain/usecases/get_memorization_statistics.dart';
+import '../../features/quran/domain/usecases/mark_item_as_reviewed.dart';
+import '../../features/quran/domain/usecases/update_memorization_item.dart';
+import '../../features/quran/domain/usecases/update_memorization_preferences.dart';
+import '../../features/quran/presentation/bloc/memorization/memorization_bloc.dart';
+
 final GetIt sl = GetIt.instance;
 
 /// Initialize all dependencies
@@ -102,6 +119,7 @@ Future<void> init() async {
   await _initLocalizationFeature();
   await _initHadithFeature();
   await _initQuranFeature();
+  await _initMemorizationFeature();
 }
 
 /// Initialize external dependencies
@@ -398,4 +416,65 @@ Future<void> _initQuranFeature() async {
       sharedPrefService: sl(),
     ),
   );
+
+  // Register Memorization BLoC
+  sl.registerFactory(
+    () => MemorizationBloc(
+      getMemorizationItems: sl(),
+      createMemorizationItem: sl(),
+      updateMemorizationItem: sl(),
+      deleteMemorizationItem: sl(),
+      getDailyReviewSchedule: sl(),
+      markItemAsReviewed: sl(),
+      getMemorizationPreferences: sl(),
+      updateMemorizationPreferences: sl(),
+      getMemorizationStatistics: sl(),
+    ),
+  );
+}
+
+/// Initialize memorization feature dependencies
+Future<void> _initMemorizationFeature() async {
+  // Register Hive box
+  await Hive.openBox(AppConstants.memorizationBoxName);
+
+  // Services
+  sl.registerLazySingleton<QuranIntegrationService>(
+    () => QuranIntegrationService(quranLibrary: sl()),
+  );
+
+  sl.registerLazySingleton<MemorizationMigrationService>(
+    () => MemorizationMigrationService(
+      localDataSource: sl(),
+      sharedPreferences: sl(),
+    ),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<MemorizationLocalDataSource>(
+    () => MemorizationLocalDataSourceImpl(
+      memorizationBox: Hive.box(AppConstants.memorizationBoxName),
+      sharedPreferences: sl(),
+      uuid: sl(),
+    ),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<MemorizationRepository>(
+    () => MemorizationRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => GetMemorizationItems(sl()));
+  sl.registerLazySingleton(() => CreateMemorizationItem(sl()));
+  sl.registerLazySingleton(() => UpdateMemorizationItem(sl()));
+  sl.registerLazySingleton(() => DeleteMemorizationItem(sl()));
+  sl.registerLazySingleton(() => GetDailyReviewSchedule(sl()));
+  sl.registerLazySingleton(() => MarkItemAsReviewed(sl()));
+  sl.registerLazySingleton(() => GetMemorizationPreferences(sl()));
+  sl.registerLazySingleton(() => UpdateMemorizationPreferences(sl()));
+  sl.registerLazySingleton(() => GetMemorizationStatistics(sl()));
+
+  // Run data migration
+  await sl<MemorizationMigrationService>().migrateData();
 }

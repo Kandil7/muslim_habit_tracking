@@ -1,0 +1,396 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
+import 'package:muslim_habbit/features/quran/presentation/widgets/memorization_progress_card.dart';
+import 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_list.dart';
+import 'package:muslim_habbit/features/quran/presentation/widgets/stats_summary_card.dart';
+
+/// Dashboard page for Quran memorization tracking
+class MemorizationDashboardPage extends StatefulWidget {
+  const MemorizationDashboardPage({super.key});
+
+  @override
+  State<MemorizationDashboardPage> createState() => _MemorizationDashboardPageState();
+}
+
+class _MemorizationDashboardPageState extends State<MemorizationDashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load initial data
+    context.read<MemorizationBloc>().add(LoadMemorizationStatistics());
+    context.read<MemorizationBloc>().add(LoadDailyReviewSchedule());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quran Memorization'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              // Navigate to settings page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MemorizationSettingsPage(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<MemorizationBloc>().add(LoadMemorizationStatistics());
+          context.read<MemorizationBloc>().add(LoadDailyReviewSchedule());
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Progress summary card
+                const MemorizationProgressCard(),
+                const SizedBox(height: 16),
+                
+                // Stats summary card
+                const StatsSummaryCard(),
+                const SizedBox(height: 16),
+                
+                // Daily review section
+                const Text(
+                  'Daily Review',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                
+                // Daily review list
+                const DailyReviewList(),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to add new memorization item page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddMemorizationItemPage(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+/// Settings page for memorization preferences
+class MemorizationSettingsPage extends StatefulWidget {
+  const MemorizationSettingsPage({super.key});
+
+  @override
+  State<MemorizationSettingsPage> createState() => _MemorizationSettingsPageState();
+}
+
+class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<MemorizationBloc>().add(LoadMemorizationPreferences());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Memorization Settings'),
+      ),
+      body: BlocBuilder<MemorizationBloc, MemorizationState>(
+        builder: (context, state) {
+          if (state is MemorizationPreferencesLoaded) {
+            final preferences = state.preferences;
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Review Period',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Select how many days to divide your memorized portions for review',
+                  ),
+                  const SizedBox(height: 16),
+                  SegmentedButton<int>(
+                    segments: const [
+                      ButtonSegment(value: 5, label: Text('5 Days')),
+                      ButtonSegment(value: 6, label: Text('6 Days')),
+                      ButtonSegment(value: 7, label: Text('7 Days')),
+                    ],
+                    selected: {preferences.reviewPeriod},
+                    onSelectionChanged: (Set<int> newSelection) {
+                      context.read<MemorizationBloc>().add(
+                            UpdatePreferences(
+                              preferences.copyWith(reviewPeriod: newSelection.first),
+                            ),
+                          );
+                    },
+                  ),
+                  const SizedBox(height: 32),
+                  const Text(
+                    'Memorization Direction',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Choose the direction of your memorization journey',
+                  ),
+                  const SizedBox(height: 16),
+                  SegmentedButton<MemorizationDirection>(
+                    segments: const [
+                      ButtonSegment(
+                        value: MemorizationDirection.fromBaqarah,
+                        label: Text('Baqarah → Nas'),
+                      ),
+                      ButtonSegment(
+                        value: MemorizationDirection.fromNas,
+                        label: Text('Nas → Baqarah'),
+                      ),
+                    ],
+                    selected: {preferences.memorizationDirection},
+                    onSelectionChanged: (Set<MemorizationDirection> newSelection) {
+                      context.read<MemorizationBloc>().add(
+                            UpdatePreferences(
+                              preferences.copyWith(
+                                memorizationDirection: newSelection.first,
+                              ),
+                            ),
+                          );
+                    },
+                  ),
+                  const SizedBox(height: 32),
+                  const Text(
+                    'Notifications',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    title: const Text('Enable Daily Reminders'),
+                    value: preferences.notificationsEnabled,
+                    onChanged: (bool value) {
+                      context.read<MemorizationBloc>().add(
+                            UpdatePreferences(
+                              preferences.copyWith(notificationsEnabled: value),
+                            ),
+                          );
+                    },
+                  ),
+                ],
+              ),
+            );
+          } else if (state is MemorizationLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is MemorizationError) {
+            return Center(child: Text('Error: ${state.message}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
+  }
+}
+
+/// Page for adding a new memorization item
+class AddMemorizationItemPage extends StatefulWidget {
+  const AddMemorizationItemPage({super.key});
+
+  @override
+  State<AddMemorizationItemPage> createState() => _AddMemorizationItemPageState();
+}
+
+class _AddMemorizationItemPageState extends State<AddMemorizationItemPage> {
+  final _formKey = GlobalKey<FormState>();
+  late String _selectedSurahName;
+  late int _selectedSurahNumber;
+  late int _startPage;
+  late int _endPage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add New Memorization'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Select Surah',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // TODO: Implement surah selection dropdown
+              // This would integrate with the Quran library to get surah data
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Surah',
+                  border: OutlineInputBorder(),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'Al-Baqarah',
+                    child: Text('Al-Baqarah'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Ali \'Imran',
+                    child: Text('Ali \'Imran'),
+                  ),
+                  // Add more surahs here
+                ],
+                onChanged: (String? value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedSurahName = value;
+                      // TODO: Set the corresponding surah number and page numbers
+                    });
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a surah';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Page Range',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Start Page',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          _startPage = int.parse(value);
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter start page';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'End Page',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          _endPage = int.parse(value);
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter end page';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        if (int.tryParse(value)! < _startPage) {
+                          return 'End page must be greater than start page';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Create new memorization item
+                      final newItem = MemorizationItem(
+                        id: '', // Will be generated by the repository
+                        surahNumber: _selectedSurahNumber,
+                        surahName: _selectedSurahName,
+                        startPage: _startPage,
+                        endPage: _endPage,
+                        dateAdded: DateTime.now(),
+                        status: MemorizationStatus.newStatus,
+                        consecutiveReviewDays: 0,
+                        lastReviewed: null,
+                        reviewHistory: [],
+                      );
+                      
+                      context.read<MemorizationBloc>().add(CreateMemorizationItem(newItem));
+                      
+                      // Show success message and navigate back
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Memorization item added successfully!'),
+                        ),
+                      );
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Add to Memorization'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
