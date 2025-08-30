@@ -20,7 +20,7 @@ void main() {
   });
 
   final testItems = [
-    const MemorizationItem(
+    MemorizationItem(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',
@@ -37,13 +37,13 @@ void main() {
   test('should get items by status from the repository', () async {
     // Arrange
     when(mockRepository.getItemsByStatus(any))
-        .thenAnswer((_) async => const Right(testItems));
+        .thenAnswer((_) async => Right(testItems));
 
     // Act
     final result = await usecase(MemorizationStatus.newStatus);
 
     // Assert
-    expect(result, const Right(testItems));
+    expect(result, Right(testItems));
     verify(mockRepository.getItemsByStatus(MemorizationStatus.newStatus));
     verifyNoMoreInteractions(mockRepository);
   });

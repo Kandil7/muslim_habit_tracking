@@ -19,7 +19,7 @@ void main() {
     usecase = UnarchiveItem(mockRepository);
   });
 
-  final testItem = const MemorizationItem(
+  final testItem = MemorizationItem(
     id: '1',
     surahNumber: 2,
     surahName: 'Al-Baqarah',
@@ -35,13 +35,13 @@ void main() {
   test('should unarchive an item through the repository', () async {
     // Arrange
     when(mockRepository.unarchiveItem(any))
-        .thenAnswer((_) async => const Right(testItem));
+        .thenAnswer((_) async => Right(testItem));
 
     // Act
     final result = await usecase('1');
 
     // Assert
-    expect(result, const Right(testItem));
+    expect(result, Right(testItem));
     verify(mockRepository.unarchiveItem('1'));
     verifyNoMoreInteractions(mockRepository);
   });

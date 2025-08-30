@@ -7,6 +7,7 @@ void main() {
     late MemorizationItem newItem;
     late MemorizationItem inProgressItem;
     late MemorizationItem memorizedItem;
+    late MemorizationItem overdueItem;
 
     setUp(() {
       newItem = MemorizationItem(
@@ -50,9 +51,27 @@ void main() {
         dateAdded: DateTime(2023, 1, 15),
         status: MemorizationStatus.memorized,
         consecutiveReviewDays: 5,
-        lastReviewed: DateTime(2023, 1, 20),
-        reviewHistory: [DateTime(2023, 1, 16), DateTime(2023, 1, 17), DateTime(2023, 1, 18), DateTime(2023, 1, 19), DateTime(2023, 1, 20)],
+        lastReviewed: DateTime.now(), // Today so it's not overdue
+        reviewHistory: [DateTime(2023, 1, 16), DateTime(2023, 1, 17), DateTime(2023, 1, 18), DateTime(2023, 1, 19), DateTime.now()],
         dateMemorized: DateTime(2023, 1, 15),
+        progressPercentage: 100.0,
+        estimatedCompletionDate: null,
+        daysRemaining: 0,
+      );
+
+      overdueItem = MemorizationItem(
+        id: '4',
+        surahNumber: 5,
+        surahName: 'Al-Ma\'idah',
+        startPage: 107,
+        endPage: 128,
+        dateAdded: DateTime(2023, 1, 20),
+        status: MemorizationStatus.memorized,
+        consecutiveReviewDays: 5,
+        lastReviewed: DateTime.now().subtract(Duration(days: 2)), // 2 days ago so it's overdue
+        reviewHistory: [DateTime(2023, 1, 21), DateTime(2023, 1, 22), DateTime.now().subtract(Duration(days: 2))],
+        dateMemorized: DateTime(2023, 1, 20),
+        overdueCount: 1,
         progressPercentage: 100.0,
         estimatedCompletionDate: null,
         daysRemaining: 0,
@@ -88,12 +107,14 @@ void main() {
       expect(newItem.reviewStatusMessage, contains('New item'));
       expect(inProgressItem.reviewStatusMessage, contains('3/5 days reviewed'));
       expect(memorizedItem.reviewStatusMessage, contains('Memorized'));
+      expect(overdueItem.reviewStatusMessage, contains('Overdue'));
     });
 
     test('should provide correct status color', () {
       expect(newItem.statusColor, equals(Colors.blue));
       expect(inProgressItem.statusColor, equals(Colors.orange));
       expect(memorizedItem.statusColor, equals(Colors.green));
+      expect(overdueItem.statusColor, equals(Colors.red));
     });
 
     test('should copy with new enhanced values correctly', () {

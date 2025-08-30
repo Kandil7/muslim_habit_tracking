@@ -11,7 +11,7 @@ void main() {
     late MemorizationItem overdueItem;
 
     setUp(() {
-      newItem = const MemorizationItem(
+      newItem = MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -27,7 +27,7 @@ void main() {
         daysRemaining: 5,
       );
 
-      inProgressItem = const MemorizationItem(
+      inProgressItem = MemorizationItem(
         id: '2',
         surahNumber: 3,
         surahName: 'Ali \'Imran',
@@ -43,7 +43,7 @@ void main() {
         daysRemaining: 2,
       );
 
-      memorizedItem = const MemorizationItem(
+      memorizedItem = MemorizationItem(
         id: '3',
         surahNumber: 4,
         surahName: 'An-Nisa',
@@ -53,14 +53,14 @@ void main() {
         status: MemorizationStatus.memorized,
         consecutiveReviewDays: 5,
         lastReviewed: DateTime.now(),
-        reviewHistory: [DateTime(2023, 1, 16), DateTime(2023, 1, 17), DateTime(2023, 1, 18), DateTime(2023, 1, 19), DateTime(2023, 1, 20)],
+        reviewHistory: [DateTime(2023, 1, 16), DateTime(2023, 1, 17), DateTime(2023, 1, 18), DateTime(2023, 1, 19), DateTime.now()],
         dateMemorized: DateTime(2023, 1, 15),
         progressPercentage: 100.0,
         estimatedCompletionDate: null,
         daysRemaining: 0,
       );
 
-      overdueItem = const MemorizationItem(
+      overdueItem = MemorizationItem(
         id: '4',
         surahNumber: 5,
         surahName: 'Al-Ma\'idah',
@@ -69,8 +69,8 @@ void main() {
         dateAdded: DateTime(2023, 1, 20),
         status: MemorizationStatus.memorized,
         consecutiveReviewDays: 5,
-        lastReviewed: DateTime.now().subtract(const Duration(days: 2)),
-        reviewHistory: [DateTime(2023, 1, 21), DateTime(2023, 1, 22), DateTime(2023, 1, 23)],
+        lastReviewed: DateTime.now().subtract(Duration(days: 2)),
+        reviewHistory: [DateTime(2023, 1, 21), DateTime(2023, 1, 22), DateTime.now().subtract(Duration(days: 2))],
         dateMemorized: DateTime(2023, 1, 20),
         overdueCount: 1,
         progressPercentage: 100.0,

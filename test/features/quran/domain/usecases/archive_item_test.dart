@@ -19,7 +19,7 @@ void main() {
     usecase = ArchiveItem(mockRepository);
   });
 
-  final testItem = const MemorizationItem(
+  final testItem = MemorizationItem(
     id: '1',
     surahNumber: 2,
     surahName: 'Al-Baqarah',
@@ -35,13 +35,13 @@ void main() {
   test('should archive an item through the repository', () async {
     // Arrange
     when(mockRepository.archiveItem(any))
-        .thenAnswer((_) async => const Right(testItem));
+        .thenAnswer((_) async => Right(testItem));
 
     // Act
     final result = await usecase('1');
 
     // Assert
-    expect(result, const Right(testItem));
+    expect(result, Right(testItem));
     verify(mockRepository.archiveItem('1'));
     verifyNoMoreInteractions(mockRepository);
   });

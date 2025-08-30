@@ -20,7 +20,7 @@ void main() {
   });
 
   final testItems = [
-    const MemorizationItem(
+    MemorizationItem(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',
@@ -38,13 +38,13 @@ void main() {
   test('should get overdue items from the repository', () async {
     // Arrange
     when(mockRepository.getOverdueItems())
-        .thenAnswer((_) async => const Right(testItems));
+        .thenAnswer((_) async => Right(testItems));
 
     // Act
     final result = await usecase();
 
     // Assert
-    expect(result, const Right(testItems));
+    expect(result, Right(testItems));
     verify(mockRepository.getOverdueItems());
     verifyNoMoreInteractions(mockRepository);
   });
