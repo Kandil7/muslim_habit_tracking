@@ -11,7 +11,7 @@ void main() {
     late MemorizationItem overdueItem;
 
     setUp(() {
-      newItem = const MemorizationItem(
+      newItem = MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -24,7 +24,7 @@ void main() {
         reviewHistory: [],
       );
 
-      inProgressItem = const MemorizationItem(
+      inProgressItem = MemorizationItem(
         id: '2',
         surahNumber: 3,
         surahName: 'Ali \'Imran',
@@ -37,7 +37,7 @@ void main() {
         reviewHistory: [DateTime(2023, 1, 8), DateTime(2023, 1, 9), DateTime(2023, 1, 10)],
       );
 
-      memorizedItem = const MemorizationItem(
+      memorizedItem = MemorizationItem(
         id: '3',
         surahNumber: 4,
         surahName: 'An-Nisa',
@@ -51,7 +51,7 @@ void main() {
         dateMemorized: DateTime(2023, 1, 15),
       );
 
-      overdueItem = const MemorizationItem(
+      overdueItem = MemorizationItem(
         id: '4',
         surahNumber: 5,
         surahName: 'Al-Ma\'idah',

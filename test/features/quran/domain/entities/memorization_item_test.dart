@@ -8,7 +8,7 @@ void main() {
     late MemorizationItem memorizedItem;
 
     setUp(() {
-      newItem = const MemorizationItem(
+      newItem = MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -21,7 +21,7 @@ void main() {
         reviewHistory: [],
       );
 
-      inProgressItem = const MemorizationItem(
+      inProgressItem = MemorizationItem(
         id: '2',
         surahNumber: 3,
         surahName: 'Ali \'Imran',
@@ -34,7 +34,7 @@ void main() {
         reviewHistory: [DateTime(2023, 1, 8), DateTime(2023, 1, 9), DateTime(2023, 1, 10)],
       );
 
-      memorizedItem = const MemorizationItem(
+      memorizedItem = MemorizationItem(
         id: '3',
         surahNumber: 4,
         surahName: 'An-Nisa',

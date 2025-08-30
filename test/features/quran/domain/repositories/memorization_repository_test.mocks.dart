@@ -233,4 +233,24 @@ class MockMemorizationRepository extends _i1.Mock
               ),
             )),
           ) as _i4.Future<_i2.Either<_i5.Failure, _i3.MemorizationStatistics>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i3.DetailedMemorizationStatistics>>
+      getDetailedStatistics() => (super.noSuchMethod(
+            Invocation.method(
+              #getDetailedStatistics,
+              [],
+            ),
+            returnValue: _i4.Future<
+                    _i2.Either<_i5.Failure,
+                        _i3.DetailedMemorizationStatistics>>.value(
+                _FakeEither_0<_i5.Failure, _i3.DetailedMemorizationStatistics>(
+              this,
+              Invocation.method(
+                #getDetailedStatistics,
+                [],
+              ),
+            )),
+          ) as _i4.Future<
+              _i2.Either<_i5.Failure, _i3.DetailedMemorizationStatistics>>);
 }
