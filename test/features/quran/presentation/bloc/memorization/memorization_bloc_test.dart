@@ -2,35 +2,34 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/create_memorization_item.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/delete_memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_daily_review_schedule.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_items.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_statistics.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/mark_item_as_reviewed.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
 
-// Mock use cases
-class MockGetMemorizationItems extends Mock implements GetMemorizationItems {}
-
-class MockCreateMemorizationItem extends Mock implements CreateMemorizationItem {}
-
-class MockUpdateMemorizationItem extends Mock implements UpdateMemorizationItem {}
-
-class MockDeleteMemorizationItem extends Mock implements DeleteMemorizationItem {}
-
-class MockGetDailyReviewSchedule extends Mock implements GetDailyReviewSchedule {}
-
-class MockMarkItemAsReviewed extends Mock implements MarkItemAsReviewed {}
-
-class MockGetMemorizationPreferences extends Mock implements GetMemorizationPreferences {}
-
-class MockUpdateMemorizationPreferences extends Mock
-    implements UpdateMemorizationPreferences {}
-
-class MockGetMemorizationStatistics extends Mock implements GetMemorizationStatistics {}
+// Generate mocks
+@GenerateMocks([
+  GetMemorizationItems,
+  CreateMemorizationItem,
+  UpdateMemorizationItem,
+  DeleteMemorizationItem,
+  GetDailyReviewSchedule,
+  MarkItemAsReviewed,
+  GetMemorizationPreferences,
+  UpdateMemorizationPreferences,
+  GetMemorizationStatistics,
+])
+import 'memorization_bloc_test.mocks.dart';
 
 void main() {
   group('MemorizationBloc', () {
@@ -82,7 +81,7 @@ void main() {
       'emits [MemorizationLoading, MemorizationItemsLoaded] when LoadMemorizationItems is added',
       build: () {
         final items = [
-          const MemorizationItem(
+          MemorizationItem(
             id: '1',
             surahNumber: 2,
             surahName: 'Al-Baqarah',
@@ -96,7 +95,7 @@ void main() {
           )
         ];
 
-        when(mockGetMemorizationItems())
+        when(mockGetMemorizationItems.call())
             .thenAnswer((_) async => Right(items));
 
         return memorizationBloc;
@@ -129,7 +128,7 @@ void main() {
           dailyItems: [],
         );
 
-        when(mockGetDailyReviewSchedule())
+        when(mockGetDailyReviewSchedule.call())
             .thenAnswer((_) async => Right(schedule));
 
         return memorizationBloc;
@@ -149,12 +148,12 @@ void main() {
     blocTest<MemorizationBloc, MemorizationState>(
       'emits [MemorizationLoading, MemorizationPreferencesLoaded] when LoadMemorizationPreferences is added',
       build: () {
-        const preferences = MemorizationPreferences(
+        final preferences = MemorizationPreferences(
           reviewPeriod: 5,
           memorizationDirection: MemorizationDirection.fromBaqarah,
         );
 
-        when(mockGetMemorizationPreferences())
+        when(mockGetMemorizationPreferences.call())
             .thenAnswer((_) async => Right(preferences));
 
         return memorizationBloc;
@@ -162,8 +161,8 @@ void main() {
       act: (bloc) => bloc.add(LoadMemorizationPreferences()),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationPreferencesLoaded(
-          const MemorizationPreferences(
+        MemorizationPreferencesLoaded(
+          MemorizationPreferences(
             reviewPeriod: 5,
             memorizationDirection: MemorizationDirection.fromBaqarah,
           ),
