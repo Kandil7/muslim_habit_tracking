@@ -30,7 +30,7 @@ void main() {
   });
 
   group('getMemorizationItems', () {
-    const testItems = [
+    final testItems = [
       MemorizationItem(
         id: '1',
         surahNumber: 2,
@@ -54,7 +54,7 @@ void main() {
       final result = await repository.getMemorizationItems();
 
       // Assert
-      expect(result, const Right(testItems));
+      expect(result, Right(testItems));
       verify(mockLocalDataSource.getMemorizationItems());
       verifyNoMoreInteractions(mockLocalDataSource);
     });
@@ -75,12 +75,12 @@ void main() {
   });
 
   group('getDailyReviewSchedule', () {
-    const testPreferences = MemorizationPreferences(
+    final testPreferences = MemorizationPreferences(
       reviewPeriod: 5,
       memorizationDirection: MemorizationDirection.fromBaqarah,
     );
 
-    const testItems = [
+    final testItems = [
       MemorizationItem(
         id: '1',
         surahNumber: 2,
@@ -147,7 +147,7 @@ void main() {
   });
 
   group('markItemAsReviewed', () {
-    const testItem = MemorizationItem(
+    final testItem = MemorizationItem(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',
@@ -169,7 +169,7 @@ void main() {
       final result = await repository.markItemAsReviewed('1');
 
       // Assert
-      expect(result, const Right(testItem));
+      expect(result, Right(testItem));
       verify(mockLocalDataSource.markItemAsReviewed('1'));
       verifyNoMoreInteractions(mockLocalDataSource);
     });
