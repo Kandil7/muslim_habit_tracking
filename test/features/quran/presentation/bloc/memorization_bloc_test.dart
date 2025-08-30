@@ -82,7 +82,7 @@ void main() {
   });
 
   group('LoadMemorizationItems', () {
-    const testItems = [
+    final testItems = [
       MemorizationItem(
         id: '1',
         surahNumber: 2,
@@ -101,13 +101,13 @@ void main() {
       'should emit [Loading, ItemsLoaded] when GetMemorizationItems succeeds',
       build: () {
         when(mockGetMemorizationItems())
-            .thenAnswer((_) async => const Right(testItems));
+            .thenAnswer((_) async => Right(testItems));
         return memorizationBloc;
       },
       act: (bloc) => bloc.add(LoadMemorizationItems()),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationItemsLoaded(testItems),
+        MemorizationItemsLoaded(testItems),
       ],
       verify: (_) {
         verify(mockGetMemorizationItems()).called(1);
@@ -133,7 +133,7 @@ void main() {
   });
 
   group('LoadDailyReviewSchedule', () {
-    const testSchedule = ReviewSchedule(
+    final testSchedule = ReviewSchedule(
       reviewPeriodDays: 5,
       dailyItems: [],
     );
@@ -142,13 +142,13 @@ void main() {
       'should emit [Loading, ScheduleLoaded] when GetDailyReviewSchedule succeeds',
       build: () {
         when(mockGetDailyReviewSchedule())
-            .thenAnswer((_) async => const Right(testSchedule));
+            .thenAnswer((_) async => Right(testSchedule));
         return memorizationBloc;
       },
       act: (bloc) => bloc.add(LoadDailyReviewSchedule()),
       expect: () => [
         MemorizationLoading(),
-        const DailyReviewScheduleLoaded(testSchedule),
+        DailyReviewScheduleLoaded(testSchedule),
       ],
       verify: (_) {
         verify(mockGetDailyReviewSchedule()).called(1);
@@ -157,7 +157,7 @@ void main() {
   });
 
   group('MarkItemAsReviewed', () {
-    const testItem = MemorizationItem(
+    final testItem = MemorizationItem(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',
@@ -174,13 +174,13 @@ void main() {
       'should emit [Loading, OperationSuccess] when MarkItemAsReviewed succeeds',
       build: () {
         when(mockMarkItemAsReviewed(any))
-            .thenAnswer((_) async => const Right(testItem));
+            .thenAnswer((_) async => Right(testItem));
         return memorizationBloc;
       },
-      act: (bloc) => bloc.add(const MarkItemAsReviewedEvent('1')),
+      act: (bloc) => bloc.add(MarkItemAsReviewedEvent('1')),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationOperationSuccess(testItem),
+        MemorizationOperationSuccess(testItem),
       ],
       verify: (_) {
         verify(mockMarkItemAsReviewed('1')).called(1);
