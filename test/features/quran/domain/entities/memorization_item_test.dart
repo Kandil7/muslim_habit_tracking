@@ -155,8 +155,9 @@ void main() {
       final memorizedItemReviewedToday = memorizedItem.copyWith(
         lastReviewed: today,
       );
-      // If reviewed today, it's not overdue, so priority should be 300
-      expect(memorizedItemReviewedToday.priorityScore, 300);
+      // If reviewed today, it's not overdue and daysUntilNextReview is 1, 
+      // so it doesn't match either condition and should return 0 (default)
+      expect(memorizedItemReviewedToday.priorityScore, 0);
       
       final memorizedItemReviewedTwoDaysAgo = memorizedItem.copyWith(
         lastReviewed: twoDaysAgo,

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 /// Direction of memorization
 enum MemorizationDirection {
@@ -26,6 +27,12 @@ class MemorizationPreferences extends Equatable {
   /// Whether to show overdue item warnings
   final bool showOverdueWarnings;
 
+  /// Whether to show motivational quotes in notifications
+  final bool showMotivationalQuotes;
+
+  /// Whether to enable haptic feedback for reviews
+  final bool enableHapticFeedback;
+
   /// Constructor
   const MemorizationPreferences({
     required this.reviewPeriod,
@@ -33,6 +40,8 @@ class MemorizationPreferences extends Equatable {
     this.notificationsEnabled = true,
     this.notificationTime,
     this.showOverdueWarnings = true,
+    this.showMotivationalQuotes = true,
+    this.enableHapticFeedback = true,
   });
 
   @override
@@ -42,6 +51,8 @@ class MemorizationPreferences extends Equatable {
         notificationsEnabled,
         notificationTime,
         showOverdueWarnings,
+        showMotivationalQuotes,
+        enableHapticFeedback,
       ];
 
   /// Creates a copy of this preferences with specified fields replaced
@@ -51,6 +62,8 @@ class MemorizationPreferences extends Equatable {
     bool? notificationsEnabled,
     TimeOfDay? notificationTime,
     bool? showOverdueWarnings,
+    bool? showMotivationalQuotes,
+    bool? enableHapticFeedback,
   }) {
     return MemorizationPreferences(
       reviewPeriod: reviewPeriod ?? this.reviewPeriod,
@@ -58,6 +71,8 @@ class MemorizationPreferences extends Equatable {
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationTime: notificationTime ?? this.notificationTime,
       showOverdueWarnings: showOverdueWarnings ?? this.showOverdueWarnings,
+      showMotivationalQuotes: showMotivationalQuotes ?? this.showMotivationalQuotes,
+      enableHapticFeedback: enableHapticFeedback ?? this.enableHapticFeedback,
     );
   }
 }
@@ -93,5 +108,25 @@ class TimeOfDay extends Equatable {
       hour: dateTime.hour,
       minute: dateTime.minute,
     );
+  }
+
+  /// Converts TimeOfDay to DateTime for today
+  DateTime toDateTime() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
+  /// Checks if this time is before the given time
+  bool isBefore(TimeOfDay other) {
+    if (hour < other.hour) return true;
+    if (hour > other.hour) return false;
+    return minute < other.minute;
+  }
+
+  /// Checks if this time is after the given time
+  bool isAfter(TimeOfDay other) {
+    if (hour > other.hour) return true;
+    if (hour < other.hour) return false;
+    return minute > other.minute;
   }
 }

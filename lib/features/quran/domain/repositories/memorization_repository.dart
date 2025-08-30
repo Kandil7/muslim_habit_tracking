@@ -43,6 +43,39 @@ abstract class MemorizationRepository {
 
   /// Get detailed statistics for charts and graphs
   Future<Either<Failure, DetailedMemorizationStatistics>> getDetailedStatistics();
+
+  /// Get items by status
+  Future<Either<Failure, List<MemorizationItem>>> getItemsByStatus(MemorizationStatus status);
+
+  /// Archive an item
+  Future<Either<Failure, MemorizationItem>> archiveItem(String itemId);
+
+  /// Unarchive an item
+  Future<Either<Failure, MemorizationItem>> unarchiveItem(String itemId);
+
+  /// Get overdue items
+  Future<Either<Failure, List<MemorizationItem>>> getOverdueItems();
+
+  /// Reset item progress
+  Future<Either<Failure, MemorizationItem>> resetItemProgress(String itemId);
+
+  /// Get items needing review today
+  Future<Either<Failure, List<MemorizationItem>>> getItemsNeedingReview();
+
+  /// Get review history for an item
+  Future<Either<Failure, List<DateTime>>> getItemReviewHistory(String itemId);
+
+  /// Get items by surah number
+  Future<Either<Failure, List<MemorizationItem>>> getItemsBySurah(int surahNumber);
+
+  /// Get items within a date range
+  Future<Either<Failure, List<MemorizationItem>>> getItemsByDateRange(DateTime start, DateTime end);
+
+  /// Get streak statistics
+  Future<Either<Failure, StreakStatistics>> getStreakStatistics();
+
+  /// Get progress statistics for a specific period
+  Future<Either<Failure, ProgressStatistics>> getProgressStatistics(DateTime start, DateTime end);
 }
 
 /// Entity representing statistics about memorization progress
@@ -71,6 +104,9 @@ class MemorizationStatistics extends Equatable {
   /// Average reviews per day
   final double averageReviewsPerDay;
 
+  /// Number of overdue items
+  final int overdueItemsCount;
+
   /// Constructor
   const MemorizationStatistics({
     required this.totalItems,
@@ -81,6 +117,7 @@ class MemorizationStatistics extends Equatable {
     required this.memorizationPercentage,
     required this.totalReviews,
     required this.averageReviewsPerDay,
+    required this.overdueItemsCount,
   });
 
   @override
@@ -93,6 +130,7 @@ class MemorizationStatistics extends Equatable {
         memorizationPercentage,
         totalReviews,
         averageReviewsPerDay,
+        overdueItemsCount,
       ];
 
   /// Creates a copy of this statistics with specified fields replaced
@@ -105,6 +143,7 @@ class MemorizationStatistics extends Equatable {
     double? memorizationPercentage,
     int? totalReviews,
     double? averageReviewsPerDay,
+    int? overdueItemsCount,
   }) {
     return MemorizationStatistics(
       totalItems: totalItems ?? this.totalItems,
@@ -115,6 +154,7 @@ class MemorizationStatistics extends Equatable {
       memorizationPercentage: memorizationPercentage ?? this.memorizationPercentage,
       totalReviews: totalReviews ?? this.totalReviews,
       averageReviewsPerDay: averageReviewsPerDay ?? this.averageReviewsPerDay,
+      overdueItemsCount: overdueItemsCount ?? this.overdueItemsCount,
     );
   }
 }
@@ -136,6 +176,12 @@ class DetailedMemorizationStatistics extends Equatable {
   /// Number of items that were archived
   final int archivedItemsCount;
 
+  /// Review consistency percentage
+  final double reviewConsistency;
+
+  /// Average pages memorized per day
+  final double averagePagesPerDay;
+
   /// Constructor
   const DetailedMemorizationStatistics({
     required this.progressOverTime,
@@ -143,6 +189,8 @@ class DetailedMemorizationStatistics extends Equatable {
     required this.averageStreakLength,
     required this.successRate,
     required this.archivedItemsCount,
+    required this.reviewConsistency,
+    required this.averagePagesPerDay,
   });
 
   @override
@@ -152,6 +200,8 @@ class DetailedMemorizationStatistics extends Equatable {
         averageStreakLength,
         successRate,
         archivedItemsCount,
+        reviewConsistency,
+        averagePagesPerDay,
       ];
 
   /// Creates a copy of this detailed statistics with specified fields replaced
@@ -161,6 +211,8 @@ class DetailedMemorizationStatistics extends Equatable {
     double? averageStreakLength,
     double? successRate,
     int? archivedItemsCount,
+    double? reviewConsistency,
+    double? averagePagesPerDay,
   }) {
     return DetailedMemorizationStatistics(
       progressOverTime: progressOverTime ?? this.progressOverTime,
@@ -168,6 +220,107 @@ class DetailedMemorizationStatistics extends Equatable {
       averageStreakLength: averageStreakLength ?? this.averageStreakLength,
       successRate: successRate ?? this.successRate,
       archivedItemsCount: archivedItemsCount ?? this.archivedItemsCount,
+      reviewConsistency: reviewConsistency ?? this.reviewConsistency,
+      averagePagesPerDay: averagePagesPerDay ?? this.averagePagesPerDay,
+    );
+  }
+}
+
+/// Entity representing streak statistics
+class StreakStatistics extends Equatable {
+  /// Current review streak (consecutive days of reviews)
+  final int currentStreak;
+
+  /// Longest review streak achieved
+  final int longestStreak;
+
+  /// Streak history (date -> streak length)
+  final Map<DateTime, int> streakHistory;
+
+  /// Constructor
+  const StreakStatistics({
+    required this.currentStreak,
+    required this.longestStreak,
+    required this.streakHistory,
+  });
+
+  @override
+  List<Object?> get props => [
+        currentStreak,
+        longestStreak,
+        streakHistory,
+      ];
+
+  /// Creates a copy of this streak statistics with specified fields replaced
+  StreakStatistics copyWith({
+    int? currentStreak,
+    int? longestStreak,
+    Map<DateTime, int>? streakHistory,
+  }) {
+    return StreakStatistics(
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      streakHistory: streakHistory ?? this.streakHistory,
+    );
+  }
+}
+
+/// Entity representing progress statistics for a specific period
+class ProgressStatistics extends Equatable {
+  /// Start date of the period
+  final DateTime startDate;
+
+  /// End date of the period
+  final DateTime endDate;
+
+  /// Number of items started during the period
+  final int itemsStarted;
+
+  /// Number of items completed (memorized) during the period
+  final int itemsCompleted;
+
+  /// Number of reviews during the period
+  final int reviewsCount;
+
+  /// Average progress per day during the period
+  final double averageProgressPerDay;
+
+  /// Constructor
+  const ProgressStatistics({
+    required this.startDate,
+    required this.endDate,
+    required this.itemsStarted,
+    required this.itemsCompleted,
+    required this.reviewsCount,
+    required this.averageProgressPerDay,
+  });
+
+  @override
+  List<Object?> get props => [
+        startDate,
+        endDate,
+        itemsStarted,
+        itemsCompleted,
+        reviewsCount,
+        averageProgressPerDay,
+      ];
+
+  /// Creates a copy of this progress statistics with specified fields replaced
+  ProgressStatistics copyWith({
+    DateTime? startDate,
+    DateTime? endDate,
+    int? itemsStarted,
+    int? itemsCompleted,
+    int? reviewsCount,
+    double? averageProgressPerDay,
+  }) {
+    return ProgressStatistics(
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      itemsStarted: itemsStarted ?? this.itemsStarted,
+      itemsCompleted: itemsCompleted ?? this.itemsCompleted,
+      reviewsCount: reviewsCount ?? this.reviewsCount,
+      averageProgressPerDay: averageProgressPerDay ?? this.averageProgressPerDay,
     );
   }
 }

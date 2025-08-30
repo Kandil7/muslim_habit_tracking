@@ -52,3 +52,70 @@ class UpdatePreferences extends MemorizationEvent {
 
   UpdatePreferences(this.preferences);
 }
+
+/// Event to load items by status
+class LoadItemsByStatus extends MemorizationEvent {
+  final MemorizationStatus status;
+
+  LoadItemsByStatus(this.status);
+}
+
+/// Event to archive an item
+class ArchiveItemEvent extends MemorizationEvent {
+  final String itemId;
+
+  ArchiveItemEvent(this.itemId);
+}
+
+/// Event to unarchive an item
+class UnarchiveItemEvent extends MemorizationEvent {
+  final String itemId;
+
+  UnarchiveItemEvent(this.itemId);
+}
+
+/// Event to load overdue items
+class LoadOverdueItems extends MemorizationEvent {}
+
+/// Event to reset item progress
+class ResetItemProgressEvent extends MemorizationEvent {
+  final String itemId;
+
+  ResetItemProgressEvent(this.itemId);
+}
+
+/// Event to load items needing review
+class LoadItemsNeedingReview extends MemorizationEvent {}
+
+/// Event to load item review history
+class LoadItemReviewHistory extends MemorizationEvent {
+  final String itemId;
+
+  LoadItemReviewHistory(this.itemId);
+}
+
+/// Event to load items by surah
+class LoadItemsBySurah extends MemorizationEvent {
+  final int surahNumber;
+
+  LoadItemsBySurah(this.surahNumber);
+}
+
+/// Event to load items by date range
+class LoadItemsByDateRange extends MemorizationEvent {
+  final DateTime start;
+  final DateTime end;
+
+  LoadItemsByDateRange(this.start, this.end);
+}
+
+/// Event to load streak statistics
+class LoadStreakStatistics extends MemorizationEvent {}
+
+/// Event to load progress statistics
+class LoadProgressStatistics extends MemorizationEvent {
+  final DateTime start;
+  final DateTime end;
+
+  LoadProgressStatistics(this.start, this.end);
+}

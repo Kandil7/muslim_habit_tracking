@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 import 'memorization_item.dart';
 
@@ -95,4 +96,101 @@ class ReviewSchedule extends Equatable {
     
     return (reviewedCount / dailyItems.length) * 100;
   }
+
+  /// Gets the items grouped by status
+  Map<MemorizationStatus, List<MemorizationItem>> get itemsByStatus {
+    final Map<MemorizationStatus, List<MemorizationItem>> groupedItems = {};
+    
+    for (final status in MemorizationStatus.values) {
+      groupedItems[status] = dailyItems
+          .where((item) => item.status == status)
+          .toList();
+    }
+    
+    return groupedItems;
+  }
+
+  /// Gets the items that need review today, sorted by priority
+  List<MemorizationItem> get todayReviewItems {
+    // Get all items that need review today
+    final itemsNeedingReview = dailyItems
+        .where((item) => item.needsImmediateReview || 
+            (item.status == MemorizationStatus.memorized && 
+                (item.isOverdue || item.daysUntilNextReview == 0)))
+        .toList();
+    
+    // Sort by priority
+    itemsNeedingReview.sort((a, b) => b.priorityScore.compareTo(a.priorityScore));
+    return itemsNeedingReview;
+  }
+
+  /// Gets the items that are completed for today
+  List<MemorizationItem> get completedItems {
+    final today = DateTime.now();
+    return dailyItems
+        .where((item) => item.lastReviewed != null && 
+            DateTime(
+              item.lastReviewed!.year,
+              item.lastReviewed!.month,
+              item.lastReviewed!.day,
+            ).isAtSameMomentAs(DateTime(
+              today.year,
+              today.month,
+              today.day,
+            )))
+        .toList();
+  }
+
+  /// Gets the items that are pending review for today
+  List<MemorizationItem> get pendingItems {
+    return dailyItems
+        .where((item) => item.lastReviewed == null || 
+            !DateTime(
+              item.lastReviewed!.year,
+              item.lastReviewed!.month,
+              item.lastReviewed!.day,
+            ).isAtSameMomentAs(DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+            )))
+        .toList();
+  }
+
+  /// Gets the progress statistics for today's review
+  ReviewProgressStats get progressStats {
+    final total = dailyItems.length;
+    final completed = completedItems.length;
+    final pending = pendingItems.length;
+    
+    return ReviewProgressStats(
+      totalItems: total,
+      completedItems: completed,
+      pendingItems: pending,
+      completionPercentage: total > 0 ? (completed / total) * 100 : 0,
+    );
+  }
+}
+
+/// Entity representing review progress statistics
+class ReviewProgressStats extends Equatable {
+  final int totalItems;
+  final int completedItems;
+  final int pendingItems;
+  final double completionPercentage;
+
+  const ReviewProgressStats({
+    required this.totalItems,
+    required this.completedItems,
+    required this.pendingItems,
+    required this.completionPercentage,
+  });
+
+  @override
+  List<Object?> get props => [
+    totalItems,
+    completedItems,
+    pendingItems,
+    completionPercentage,
+  ];
 }

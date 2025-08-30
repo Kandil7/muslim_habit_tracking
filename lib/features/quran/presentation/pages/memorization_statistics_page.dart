@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
+import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 
 /// Page to display detailed memorization statistics
 class MemorizationStatisticsPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
     // Load initial data
     context.read<MemorizationBloc>().add(LoadMemorizationStatistics());
     context.read<MemorizationBloc>().add(LoadDetailedStatistics());
+    context.read<MemorizationBloc>().add(LoadMemorizationItems());
   }
 
   @override
@@ -32,23 +34,28 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
             return const Center(child: CircularProgressIndicator());
           } else if (state is MemorizationError) {
             return Center(child: Text('Error: ${state.message}'));
-          } else if (state is MemorizationStatisticsLoaded &&
-              state is DetailedStatisticsLoaded) {
-            // This won't work as intended, we need to handle both states
-            return _buildStatisticsContent(context, state.statistics, null);
-          } else if (state is MemorizationStatisticsLoaded) {
-            return _buildStatisticsContent(context, state.statistics, null);
-          } else if (state is DetailedStatisticsLoaded) {
-            return _buildStatisticsContent(context, null, state.detailedStatistics);
+          } else {
+            return _buildStatisticsContent(state);
           }
-          return const Center(child: Text('No data available'));
         },
       ),
     );
   }
 
-  Widget _buildStatisticsContent(BuildContext context,
-      MemorizationStatistics? stats, DetailedMemorizationStatistics? detailedStats) {
+  Widget _buildStatisticsContent(MemorizationState state) {
+    MemorizationStatistics? stats;
+    DetailedMemorizationStatistics? detailedStats;
+    List<MemorizationItem>? items;
+
+    // Extract data from different states
+    if (state is MemorizationStatisticsLoaded) {
+      stats = state.statistics;
+    } else if (state is DetailedStatisticsLoaded) {
+      detailedStats = state.detailedStatistics;
+    } else if (state is MemorizationItemsLoaded) {
+      items = state.items;
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,22 +64,18 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
           children: [
             // Overall statistics cards
             if (stats != null) ...[
-              _buildStatCard('Total Items', stats.totalItems.toString()),
-              const SizedBox(height: 16),
-              _buildStatCard('Memorized Items', 
-                  '${stats.itemsByStatus[MemorizationStatus.memorized] ?? 0} '
-                  '(${stats.memorizationPercentage.toStringAsFixed(1)}%)'),
-              const SizedBox(height: 16),
-              _buildStatCard('Current Streak', '${stats.currentStreak} days'),
-              const SizedBox(height: 16),
-              _buildStatCard('Longest Streak', '${stats.longestStreak} days'),
-              const SizedBox(height: 16),
-              _buildStatCard('Total Reviews', stats.totalReviews.toString()),
-              const SizedBox(height: 16),
-              _buildStatCard('Avg. Reviews/Day', 
-                  stats.averageReviewsPerDay.toStringAsFixed(2)),
+              _buildOverallStatsGrid(stats),
+              const SizedBox(height: 24),
             ],
             
+            // Status distribution chart
+            const Text(
+              'Status Distribution',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            if (stats != null)
+              _buildStatusDistributionChart(stats.itemsByStatus),
             const SizedBox(height: 32),
             
             // Progress over time chart
@@ -83,7 +86,6 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
             const SizedBox(height: 16),
             if (detailedStats != null)
               _buildProgressChart(detailedStats.progressOverTime),
-            
             const SizedBox(height: 32),
             
             // Review frequency chart
@@ -94,23 +96,90 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
             const SizedBox(height: 16),
             if (detailedStats != null)
               _buildReviewFrequencyChart(detailedStats.reviewFrequencyByDay),
-            
             const SizedBox(height: 32),
             
             // Additional statistics
             if (detailedStats != null) ...[
+              const Text(
+                'Additional Metrics',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
               _buildStatCard('Average Streak Length', 
-                  detailedStats.averageStreakLength.toStringAsFixed(2)),
+                  '${detailedStats.averageStreakLength.toStringAsFixed(2)} days'),
               const SizedBox(height: 16),
               _buildStatCard('Success Rate', 
                   '${detailedStats.successRate.toStringAsFixed(1)}%'),
               const SizedBox(height: 16),
               _buildStatCard('Archived Items', 
                   detailedStats.archivedItemsCount.toString()),
+              const SizedBox(height: 16),
+              _buildStatCard('Review Consistency', 
+                  '${detailedStats.reviewConsistency.toStringAsFixed(1)}%'),
+              const SizedBox(height: 16),
+              _buildStatCard('Avg. Pages/Day', 
+                  detailedStats.averagePagesPerDay.toStringAsFixed(2)),
+            ],
+            
+            const SizedBox(height: 32),
+            
+            // Items list by status
+            if (items != null) ...[
+              const Text(
+                'Your Memorization Items',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              _buildItemsByStatusList(items),
             ],
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildOverallStatsGrid(MemorizationStatistics stats) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard('Total Items', stats.totalItems.toString()),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildStatCard('Memorized', 
+                  '${stats.itemsByStatus[MemorizationStatus.memorized] ?? 0} '
+                  '(${stats.memorizationPercentage.toStringAsFixed(1)}%)'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard('Current Streak', '${stats.currentStreak} days'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildStatCard('Longest Streak', '${stats.longestStreak} days'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard('Total Reviews', stats.totalReviews.toString()),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildStatCard('Avg. Reviews/Day', 
+                  stats.averageReviewsPerDay.toStringAsFixed(2)),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -123,14 +192,71 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
             ),
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusDistributionChart(Map<MemorizationStatus, int> statusData) {
+    final List<PieChartSectionData> sections = [];
+    final total = statusData.values.fold(0, (sum, item) => sum + item);
+    
+    if (total == 0) {
+      return const Center(child: Text('No data available'));
+    }
+    
+    // Colors for each status
+    final statusColors = {
+      MemorizationStatus.newStatus: Colors.blue,
+      MemorizationStatus.inProgress: Colors.orange,
+      MemorizationStatus.memorized: Colors.green,
+      MemorizationStatus.archived: Colors.grey,
+    };
+    
+    // Labels for each status
+    final statusLabels = {
+      MemorizationStatus.newStatus: 'New',
+      MemorizationStatus.inProgress: 'In Progress',
+      MemorizationStatus.memorized: 'Memorized',
+      MemorizationStatus.archived: 'Archived',
+    };
+    
+    int index = 0;
+    for (final entry in statusData.entries) {
+      if (entry.value > 0) {
+        final percentage = (entry.value / total) * 100;
+        sections.add(
+          PieChartSectionData(
+            color: statusColors[entry.key],
+            value: percentage,
+            title: '${percentage.toStringAsFixed(1)}%',
+            radius: 50,
+            titleStyle: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        );
+        index++;
+      }
+    }
+    
+    return SizedBox(
+      height: 200,
+      child: PieChart(
+        PieChartData(
+          sections: sections,
+          centerSpaceRadius: 40,
+          sectionsSpace: 2,
         ),
       ),
     );
@@ -188,6 +314,7 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
               color: Colors.blue,
               barWidth: 3,
               belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.3)),
+              dotData: const FlDotData(show: true),
             ),
           ],
         ),
@@ -247,5 +374,61 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
         ),
       ),
     );
+  }
+
+  Widget _buildItemsByStatusList(List<MemorizationItem> items) {
+    // Group items by status
+    final itemsByStatus = <MemorizationStatus, List<MemorizationItem>>{};
+    for (final status in MemorizationStatus.values) {
+      itemsByStatus[status] = items.where((item) => item.status == status).toList();
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final entry in itemsByStatus.entries) ...[
+          if (entry.value.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              _getStatusLabel(entry.key),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: entry.value.length,
+              itemBuilder: (context, index) {
+                final item = entry.value[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(item.surahName),
+                    subtitle: Text('Pages ${item.startPage}-${item.endPage}'),
+                    trailing: Text(
+                      entry.key == MemorizationStatus.inProgress 
+                          ? '${item.consecutiveReviewDays}/5 days' 
+                          : '',
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ],
+      ],
+    );
+  }
+
+  String _getStatusLabel(MemorizationStatus status) {
+    switch (status) {
+      case MemorizationStatus.newStatus:
+        return 'New Items';
+      case MemorizationStatus.inProgress:
+        return 'In Progress';
+      case MemorizationStatus.memorized:
+        return 'Memorized';
+      case MemorizationStatus.archived:
+        return 'Archived';
+    }
   }
 }

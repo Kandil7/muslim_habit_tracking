@@ -5,6 +5,8 @@ import 'package:mockito/annotations.dart';
 import 'package:muslim_habbit/core/network/network_info.dart';
 import 'package:muslim_habbit/features/quran/data/repositories/memorization_repository_impl.dart';
 import 'package:muslim_habbit/features/quran/data/datasources/memorization_local_data_source.dart';
+import 'package:muslim_habbit/features/quran/data/models/memorization_item_model.dart';
+import 'package:muslim_habbit/features/quran/data/models/memorization_preferences_model.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
@@ -31,7 +33,7 @@ void main() {
 
   group('getMemorizationItems', () {
     final testItems = [
-      MemorizationItem(
+      MemorizationItemModel(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -75,13 +77,13 @@ void main() {
   });
 
   group('getDailyReviewSchedule', () {
-    final testPreferences = MemorizationPreferences(
+    final testPreferences = MemorizationPreferencesModel(
       reviewPeriod: 5,
       memorizationDirection: MemorizationDirection.fromBaqarah,
     );
 
     final testItems = [
-      MemorizationItem(
+      MemorizationItemModel(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -147,7 +149,7 @@ void main() {
   });
 
   group('markItemAsReviewed', () {
-    final testItem = MemorizationItem(
+    final testItem = MemorizationItemModel(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',

@@ -54,6 +54,15 @@ class MemorizationItem extends Equatable {
   /// Date when this item was first marked as memorized
   final DateTime? dateMemorized;
 
+  /// Progress percentage for in-progress items (0-100)
+  final double progressPercentage;
+
+  /// Estimated completion date for in-progress items
+  final DateTime? estimatedCompletionDate;
+
+  /// Number of days remaining until memorization is complete (for in-progress items)
+  final int daysRemaining;
+
   /// Constructor
   const MemorizationItem({
     required this.id,
@@ -68,6 +77,9 @@ class MemorizationItem extends Equatable {
     required this.reviewHistory,
     this.overdueCount = 0,
     this.dateMemorized,
+    this.progressPercentage = 0.0,
+    this.estimatedCompletionDate,
+    this.daysRemaining = 5,
   });
 
   @override
@@ -84,6 +96,9 @@ class MemorizationItem extends Equatable {
         reviewHistory,
         overdueCount,
         dateMemorized,
+        progressPercentage,
+        estimatedCompletionDate,
+        daysRemaining,
       ];
 
   /// Creates a copy of this item with specified fields replaced
@@ -100,6 +115,9 @@ class MemorizationItem extends Equatable {
     List<DateTime>? reviewHistory,
     int? overdueCount,
     DateTime? dateMemorized,
+    double? progressPercentage,
+    DateTime? estimatedCompletionDate,
+    int? daysRemaining,
   }) {
     return MemorizationItem(
       id: id ?? this.id,
@@ -114,6 +132,9 @@ class MemorizationItem extends Equatable {
       reviewHistory: reviewHistory ?? this.reviewHistory,
       overdueCount: overdueCount ?? this.overdueCount,
       dateMemorized: dateMemorized ?? this.dateMemorized,
+      progressPercentage: progressPercentage ?? this.progressPercentage,
+      estimatedCompletionDate: estimatedCompletionDate ?? this.estimatedCompletionDate,
+      daysRemaining: daysRemaining ?? this.daysRemaining,
     );
   }
 
@@ -215,5 +236,64 @@ class MemorizationItem extends Equatable {
     
     // Archived items have lowest priority
     return 0;
+  }
+
+  /// Calculates the progress percentage for in-progress items
+  double calculateProgressPercentage() {
+    if (status == MemorizationStatus.memorized) return 100.0;
+    if (status == MemorizationStatus.newStatus) return 0.0;
+    return (consecutiveReviewDays / 5) * 100;
+  }
+
+  /// Calculates the estimated completion date for in-progress items
+  DateTime? calculateEstimatedCompletionDate() {
+    if (status == MemorizationStatus.memorized) return dateMemorized;
+    if (status == MemorizationStatus.newStatus) return null;
+    
+    final daysNeeded = 5 - consecutiveReviewDays;
+    if (daysNeeded <= 0) return DateTime.now();
+    
+    return DateTime.now().add(Duration(days: daysNeeded));
+  }
+
+  /// Calculates the number of days remaining until memorization is complete
+  int calculateDaysRemaining() {
+    if (status == MemorizationStatus.memorized) return 0;
+    if (status == MemorizationStatus.newStatus) return 5;
+    return 5 - consecutiveReviewDays;
+  }
+
+  /// Gets the review status message
+  String get reviewStatusMessage {
+    if (status == MemorizationStatus.newStatus) {
+      return 'New item - Start reviewing to build memorization streak';
+    }
+    
+    if (status == MemorizationStatus.inProgress) {
+      return '$consecutiveReviewDays/5 days reviewed - ${5 - consecutiveReviewDays} days remaining';
+    }
+    
+    if (status == MemorizationStatus.memorized) {
+      if (isOverdue) {
+        return 'Overdue for review - Last reviewed ${lastReviewed?.difference(DateTime.now()).inDays.abs()} days ago';
+      }
+      return 'Memorized - Due for review in $daysUntilNextReview days';
+    }
+    
+    return 'Archived - Not currently being reviewed';
+  }
+
+  /// Gets the color representation of the item status
+  Color get statusColor {
+    switch (status) {
+      case MemorizationStatus.newStatus:
+        return Colors.blue;
+      case MemorizationStatus.inProgress:
+        return Colors.orange;
+      case MemorizationStatus.memorized:
+        return isOverdue ? Colors.red : Colors.green;
+      case MemorizationStatus.archived:
+        return Colors.grey;
+    }
   }
 }

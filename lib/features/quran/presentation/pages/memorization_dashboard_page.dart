@@ -5,6 +5,8 @@ import 'package:muslim_habbit/features/quran/presentation/widgets/memorization_p
 import 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_list.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/stats_summary_card.dart';
 import 'package:muslim_habbit/features/quran/presentation/pages/memorization_statistics_page.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/add_memorization_item_page.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/daily_review_page.dart';
 
 /// Dashboard page for Quran memorization tracking
 class MemorizationDashboardPage extends StatefulWidget {
@@ -74,6 +76,70 @@ class _MemorizationDashboardPageState extends State<MemorizationDashboardPage> {
                 const StatsSummaryCard(),
                 const SizedBox(height: 16),
                 
+                // Quick actions
+                const Text(
+                  'Quick Actions',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DailyReviewPage(),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Icon(Icons.bookmark_added, size: 32, color: Colors.blue),
+                                SizedBox(height: 8),
+                                Text('Daily Review'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Card(
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddMemorizationItemPage(),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Icon(Icons.add, size: 32, color: Colors.green),
+                                SizedBox(height: 8),
+                                Text('Add Item'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                
                 // Daily review section
                 const Text(
                   'Daily Review',
@@ -116,6 +182,8 @@ class MemorizationSettingsPage extends StatefulWidget {
 }
 
 class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
+  TimeOfDay? _selectedTime;
+
   @override
   void initState() {
     super.initState();
@@ -132,6 +200,8 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
         builder: (context, state) {
           if (state is MemorizationPreferencesLoaded) {
             final preferences = state.preferences;
+            _selectedTime = preferences.notificationTime;
+            
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -145,7 +215,7 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     'Select how many days to divide your memorized portions for review',
                   ),
                   const SizedBox(height: 16),
@@ -173,7 +243,7 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     'Choose the direction of your memorization journey',
                   ),
                   const SizedBox(height: 16),
@@ -219,6 +289,32 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                           );
                     },
                   ),
+                  if (preferences.notificationsEnabled) ...[
+                    const SizedBox(height: 8),
+                    ListTile(
+                      title: const Text('Notification Time'),
+                      subtitle: Text(
+                        preferences.notificationTime?.formattedTime ?? 'Not set',
+                      ),
+                      trailing: const Icon(Icons.access_time),
+                      onTap: () async {
+                        final TimeOfDay? picked = await showTimePicker(
+                          context: context,
+                          initialTime: preferences.notificationTime ??
+                              TimeOfDay(hour: 8, minute: 0),
+                        );
+                        if (picked != null) {
+                          context.read<MemorizationBloc>().add(
+                                UpdatePreferences(
+                                  preferences.copyWith(
+                                    notificationTime: picked,
+                                  ),
+                                ),
+                              );
+                        }
+                      },
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   SwitchListTile(
                     title: const Text('Show Overdue Warnings'),
@@ -232,81 +328,39 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Notification Time',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  SwitchListTile(
+                    title: const Text('Show Motivational Quotes'),
+                    value: preferences.showMotivationalQuotes,
+                    onChanged: (bool value) {
+                      context.read<MemorizationBloc>().add(
+                            UpdatePreferences(
+                              preferences.copyWith(showMotivationalQuotes: value),
+                            ),
+                          );
+                    },
                   ),
-                  const SizedBox(height: 8),
-                  ListTile(
-                    title: Text(
-                      preferences.notificationTime != null
-                          ? 'Daily at ${preferences.notificationTime!.formattedTime}'
-                          : 'Not set',
-                    ),
-                    trailing: const Icon(Icons.access_time),
-                    onTap: () async {
-                      final selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: preferences.notificationTime != null
-                            ? TimeOfDay(
-                                hour: preferences.notificationTime!.hour,
-                                minute: preferences.notificationTime!.minute,
-                              )
-                            : TimeOfDay.now(),
-                      );
-                      if (selectedTime != null) {
-                        context.read<MemorizationBloc>().add(
-                              UpdatePreferences(
-                                preferences.copyWith(
-                                  notificationTime: TimeOfDay.fromDateTime(
-                                    DateTime(
-                                      DateTime.now().year,
-                                      DateTime.now().month,
-                                      DateTime.now().day,
-                                      selectedTime.hour,
-                                      selectedTime.minute,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                      }
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    title: const Text('Enable Haptic Feedback'),
+                    value: preferences.enableHapticFeedback,
+                    onChanged: (bool value) {
+                      context.read<MemorizationBloc>().add(
+                            UpdatePreferences(
+                              preferences.copyWith(enableHapticFeedback: value),
+                            ),
+                          );
                     },
                   ),
                 ],
               ),
             );
+          } else if (state is MemorizationLoading) {
+            return const Center(child: CircularProgressIndicator());
           } else if (state is MemorizationError) {
             return Center(child: Text('Error: ${state.message}'));
-          } else {
-            return const Center(child: CircularProgressIndicator());
           }
+          return const Center(child: CircularProgressIndicator());
         },
-      ),
-    );
-  }
-}
-
-/// Page to add a new memorization item
-class AddMemorizationItemPage extends StatefulWidget {
-  const AddMemorizationItemPage({super.key});
-
-  @override
-  State<AddMemorizationItemPage> createState() => _AddMemorizationItemPageState();
-}
-
-class _AddMemorizationItemPageState extends State<AddMemorizationItemPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Memorization Item'),
-      ),
-      body: const Center(
-        child: Text('Add Memorization Item Page - Implementation pending'),
       ),
     );
   }
