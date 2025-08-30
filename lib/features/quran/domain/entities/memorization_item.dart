@@ -48,6 +48,12 @@ class MemorizationItem extends Equatable {
   /// History of all review timestamps
   final List<DateTime> reviewHistory;
 
+  /// Number of times this item has been marked as overdue
+  final int overdueCount;
+
+  /// Date when this item was first marked as memorized
+  final DateTime? dateMemorized;
+
   /// Constructor
   const MemorizationItem({
     required this.id,
@@ -60,6 +66,8 @@ class MemorizationItem extends Equatable {
     required this.consecutiveReviewDays,
     required this.lastReviewed,
     required this.reviewHistory,
+    this.overdueCount = 0,
+    this.dateMemorized,
   });
 
   @override
@@ -74,6 +82,8 @@ class MemorizationItem extends Equatable {
         consecutiveReviewDays,
         lastReviewed,
         reviewHistory,
+        overdueCount,
+        dateMemorized,
       ];
 
   /// Creates a copy of this item with specified fields replaced
@@ -88,6 +98,8 @@ class MemorizationItem extends Equatable {
     int? consecutiveReviewDays,
     DateTime? lastReviewed,
     List<DateTime>? reviewHistory,
+    int? overdueCount,
+    DateTime? dateMemorized,
   }) {
     return MemorizationItem(
       id: id ?? this.id,
@@ -100,6 +112,8 @@ class MemorizationItem extends Equatable {
       consecutiveReviewDays: consecutiveReviewDays ?? this.consecutiveReviewDays,
       lastReviewed: lastReviewed ?? this.lastReviewed,
       reviewHistory: reviewHistory ?? this.reviewHistory,
+      overdueCount: overdueCount ?? this.overdueCount,
+      dateMemorized: dateMemorized ?? this.dateMemorized,
     );
   }
 
@@ -137,5 +151,69 @@ class MemorizationItem extends Equatable {
   double get streakCompletionPercentage {
     if (status == MemorizationStatus.memorized) return 100.0;
     return (consecutiveReviewDays / 5) * 100;
+  }
+
+  /// Gets the number of days until this item is due for review again
+  int get daysUntilNextReview {
+    if (status != MemorizationStatus.memorized || lastReviewed == null) return 0;
+    
+    final now = DateTime.now();
+    final lastReviewDate = DateTime(
+      lastReviewed!.year,
+      lastReviewed!.month,
+      lastReviewed!.day,
+    );
+    
+    // Calculate days since last review
+    final daysSinceLastReview = now.difference(lastReviewDate).inDays;
+    
+    // If already overdue, return 0
+    if (daysSinceLastReview > 1) return 0;
+    
+    // Otherwise, return days until next review (1 day for consecutive days)
+    return 1;
+  }
+
+  /// Checks if this item needs immediate review (due today or overdue)
+  bool get needsImmediateReview {
+    if (status == MemorizationStatus.newStatus || status == MemorizationStatus.inProgress) {
+      return true; // In-progress items always need review
+    }
+    
+    if (status == MemorizationStatus.memorized) {
+      // For memorized items, check if due or overdue
+      return isOverdue || daysUntilNextReview == 0;
+    }
+    
+    return false;
+  }
+
+  /// Gets the priority score for this item (higher means higher priority)
+  int get priorityScore {
+    // In-progress items have highest priority, especially older ones
+    if (status == MemorizationStatus.inProgress) {
+      // Priority based on consecutive days (items closer to memorization have higher priority)
+      // and date added (older items have higher priority)
+      final daysSinceAdded = DateTime.now().difference(dateAdded).inDays;
+      return 1000 + (5 - consecutiveReviewDays) * 100 + daysSinceAdded;
+    }
+    
+    // Memorized items that are overdue have high priority
+    if (status == MemorizationStatus.memorized && isOverdue) {
+      return 500 + overdueCount * 50;
+    }
+    
+    // Memorized items due today have medium priority
+    if (status == MemorizationStatus.memorized && daysUntilNextReview == 0) {
+      return 300;
+    }
+    
+    // New items have low priority
+    if (status == MemorizationStatus.newStatus) {
+      return 100;
+    }
+    
+    // Archived items have lowest priority
+    return 0;
   }
 }

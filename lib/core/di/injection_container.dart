@@ -87,6 +87,7 @@ import '../../features/quran/presentation/bloc/quran_bloc.dart';
 import '../../features/quran/data/datasources/memorization_local_data_source.dart';
 import '../../features/quran/data/repositories/memorization_repository_impl.dart';
 import '../../features/quran/data/services/memorization_migration_service.dart';
+import '../../features/quran/data/services/memorization_notification_service.dart';
 import '../../features/quran/data/services/quran_integration_service.dart';
 import '../../features/quran/domain/repositories/memorization_repository.dart';
 import '../../features/quran/domain/usecases/create_memorization_item.dart';
@@ -95,6 +96,7 @@ import '../../features/quran/domain/usecases/get_daily_review_schedule.dart';
 import '../../features/quran/domain/usecases/get_memorization_items.dart';
 import '../../features/quran/domain/usecases/get_memorization_preferences.dart';
 import '../../features/quran/domain/usecases/get_memorization_statistics.dart';
+import '../../features/quran/domain/usecases/get_detailed_statistics.dart';
 import '../../features/quran/domain/usecases/mark_item_as_reviewed.dart';
 import '../../features/quran/domain/usecases/update_memorization_item.dart';
 import '../../features/quran/domain/usecases/update_memorization_preferences.dart';
@@ -443,6 +445,10 @@ Future<void> _initMemorizationFeature() async {
     () => QuranIntegrationService(quranLibrary: sl()),
   );
 
+  sl.registerLazySingleton<MemorizationNotificationService>(
+    () => MemorizationNotificationService(sl()),
+  );
+
   sl.registerLazySingleton<MemorizationMigrationService>(
     () => MemorizationMigrationService(
       localDataSource: sl(),
@@ -474,6 +480,7 @@ Future<void> _initMemorizationFeature() async {
   sl.registerLazySingleton(() => GetMemorizationPreferences(sl()));
   sl.registerLazySingleton(() => UpdateMemorizationPreferences(sl()));
   sl.registerLazySingleton(() => GetMemorizationStatistics(sl()));
+  sl.registerLazySingleton(() => GetDetailedStatistics(sl()));
 
   // Run data migration
   await sl<MemorizationMigrationService>().migrateData();

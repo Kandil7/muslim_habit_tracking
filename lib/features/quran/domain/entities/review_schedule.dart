@@ -54,4 +54,45 @@ class ReviewSchedule extends Equatable {
   List<MemorizationItem> get newItems => dailyItems
       .where((item) => item.status == MemorizationStatus.newStatus)
       .toList();
+
+  /// Gets the items sorted by priority (highest priority first)
+  List<MemorizationItem> get prioritizedItems {
+    final sortedItems = List<MemorizationItem>.from(dailyItems);
+    sortedItems.sort((a, b) => b.priorityScore.compareTo(a.priorityScore));
+    return sortedItems;
+  }
+
+  /// Gets the number of items that need immediate review
+  int get immediateReviewCount => dailyItems
+      .where((item) => item.needsImmediateReview)
+      .length;
+
+  /// Gets items that need immediate review, sorted by priority
+  List<MemorizationItem> get immediateReviewItems {
+    final items = dailyItems
+        .where((item) => item.needsImmediateReview)
+        .toList();
+    items.sort((a, b) => b.priorityScore.compareTo(a.priorityScore));
+    return items;
+  }
+
+  /// Gets the completion percentage for today's review
+  double get completionPercentage {
+    if (dailyItems.isEmpty) return 100.0;
+    
+    final reviewedCount = dailyItems
+        .where((item) => item.lastReviewed != null && 
+            DateTime(
+              item.lastReviewed!.year,
+              item.lastReviewed!.month,
+              item.lastReviewed!.day,
+            ).isAtSameMomentAs(DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+            )))
+        .length;
+    
+    return (reviewedCount / dailyItems.length) * 100;
+  }
 }

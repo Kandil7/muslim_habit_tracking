@@ -1,17 +1,12 @@
 part of 'memorization_bloc.dart';
 
-/// Base event class for memorization BLoC
-abstract class MemorizationEvent extends Equatable {
-  const MemorizationEvent();
+/// Base event class for memorization
+abstract class MemorizationEvent {}
 
-  @override
-  List<Object?> get props => [];
-}
-
-/// Event to load all memorization items
+/// Event to load memorization items
 class LoadMemorizationItems extends MemorizationEvent {}
 
-/// Event to load the daily review schedule
+/// Event to load daily review schedule
 class LoadDailyReviewSchedule extends MemorizationEvent {}
 
 /// Event to load memorization preferences
@@ -20,52 +15,40 @@ class LoadMemorizationPreferences extends MemorizationEvent {}
 /// Event to load memorization statistics
 class LoadMemorizationStatistics extends MemorizationEvent {}
 
-/// Event to create a new memorization item
+/// Event to load detailed statistics
+class LoadDetailedStatistics extends MemorizationEvent {}
+
+/// Event to create a memorization item
 class CreateMemorizationItemEvent extends MemorizationEvent {
   final MemorizationItem item;
 
-  const CreateMemorizationItemEvent(this.item);
-
-  @override
-  List<Object?> get props => [item];
+  CreateMemorizationItemEvent(this.item);
 }
 
-/// Event to update an existing memorization item
+/// Event to update a memorization item
 class UpdateMemorizationItemEvent extends MemorizationEvent {
   final MemorizationItem item;
 
-  const UpdateMemorizationItemEvent(this.item);
-
-  @override
-  List<Object?> get props => [item];
+  UpdateMemorizationItemEvent(this.item);
 }
 
 /// Event to delete a memorization item
 class DeleteMemorizationItemEvent extends MemorizationEvent {
   final String itemId;
 
-  const DeleteMemorizationItemEvent(this.itemId);
-
-  @override
-  List<Object?> get props => [itemId];
+  DeleteMemorizationItemEvent(this.itemId);
 }
 
 /// Event to mark an item as reviewed
 class MarkItemAsReviewedEvent extends MemorizationEvent {
   final String itemId;
 
-  const MarkItemAsReviewedEvent(this.itemId);
-
-  @override
-  List<Object?> get props => [itemId];
+  MarkItemAsReviewedEvent(this.itemId);
 }
 
-/// Event to update memorization preferences
+/// Event to update preferences
 class UpdatePreferences extends MemorizationEvent {
   final MemorizationPreferences preferences;
 
-  const UpdatePreferences(this.preferences);
-
-  @override
-  List<Object?> get props => [preferences];
+  UpdatePreferences(this.preferences);
 }

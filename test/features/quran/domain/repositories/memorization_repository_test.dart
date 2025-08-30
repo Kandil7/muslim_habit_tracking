@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
 import 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart';
 
-// We need to create a mock implementation since we can't directly mock abstract classes
-// with Dart's mockito without build_runner
-
-class MockMemorizationRepository extends Mock implements MemorizationRepository {}
+// Generate mocks
+@GenerateMocks([MemorizationRepository])
+import 'memorization_repository_test.mocks.dart';
 
 void main() {
   group('MemorizationRepository', () {
@@ -22,7 +22,7 @@ void main() {
     test('should get memorization items', () async {
       // Arrange
       final items = [
-        const MemorizationItem(
+        MemorizationItem(
           id: '1',
           surahNumber: 2,
           surahName: 'Al-Baqarah',
@@ -67,7 +67,7 @@ void main() {
 
     test('should get memorization preferences', () async {
       // Arrange
-      const preferences = MemorizationPreferences(
+      final preferences = MemorizationPreferences(
         reviewPeriod: 5,
         memorizationDirection: MemorizationDirection.fromBaqarah,
       );

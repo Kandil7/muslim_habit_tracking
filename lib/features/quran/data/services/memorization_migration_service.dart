@@ -2,102 +2,66 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/memorization_item.dart';
 import '../../domain/entities/memorization_preferences.dart';
 import '../datasources/memorization_local_data_source.dart';
 
-/// Service for handling data migration for memorization tracking
+/// Service to handle data migration for existing users
 class MemorizationMigrationService {
-  final MemorizationLocalDataSource localDataSource;
-  final SharedPreferences sharedPreferences;
+  final MemorizationLocalDataSource _localDataSource;
+  final SharedPreferences _sharedPreferences;
+
+  static const String _migrationVersionKey = 'memorization_migration_version';
+  static const int _currentMigrationVersion = 1;
 
   MemorizationMigrationService({
-    required this.localDataSource,
-    required this.sharedPreferences,
-  });
+    required MemorizationLocalDataSource localDataSource,
+    required SharedPreferences sharedPreferences,
+  })  : _localDataSource = localDataSource,
+        _sharedPreferences = sharedPreferences;
 
-  /// Migrate data from old format to new format
+  /// Migrate data from previous versions
   Future<void> migrateData() async {
+    final currentVersion = _sharedPreferences.getInt(_migrationVersionKey) ?? 0;
+
+    if (currentVersion < 1) {
+      await _migrateToVersion1();
+    }
+
+    // Update migration version
+    await _sharedPreferences.setInt(_migrationVersionKey, _currentMigrationVersion);
+  }
+
+  /// Migration to version 1
+  Future<void> _migrateToVersion1() async {
+    // This is the first version, so we don't need to migrate anything
+    // In future versions, we would add migration logic here
+    
+    // Ensure default preferences exist
     try {
-      // Check if migration has already been performed
-      final hasMigrated = sharedPreferences.getBool('memorization_migrated') ?? false;
-      if (hasMigrated) return;
-
-      // Perform migration steps here
-      // This is a placeholder for actual migration logic
-      // In a real implementation, this would:
-      // 1. Check for existing data in old format
-      // 2. Convert it to the new format
-      // 3. Save it using the new data source
-      // 4. Mark migration as complete
-
-      // For now, we'll just mark migration as complete
-      await sharedPreferences.setBool('memorization_migrated', true);
+      final preferences = await _localDataSource.getPreferences();
+      // Preferences already exist, no need to do anything
     } catch (e) {
-      throw CacheException(message: 'Failed to migrate memorization data: $e');
+      // Preferences don't exist, create default ones
+      final defaultPreferences = const MemorizationPreferencesModel(
+        reviewPeriod: 5,
+        memorizationDirection: MemorizationDirection.fromBaqarah,
+      );
+      await _localDataSource.updatePreferences(defaultPreferences);
     }
   }
 
-  /// Migrate from v1 to v2 format (example)
-  Future<void> migrateFromV1ToV2() async {
-    try {
-      // Check if v1 data exists
-      final v1Data = sharedPreferences.getString('memorization_items_v1');
-      if (v1Data == null) return;
-
-      // Parse v1 data
-      final List<dynamic> itemsJson = json.decode(v1Data);
-      
-      // Convert to v2 format
-      for (final itemJson in itemsJson) {
-        final item = _convertV1ItemToV2(itemJson as Map<String, dynamic>);
-        await localDataSource.createMemorizationItem(item);
-      }
-
-      // Remove old data
-      await sharedPreferences.remove('memorization_items_v1');
-      
-      // Mark migration as complete
-      await sharedPreferences.setBool('memorization_migrated_v2', true);
-    } catch (e) {
-      throw CacheException(message: 'Failed to migrate from v1 to v2: $e');
-    }
-  }
-
-  /// Convert v1 item format to v2
-  MemorizationItem _convertV1ItemToV2(Map<String, dynamic> itemJson) {
-    return MemorizationItem(
-      id: itemJson['id'] as String,
-      surahNumber: itemJson['surahNumber'] as int,
-      surahName: itemJson['surahName'] as String,
-      startPage: itemJson['startPage'] as int,
-      endPage: itemJson['endPage'] as int,
-      dateAdded: DateTime.parse(itemJson['dateAdded'] as String),
-      status: _convertV1StatusToV2(itemJson['status'] as String),
-      consecutiveReviewDays: itemJson['consecutiveReviewDays'] as int,
-      lastReviewed: itemJson['lastReviewed'] == null
-          ? null
-          : DateTime.parse(itemJson['lastReviewed'] as String),
-      reviewHistory: (itemJson['reviewHistory'] as List<dynamic>)
-          .map((date) => DateTime.parse(date as String))
-          .toList(),
-    );
-  }
-
-  /// Convert v1 status to v2
-  MemorizationStatus _convertV1StatusToV2(String status) {
-    switch (status) {
-      case 'new':
-        return MemorizationStatus.newStatus;
-      case 'inProgress':
-        return MemorizationStatus.inProgress;
-      case 'memorized':
-        return MemorizationStatus.memorized;
-      case 'archived':
-        return MemorizationStatus.archived;
-      default:
-        return MemorizationStatus.newStatus;
-    }
+  /// Migrate from old data format (if any)
+  Future<void> _migrateFromOldFormat() async {
+    // Check if there's old data format that needs to be migrated
+    // This would be specific to the app's previous implementation
+    
+    // Example: If there was a different key for storing memorization items
+    // final oldData = _sharedPreferences.getString('old_memorization_key');
+    // if (oldData != null) {
+    //   // Parse old data format and convert to new format
+    //   // Save to new storage
+    //   // Remove old data
+    // }
   }
 }

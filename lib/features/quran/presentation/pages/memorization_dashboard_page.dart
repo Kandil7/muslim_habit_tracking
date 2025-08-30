@@ -4,6 +4,7 @@ import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memo
 import 'package:muslim_habbit/features/quran/presentation/widgets/memorization_progress_card.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_list.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/stats_summary_card.dart';
+import 'package:muslim_habbit/features/quran/presentation/pages/memorization_statistics_page.dart';
 
 /// Dashboard page for Quran memorization tracking
 class MemorizationDashboardPage extends StatefulWidget {
@@ -28,6 +29,18 @@ class _MemorizationDashboardPageState extends State<MemorizationDashboardPage> {
       appBar: AppBar(
         title: const Text('Quran Memorization'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () {
+              // Navigate to statistics page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MemorizationStatisticsPage(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -206,22 +219,78 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                           );
                     },
                   ),
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    title: const Text('Show Overdue Warnings'),
+                    value: preferences.showOverdueWarnings,
+                    onChanged: (bool value) {
+                      context.read<MemorizationBloc>().add(
+                            UpdatePreferences(
+                              preferences.copyWith(showOverdueWarnings: value),
+                            ),
+                          );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Notification Time',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    title: Text(
+                      preferences.notificationTime != null
+                          ? 'Daily at ${preferences.notificationTime!.formattedTime}'
+                          : 'Not set',
+                    ),
+                    trailing: const Icon(Icons.access_time),
+                    onTap: () async {
+                      final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: preferences.notificationTime != null
+                            ? TimeOfDay(
+                                hour: preferences.notificationTime!.hour,
+                                minute: preferences.notificationTime!.minute,
+                              )
+                            : TimeOfDay.now(),
+                      );
+                      if (selectedTime != null) {
+                        context.read<MemorizationBloc>().add(
+                              UpdatePreferences(
+                                preferences.copyWith(
+                                  notificationTime: TimeOfDay.fromDateTime(
+                                    DateTime(
+                                      DateTime.now().year,
+                                      DateTime.now().month,
+                                      DateTime.now().day,
+                                      selectedTime.hour,
+                                      selectedTime.minute,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                      }
+                    },
+                  ),
                 ],
               ),
             );
-          } else if (state is MemorizationLoading) {
-            return const Center(child: CircularProgressIndicator());
           } else if (state is MemorizationError) {
             return Center(child: Text('Error: ${state.message}'));
+          } else {
+            return const Center(child: CircularProgressIndicator());
           }
-          return const Center(child: CircularProgressIndicator());
         },
       ),
     );
   }
 }
 
-/// Page for adding a new memorization item
+/// Page to add a new memorization item
 class AddMemorizationItemPage extends StatefulWidget {
   const AddMemorizationItemPage({super.key});
 
@@ -230,166 +299,14 @@ class AddMemorizationItemPage extends StatefulWidget {
 }
 
 class _AddMemorizationItemPageState extends State<AddMemorizationItemPage> {
-  final _formKey = GlobalKey<FormState>();
-  late String _selectedSurahName;
-  late int _selectedSurahNumber;
-  late int _startPage;
-  late int _endPage;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Memorization'),
+        title: const Text('Add Memorization Item'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Select Surah',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              // TODO: Implement surah selection dropdown
-              // This would integrate with the Quran library to get surah data
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Surah',
-                  border: OutlineInputBorder(),
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Al-Baqarah',
-                    child: Text('Al-Baqarah'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Ali \'Imran',
-                    child: Text('Ali \'Imran'),
-                  ),
-                  // Add more surahs here
-                ],
-                onChanged: (String? value) {
-                  if (value != null) {
-                    setState(() {
-                      _selectedSurahName = value;
-                      // TODO: Set the corresponding surah number and page numbers
-                    });
-                  }
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a surah';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Page Range',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Start Page',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          _startPage = int.parse(value);
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter start page';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'End Page',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          _endPage = int.parse(value);
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter end page';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        if (int.tryParse(value)! < _startPage) {
-                          return 'End page must be greater than start page';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Create new memorization item
-                      final newItem = MemorizationItem(
-                        id: '', // Will be generated by the repository
-                        surahNumber: _selectedSurahNumber,
-                        surahName: _selectedSurahName,
-                        startPage: _startPage,
-                        endPage: _endPage,
-                        dateAdded: DateTime.now(),
-                        status: MemorizationStatus.newStatus,
-                        consecutiveReviewDays: 0,
-                        lastReviewed: null,
-                        reviewHistory: [],
-                      );
-                      
-                      context.read<MemorizationBloc>().add(CreateMemorizationItem(newItem));
-                      
-                      // Show success message and navigate back
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Memorization item added successfully!'),
-                        ),
-                      );
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text('Add to Memorization'),
-                ),
-              ),
-            ],
-          ),
-        ),
+      body: const Center(
+        child: Text('Add Memorization Item Page - Implementation pending'),
       ),
     );
   }

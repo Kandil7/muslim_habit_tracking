@@ -23,12 +23,16 @@ class MemorizationPreferences extends Equatable {
   /// Time for daily review notifications
   final TimeOfDay? notificationTime;
 
+  /// Whether to show overdue item warnings
+  final bool showOverdueWarnings;
+
   /// Constructor
   const MemorizationPreferences({
     required this.reviewPeriod,
     required this.memorizationDirection,
     this.notificationsEnabled = true,
     this.notificationTime,
+    this.showOverdueWarnings = true,
   });
 
   @override
@@ -37,6 +41,7 @@ class MemorizationPreferences extends Equatable {
         memorizationDirection,
         notificationsEnabled,
         notificationTime,
+        showOverdueWarnings,
       ];
 
   /// Creates a copy of this preferences with specified fields replaced
@@ -45,12 +50,14 @@ class MemorizationPreferences extends Equatable {
     MemorizationDirection? memorizationDirection,
     bool? notificationsEnabled,
     TimeOfDay? notificationTime,
+    bool? showOverdueWarnings,
   }) {
     return MemorizationPreferences(
       reviewPeriod: reviewPeriod ?? this.reviewPeriod,
       memorizationDirection: memorizationDirection ?? this.memorizationDirection,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationTime: notificationTime ?? this.notificationTime,
+      showOverdueWarnings: showOverdueWarnings ?? this.showOverdueWarnings,
     );
   }
 }
@@ -70,6 +77,21 @@ class TimeOfDay extends Equatable {
     return TimeOfDay(
       hour: hour ?? this.hour,
       minute: minute ?? this.minute,
+    );
+  }
+
+  /// Returns a formatted string representation of the time
+  String get formattedTime {
+    final hourStr = hour.toString().padLeft(2, '0');
+    final minuteStr = minute.toString().padLeft(2, '0');
+    return '$hourStr:$minuteStr';
+  }
+
+  /// Creates a TimeOfDay from a DateTime
+  factory TimeOfDay.fromDateTime(DateTime dateTime) {
+    return TimeOfDay(
+      hour: dateTime.hour,
+      minute: dateTime.minute,
     );
   }
 }

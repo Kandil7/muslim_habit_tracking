@@ -11,6 +11,7 @@ import '../../../domain/usecases/get_daily_review_schedule.dart';
 import '../../../domain/usecases/get_memorization_items.dart';
 import '../../../domain/usecases/get_memorization_preferences.dart';
 import '../../../domain/usecases/get_memorization_statistics.dart';
+import '../../../domain/usecases/get_detailed_statistics.dart';
 import '../../../domain/usecases/mark_item_as_reviewed.dart';
 import '../../../domain/usecases/update_memorization_item.dart';
 import '../../../domain/usecases/update_memorization_preferences.dart';
@@ -29,6 +30,7 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
   final GetMemorizationPreferences getMemorizationPreferences;
   final UpdateMemorizationPreferences updateMemorizationPreferences;
   final GetMemorizationStatistics getMemorizationStatistics;
+  final GetDetailedStatistics getDetailedStatistics;
 
   MemorizationBloc({
     required this.getMemorizationItems,
@@ -40,11 +42,13 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     required this.getMemorizationPreferences,
     required this.updateMemorizationPreferences,
     required this.getMemorizationStatistics,
+    required this.getDetailedStatistics,
   }) : super(MemorizationInitial()) {
     on<LoadMemorizationItems>(_onLoadMemorizationItems);
     on<LoadDailyReviewSchedule>(_onLoadDailyReviewSchedule);
     on<LoadMemorizationPreferences>(_onLoadMemorizationPreferences);
     on<LoadMemorizationStatistics>(_onLoadMemorizationStatistics);
+    on<LoadDetailedStatistics>(_onLoadDetailedStatistics);
     on<CreateMemorizationItemEvent>(_onCreateMemorizationItem);
     on<UpdateMemorizationItemEvent>(_onUpdateMemorizationItem);
     on<DeleteMemorizationItemEvent>(_onDeleteMemorizationItem);
@@ -104,6 +108,19 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     );
   }
 
+  /// Handle loading detailed statistics
+  Future<void> _onLoadDetailedStatistics(
+    LoadDetailedStatistics event,
+    Emitter<MemorizationState> emit,
+  ) async {
+    emit(MemorizationLoading());
+    final failureOrDetailedStatistics = await getDetailedStatistics();
+    failureOrDetailedStatistics.fold(
+      (failure) => emit(MemorizationError(failure.toString())),
+      (detailedStatistics) => emit(DetailedStatisticsLoaded(detailedStatistics)),
+    );
+  }
+
   /// Handle creating a memorization item
   Future<void> _onCreateMemorizationItem(
     CreateMemorizationItemEvent event,
@@ -152,7 +169,12 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     final failureOrItem = await markItemAsReviewed(event.itemId);
     failureOrItem.fold(
       (failure) => emit(MemorizationError(failure.toString())),
-      (item) => emit(MemorizationOperationSuccess(item)),
+      (item) {
+        // After marking an item as reviewed, reload the schedule and statistics
+        add(LoadDailyReviewSchedule());
+        add(LoadMemorizationStatistics());
+        emit(MemorizationOperationSuccess(item));
+      },
     );
   }
 
@@ -165,7 +187,11 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     final failureOrPreferences = await updateMemorizationPreferences(event.preferences);
     failureOrPreferences.fold(
       (failure) => emit(MemorizationError(failure.toString())),
-      (preferences) => emit(MemorizationPreferencesLoaded(preferences)),
+      (preferences) {
+        // After updating preferences, reload the schedule
+        add(LoadDailyReviewSchedule());
+        emit(MemorizationPreferencesLoaded(preferences));
+      },
     );
   }
 }

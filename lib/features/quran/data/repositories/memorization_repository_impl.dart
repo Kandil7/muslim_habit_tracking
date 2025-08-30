@@ -174,4 +174,14 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
       return Left(CacheFailure(message: e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, DetailedMemorizationStatistics>> getDetailedStatistics() async {
+    try {
+      final detailedStats = await localDataSource.getDetailedStatistics();
+      return Right(detailedStats);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
 }
