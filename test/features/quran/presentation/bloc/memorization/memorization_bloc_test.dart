@@ -5,14 +5,10 @@ import 'package:mockito/mockito.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
-import 'package:muslim_habbit/features/quran/domain/usecases/create_memorization_item.dart';
-import 'package:muslim_habbit/features/quran/domain/usecases/delete_memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_daily_review_schedule.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_items.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_statistics.dart';
-import 'package:muslim_habbit/features/quran/domain/usecases/mark_item_as_reviewed.dart';
-import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
 
@@ -108,7 +104,7 @@ void main() {
       act: (bloc) => bloc.add(LoadMemorizationItems()),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationItemsLoaded([
+        MemorizationItemsLoaded([
           MemorizationItem(
             id: '1',
             surahNumber: 2,
@@ -167,7 +163,7 @@ void main() {
       expect: () => [
         MemorizationLoading(),
         const MemorizationPreferencesLoaded(
-          MemorizationPreferences(
+          const MemorizationPreferences(
             reviewPeriod: 5,
             memorizationDirection: MemorizationDirection.fromBaqarah,
           ),

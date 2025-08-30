@@ -6,7 +6,7 @@ void main() {
     late MemorizationItem memorizationItem;
 
     setUp(() {
-      memorizationItem = const MemorizationItem(
+      memorizationItem = MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',

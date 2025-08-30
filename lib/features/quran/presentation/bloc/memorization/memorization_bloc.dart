@@ -45,10 +45,10 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     on<LoadDailyReviewSchedule>(_onLoadDailyReviewSchedule);
     on<LoadMemorizationPreferences>(_onLoadMemorizationPreferences);
     on<LoadMemorizationStatistics>(_onLoadMemorizationStatistics);
-    on<CreateMemorizationItem>(_onCreateMemorizationItem);
-    on<UpdateMemorizationItem>(_onUpdateMemorizationItem);
-    on<DeleteMemorizationItem>(_onDeleteMemorizationItem);
-    on<MarkItemAsReviewed>(_onMarkItemAsReviewed);
+    on<CreateMemorizationItemEvent>(_onCreateMemorizationItem);
+    on<UpdateMemorizationItemEvent>(_onUpdateMemorizationItem);
+    on<DeleteMemorizationItemEvent>(_onDeleteMemorizationItem);
+    on<MarkItemAsReviewedEvent>(_onMarkItemAsReviewed);
     on<UpdatePreferences>(_onUpdatePreferences);
   }
 
@@ -106,7 +106,7 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
 
   /// Handle creating a memorization item
   Future<void> _onCreateMemorizationItem(
-    CreateMemorizationItem event,
+    CreateMemorizationItemEvent event,
     Emitter<MemorizationState> emit,
   ) async {
     emit(MemorizationLoading());
@@ -119,7 +119,7 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
 
   /// Handle updating a memorization item
   Future<void> _onUpdateMemorizationItem(
-    UpdateMemorizationItem event,
+    UpdateMemorizationItemEvent event,
     Emitter<MemorizationState> emit,
   ) async {
     emit(MemorizationLoading());
@@ -132,7 +132,7 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
 
   /// Handle deleting a memorization item
   Future<void> _onDeleteMemorizationItem(
-    DeleteMemorizationItem event,
+    DeleteMemorizationItemEvent event,
     Emitter<MemorizationState> emit,
   ) async {
     emit(MemorizationLoading());
@@ -145,7 +145,7 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
 
   /// Handle marking an item as reviewed
   Future<void> _onMarkItemAsReviewed(
-    MarkItemAsReviewed event,
+    MarkItemAsReviewedEvent event,
     Emitter<MemorizationState> emit,
   ) async {
     emit(MemorizationLoading());

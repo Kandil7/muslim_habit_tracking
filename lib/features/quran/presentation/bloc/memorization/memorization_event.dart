@@ -21,40 +21,40 @@ class LoadMemorizationPreferences extends MemorizationEvent {}
 class LoadMemorizationStatistics extends MemorizationEvent {}
 
 /// Event to create a new memorization item
-class CreateMemorizationItem extends MemorizationEvent {
+class CreateMemorizationItemEvent extends MemorizationEvent {
   final MemorizationItem item;
 
-  const CreateMemorizationItem(this.item);
+  const CreateMemorizationItemEvent(this.item);
 
   @override
   List<Object?> get props => [item];
 }
 
 /// Event to update an existing memorization item
-class UpdateMemorizationItem extends MemorizationEvent {
+class UpdateMemorizationItemEvent extends MemorizationEvent {
   final MemorizationItem item;
 
-  const UpdateMemorizationItem(this.item);
+  const UpdateMemorizationItemEvent(this.item);
 
   @override
   List<Object?> get props => [item];
 }
 
 /// Event to delete a memorization item
-class DeleteMemorizationItem extends MemorizationEvent {
+class DeleteMemorizationItemEvent extends MemorizationEvent {
   final String itemId;
 
-  const DeleteMemorizationItem(this.itemId);
+  const DeleteMemorizationItemEvent(this.itemId);
 
   @override
   List<Object?> get props => [itemId];
 }
 
 /// Event to mark an item as reviewed
-class MarkItemAsReviewed extends MemorizationEvent {
+class MarkItemAsReviewedEvent extends MemorizationEvent {
   final String itemId;
 
-  const MarkItemAsReviewed(this.itemId);
+  const MarkItemAsReviewedEvent(this.itemId);
 
   @override
   List<Object?> get props => [itemId];
