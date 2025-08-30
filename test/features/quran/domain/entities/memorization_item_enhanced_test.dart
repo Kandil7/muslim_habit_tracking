@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 
 void main() {
@@ -8,7 +9,7 @@ void main() {
     late MemorizationItem memorizedItem;
 
     setUp(() {
-      newItem = const MemorizationItem(
+      newItem = MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -24,7 +25,7 @@ void main() {
         daysRemaining: 5,
       );
 
-      inProgressItem = const MemorizationItem(
+      inProgressItem = MemorizationItem(
         id: '2',
         surahNumber: 3,
         surahName: 'Ali \'Imran',
@@ -40,7 +41,7 @@ void main() {
         daysRemaining: 2,
       );
 
-      memorizedItem = const MemorizationItem(
+      memorizedItem = MemorizationItem(
         id: '3',
         surahNumber: 4,
         surahName: 'An-Nisa',
@@ -71,7 +72,7 @@ void main() {
       expect(estimatedCompletion, isNotNull);
       
       // Should be 2 days from now (5 - 3 = 2)
-      final expectedDate = DateTime.now().add(const Duration(days: 2));
+      final expectedDate = DateTime.now().add(Duration(days: 2));
       expect(estimatedCompletion!.difference(expectedDate).inDays, lessThan(1));
       
       expect(memorizedItem.calculateEstimatedCompletionDate(), memorizedItem.dateMemorized);
