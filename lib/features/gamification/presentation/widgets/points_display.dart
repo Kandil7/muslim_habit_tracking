@@ -99,7 +99,7 @@ class PointsDisplay extends StatelessWidget {
                         Text(
                           '${userPoints.totalPoints} points',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.withValues(alpha:0.7),
                           ),
                         ),
                       ],
@@ -107,7 +107,7 @@ class PointsDisplay extends StatelessWidget {
                   ),
                   Icon(
                     Icons.chevron_right,
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha:0.5),
                   ),
                 ],
               ),
@@ -115,13 +115,13 @@ class PointsDisplay extends StatelessWidget {
               Text(
                 '${userPoints.pointsToNextLevel} points to next level',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha:0.7),
                 ),
               ),
               const SizedBox(height: 8),
               LinearProgressIndicator(
                 value: 1 - (userPoints.pointsToNextLevel / (userPoints.level * 100)),
-                backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+                backgroundColor: theme.colorScheme.onSurface.withValues(alpha:0.1),
                 color: theme.colorScheme.primary,
                 borderRadius: BorderRadius.circular(4),
               ),

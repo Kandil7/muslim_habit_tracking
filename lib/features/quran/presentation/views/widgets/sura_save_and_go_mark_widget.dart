@@ -20,7 +20,7 @@ class SuraSaveAndGoMarkWidget extends StatelessWidget {
     return Container(
       height: 150,
       width: double.infinity,
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withValues(alpha:0.5),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

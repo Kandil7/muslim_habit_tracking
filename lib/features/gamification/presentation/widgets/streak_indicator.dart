@@ -39,7 +39,7 @@ class StreakIndicator extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: effectiveColor.withOpacity(0.1),
+                color: effectiveColor.withValues(alpha:0.1),
               ),
               child: Icon(
                 icon,
@@ -65,7 +65,7 @@ class StreakIndicator extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha:0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -78,7 +78,7 @@ class StreakIndicator extends StatelessWidget {
                   children: [
                     LinearProgressIndicator(
                       value: streak / targetStreak!,
-                      backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+                      backgroundColor: theme.colorScheme.onSurface.withValues(alpha:0.1),
                       color: effectiveColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -86,7 +86,7 @@ class StreakIndicator extends StatelessWidget {
                     Text(
                       'Target: $targetStreak',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha:0.6),
                       ),
                     ),
                   ],

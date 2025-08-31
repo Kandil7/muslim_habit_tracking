@@ -313,7 +313,7 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
               isCurved: true,
               color: Colors.blue,
               barWidth: 3,
-              belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.3)),
+              belowBarData: BarAreaData(show: true, color: Colors.blue.withValues(alpha:0.3)),
               dotData: const FlDotData(show: true),
             ),
           ],

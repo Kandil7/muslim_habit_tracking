@@ -64,7 +64,7 @@ class PrayerTimesCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.access_time, color: AppColors.primary),
@@ -126,7 +126,7 @@ class PrayerTimesCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: _getPrayerColor(
                             prayerList[i].enName,
-                          ).withOpacity(0.1),
+                          ).withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Icon(

@@ -30,7 +30,7 @@ class UnlockableContentCard extends StatelessWidget {
           color:
               content.isUnlocked
                   ? theme.colorScheme.primary
-                  : theme.colorScheme.outline.withOpacity(0.5),
+                  : theme.colorScheme.outline.withValues(alpha:0.5),
           width: content.isUnlocked ? 2 : 1,
         ),
       ),
@@ -72,7 +72,7 @@ class UnlockableContentCard extends StatelessWidget {
                     Container(
                       height: 120,
                       width: double.infinity,
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha:0.5),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -118,7 +118,7 @@ class UnlockableContentCard extends StatelessWidget {
                   Text(
                     content.description,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.withValues(alpha:0.7),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -148,7 +148,7 @@ class UnlockableContentCard extends StatelessWidget {
                             child: Text(
                               ' on ${_formatDate(content.unlockedDate!)}',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(
+                                color: theme.colorScheme.onSurface.withValues(alpha:
                                   0.6,
                                 ),
                               ),
@@ -164,9 +164,9 @@ class UnlockableContentCard extends StatelessWidget {
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: theme.colorScheme.onPrimary,
                         disabledBackgroundColor: theme.colorScheme.onSurface
-                            .withOpacity(0.12),
+                            .withValues(alpha:0.12),
                         disabledForegroundColor: theme.colorScheme.onSurface
-                            .withOpacity(0.38),
+                            .withValues(alpha:0.38),
                         minimumSize: const Size(double.infinity, 36),
                       ),
                       child: Text(

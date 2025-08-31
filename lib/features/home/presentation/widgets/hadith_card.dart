@@ -47,7 +47,7 @@ class HadithCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.secondary.withOpacity(0.1),
+              color: AppColors.secondary.withValues(alpha:0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(

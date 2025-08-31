@@ -92,7 +92,7 @@ class _QiblaDirectionCardState extends State<QiblaDirectionCard>
                     width: 150,
                     height: 150,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha:0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(

@@ -73,9 +73,9 @@ class _DhikrCardState extends State<DhikrCard> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.tertiary.withOpacity(0.1),
+            color: AppColors.tertiary.withValues(alpha:0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.tertiary.withOpacity(0.3)),
+            border: Border.all(color: AppColors.tertiary.withValues(alpha:0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
