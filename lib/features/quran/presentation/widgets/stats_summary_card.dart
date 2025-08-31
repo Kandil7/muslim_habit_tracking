@@ -110,7 +110,7 @@ class _EnhancedStatsGrid extends StatelessWidget {
           children: [
             Expanded(
               child: _EnhancedStatItem(
-                value: '${stats.averageReviewsPerDay.toStringAsFixed(1)}',
+                value: stats.averageReviewsPerDay.toStringAsFixed(1),
                 label: 'Avg Reviews/Day',
                 icon: Icons.trending_up,
                 color: Colors.teal,
@@ -119,7 +119,7 @@ class _EnhancedStatsGrid extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _EnhancedStatItem(
-                value: '${stats.overdueItemsCount}',
+                value: stats.overdueItemsCount.toString(),
                 label: 'Overdue Items',
                 icon: Icons.warning,
                 color: Colors.red,
