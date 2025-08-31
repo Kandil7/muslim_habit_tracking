@@ -202,7 +202,7 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     final failureOrVoid = await deleteMemorizationItem(event.itemId);
     failureOrVoid.fold(
       (failure) => emit(MemorizationError(failure.toString())),
-      (_) => emit(const MemorizationOperationSuccess()),
+      (_) => emit(MemorizationOperationSuccess()),
     );
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart' hide TimeOfDay;
+import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart' as prefs;
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/memorization_progress_card.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_list.dart';
@@ -183,7 +183,7 @@ class MemorizationSettingsPage extends StatefulWidget {
 }
 
 class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
-  TimeOfDay? _selectedTime;
+  prefs.TimeOfDay? _selectedTime;
 
   @override
   void initState() {
@@ -301,14 +301,15 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                       onTap: () async {
                         final TimeOfDay? picked = await showTimePicker(
                           context: context,
-                          initialTime: preferences.notificationTime ??
-                              const TimeOfDay(hour: 8, minute: 0),
+                          initialTime: preferences.notificationTime != null
+                              ? TimeOfDay(hour: preferences.notificationTime!.hour, minute: preferences.notificationTime!.minute)
+                              : const TimeOfDay(hour: 8, minute: 0),
                         );
                         if (picked != null) {
                           context.read<MemorizationBloc>().add(
                                 UpdatePreferences(
                                   preferences.copyWith(
-                                    notificationTime: picked,
+                                    notificationTime: picked != null ? prefs.TimeOfDay(hour: picked.hour, minute: picked.minute) : null,
                                   ),
                                 ),
                               );
