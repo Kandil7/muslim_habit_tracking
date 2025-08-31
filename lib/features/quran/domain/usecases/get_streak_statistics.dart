@@ -1,8 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
-import '../repositories/memorization_repository.dart' hide StreakStatistics;
-import '../entities/streak_statistics.dart';
+import '../repositories/memorization_repository.dart';
 
 /// Use case to get streak statistics
 class GetStreakStatistics {

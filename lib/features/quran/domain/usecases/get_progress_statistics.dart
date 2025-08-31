@@ -1,8 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
-import '../repositories/memorization_repository.dart' hide ProgressStatistics;
-import '../entities/progress_statistics.dart';
+import '../repositories/memorization_repository.dart';
 
 /// Use case to get progress statistics for a specific period
 class GetProgressStatistics {

@@ -367,7 +367,11 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     final failureOrStreakStatistics = await getStreakStatistics();
     failureOrStreakStatistics.fold(
       (failure) => emit(MemorizationError(failure.toString())),
-      (streakStatistics) => emit(StreakStatisticsLoaded(streakStatistics)),
+      (streakStatistics) => emit(StreakStatisticsLoaded(streak_entity.StreakStatistics(
+        currentStreak: streakStatistics.currentStreak,
+        longestStreak: streakStatistics.longestStreak,
+        streakHistory: streakStatistics.streakHistory,
+      ))),
     );
   }
 
@@ -380,7 +384,14 @@ class MemorizationBloc extends Bloc<MemorizationEvent, MemorizationState> {
     final failureOrProgressStatistics = await getProgressStatistics(event.start, event.end);
     failureOrProgressStatistics.fold(
       (failure) => emit(MemorizationError(failure.toString())),
-      (progressStatistics) => emit(ProgressStatisticsLoaded(progressStatistics)),
+      (progressStatistics) => emit(ProgressStatisticsLoaded(progress_entity.ProgressStatistics(
+        startDate: progressStatistics.startDate,
+        endDate: progressStatistics.endDate,
+        itemsStarted: progressStatistics.itemsStarted,
+        itemsCompleted: progressStatistics.itemsCompleted,
+        reviewsCount: progressStatistics.reviewsCount,
+        averageProgressPerDay: progressStatistics.averageProgressPerDay,
+      ))),
     );
   }
 }
