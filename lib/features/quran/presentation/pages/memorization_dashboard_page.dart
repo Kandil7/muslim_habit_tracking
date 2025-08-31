@@ -248,19 +248,19 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                     'Choose the direction of your memorization journey',
                   ),
                   const SizedBox(height: 16),
-                  SegmentedButton<MemorizationDirection>(
+                  SegmentedButton<prefs.MemorizationDirection>(
                     segments: const [
                       ButtonSegment(
-                        value: MemorizationDirection.fromBaqarah,
+                        value: prefs.MemorizationDirection.fromBaqarah,
                         label: Text('Baqarah → Nas'),
                       ),
                       ButtonSegment(
-                        value: MemorizationDirection.fromNas,
+                        value: prefs.MemorizationDirection.fromNas,
                         label: Text('Nas → Baqarah'),
                       ),
                     ],
                     selected: {preferences.memorizationDirection},
-                    onSelectionChanged: (Set<MemorizationDirection> newSelection) {
+                    onSelectionChanged: (Set<prefs.MemorizationDirection> newSelection) {
                       context.read<MemorizationBloc>().add(
                             UpdatePreferences(
                               preferences.copyWith(

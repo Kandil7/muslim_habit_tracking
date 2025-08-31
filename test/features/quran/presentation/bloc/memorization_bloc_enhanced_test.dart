@@ -138,7 +138,7 @@ void main() {
 
   group('LoadItemsByStatus', () {
     final testItems = [
-      const MemorizationItem(
+       MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -156,7 +156,7 @@ void main() {
       'should emit [Loading, ItemsByStatusLoaded] when GetItemsByStatus succeeds',
       build: () {
         when(mockGetItemsByStatus(any))
-            .thenAnswer((_) async => const Right(testItems));
+            .thenAnswer((_) async =>  Right(testItems));
         return memorizationBloc;
       },
       act: (bloc) => bloc.add(LoadItemsByStatus(MemorizationStatus.newStatus)),
@@ -179,7 +179,7 @@ void main() {
       act: (bloc) => bloc.add(LoadItemsByStatus(MemorizationStatus.newStatus)),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationError('CacheFailure(message: Failed)'),
+         MemorizationError('CacheFailure(message: Failed)'),
       ],
       verify: (_) {
         verify(mockGetItemsByStatus(MemorizationStatus.newStatus)).called(1);
@@ -188,7 +188,7 @@ void main() {
   });
 
   group('ArchiveItemEvent', () {
-    final testItem = const MemorizationItem(
+    final testItem =  MemorizationItem(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',
@@ -205,13 +205,13 @@ void main() {
       'should emit [Loading, OperationSuccess] when ArchiveItem succeeds',
       build: () {
         when(mockArchiveItem(any))
-            .thenAnswer((_) async => const Right(testItem));
+            .thenAnswer((_) async =>  Right(testItem));
         return memorizationBloc;
       },
       act: (bloc) => bloc.add(ArchiveItemEvent('1')),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationOperationSuccess(testItem),
+        MemorizationOperationSuccess(testItem),
       ],
       verify: (_) {
         verify(mockArchiveItem('1')).called(1);
@@ -220,7 +220,7 @@ void main() {
   });
 
   group('UnarchiveItemEvent', () {
-    final testItem = const MemorizationItem(
+    final testItem =  MemorizationItem(
       id: '1',
       surahNumber: 2,
       surahName: 'Al-Baqarah',
@@ -237,13 +237,13 @@ void main() {
       'should emit [Loading, OperationSuccess] when UnarchiveItem succeeds',
       build: () {
         when(mockUnarchiveItem(any))
-            .thenAnswer((_) async => const Right(testItem));
+            .thenAnswer((_) async =>  Right(testItem));
         return memorizationBloc;
       },
       act: (bloc) => bloc.add(UnarchiveItemEvent('1')),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationOperationSuccess(testItem),
+         MemorizationOperationSuccess(testItem),
       ],
       verify: (_) {
         verify(mockUnarchiveItem('1')).called(1);
@@ -253,7 +253,7 @@ void main() {
 
   group('LoadOverdueItems', () {
     final testItems = [
-      const MemorizationItem(
+       MemorizationItem(
         id: '1',
         surahNumber: 2,
         surahName: 'Al-Baqarah',
@@ -272,7 +272,7 @@ void main() {
       'should emit [Loading, OverdueItemsLoaded] when GetOverdueItems succeeds',
       build: () {
         when(mockGetOverdueItems())
-            .thenAnswer((_) async => const Right(testItems));
+            .thenAnswer((_) async =>  Right(testItems));
         return memorizationBloc;
       },
       act: (bloc) => bloc.add(LoadOverdueItems()),

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../domain/entities/memorization_preferences.dart' as prefs;
 import '../../domain/repositories/memorization_notification_repository.dart';
 import '../services/memorization_notification_service.dart';
 
@@ -31,11 +32,11 @@ class MemorizationNotificationRepositoryImpl
       final minute = sharedPreferences.getInt(_notificationMinuteKey) ?? 0;
 
       await notificationService.scheduleDailyReviewNotification(
-        const MemorizationPreferences(
+        prefs.MemorizationPreferences(
           reviewPeriod: 5,
-          memorizationDirection: MemorizationDirection.fromBaqarah,
+          memorizationDirection: prefs.MemorizationDirection.fromBaqarah,
           notificationsEnabled: true,
-          notificationTime: TimeOfDay(hour: hour, minute: minute),
+          notificationTime: prefs.TimeOfDay(hour: hour, minute: minute),
         ),
       );
       return const Right(null);
@@ -68,11 +69,11 @@ class MemorizationNotificationRepositoryImpl
       // Reschedule notifications with new preferences
       if (enabled) {
         await notificationService.scheduleDailyReviewNotification(
-          MemorizationPreferences(
+          prefs.MemorizationPreferences(
             reviewPeriod: 5,
-            memorizationDirection: MemorizationDirection.fromBaqarah,
+            memorizationDirection: prefs.MemorizationDirection.fromBaqarah,
             notificationsEnabled: true,
-            notificationTime: TimeOfDay(hour: hour, minute: minute),
+            notificationTime: prefs.TimeOfDay(hour: hour, minute: minute),
           ),
         );
       } else {

@@ -278,7 +278,7 @@ class MemorizationRepositoryImpl implements domain.MemorizationRepository {
   }
 
   @override
-  Future<Either<Failure, streak_entity.StreakStatistics>> getStreakStatistics() async {
+  Future<Either<Failure, domain.StreakStatistics>> getStreakStatistics() async {
     try {
       final streakStats = await localDataSource.getStreakStatistics();
       return Right(streakStats);
@@ -288,7 +288,7 @@ class MemorizationRepositoryImpl implements domain.MemorizationRepository {
   }
 
   @override
-  Future<Either<Failure, progress_entity.ProgressStatistics>> getProgressStatistics(DateTime start, DateTime end) async {
+  Future<Either<Failure, domain.ProgressStatistics>> getProgressStatistics(DateTime start, DateTime end) async {
     try {
       final progressStats = await localDataSource.getProgressStatistics(start, end);
       return Right(progressStats);
