@@ -66,6 +66,18 @@ void main() {
     late MockGetMemorizationPreferences mockGetMemorizationPreferences;
     late MockUpdateMemorizationPreferences mockUpdateMemorizationPreferences;
     late MockGetMemorizationStatistics mockGetMemorizationStatistics;
+    late MockGetDetailedStatistics mockGetDetailedStatistics;
+    late MockGetItemsByStatus mockGetItemsByStatus;
+    late MockArchiveItem mockArchiveItem;
+    late MockUnarchiveItem mockUnarchiveItem;
+    late MockGetOverdueItems mockGetOverdueItems;
+    late MockResetItemProgress mockResetItemProgress;
+    late MockGetItemsNeedingReview mockGetItemsNeedingReview;
+    late MockGetItemReviewHistory mockGetItemReviewHistory;
+    late MockGetItemsBySurah mockGetItemsBySurah;
+    late MockGetItemsByDateRange mockGetItemsByDateRange;
+    late MockGetStreakStatistics mockGetStreakStatistics;
+    late MockGetProgressStatistics mockGetProgressStatistics;
 
     late MemorizationBloc memorizationBloc;
 
