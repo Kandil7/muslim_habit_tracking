@@ -281,7 +281,13 @@ class MemorizationRepositoryImpl implements domain.MemorizationRepository {
   Future<Either<Failure, domain.StreakStatistics>> getStreakStatistics() async {
     try {
       final streakStats = await localDataSource.getStreakStatistics();
-      return Right(streakStats);
+      // Convert from entity to domain model
+      final domainStreakStats = domain.StreakStatistics(
+        currentStreak: streakStats.currentStreak,
+        longestStreak: streakStats.longestStreak,
+        streakHistory: streakStats.streakHistory,
+      );
+      return Right(domainStreakStats);
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
@@ -291,7 +297,16 @@ class MemorizationRepositoryImpl implements domain.MemorizationRepository {
   Future<Either<Failure, domain.ProgressStatistics>> getProgressStatistics(DateTime start, DateTime end) async {
     try {
       final progressStats = await localDataSource.getProgressStatistics(start, end);
-      return Right(progressStats);
+      // Convert from entity to domain model
+      final domainProgressStats = domain.ProgressStatistics(
+        startDate: progressStats.startDate,
+        endDate: progressStats.endDate,
+        itemsStarted: progressStats.itemsStarted,
+        itemsCompleted: progressStats.itemsCompleted,
+        reviewsCount: progressStats.reviewsCount,
+        averageProgressPerDay: progressStats.averageProgressPerDay,
+      );
+      return Right(domainProgressStats);
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }
