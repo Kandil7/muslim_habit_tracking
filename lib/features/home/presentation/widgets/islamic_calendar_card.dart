@@ -81,10 +81,10 @@ class IslamicCalendarCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.tertiary.withOpacity(0.1),
+                color: AppColors.tertiary.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppColors.tertiary.withOpacity(0.3),
+                  color: AppColors.tertiary.withValues(alpha:0.3),
                 ),
               ),
               child: Row(
@@ -164,7 +164,7 @@ class IslamicCalendarCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

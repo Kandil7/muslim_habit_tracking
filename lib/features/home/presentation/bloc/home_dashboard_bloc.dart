@@ -10,14 +10,16 @@ import 'home_dashboard_state.dart';
 class HomeDashboardBloc extends Bloc<HomeDashboardEvent, HomeDashboardState> {
   final HomePreferencesService _preferencesService;
   
+  /// Register event handlers
   HomeDashboardBloc({
     required HomePreferencesService preferencesService,
-  }) : _preferencesService = preferencesService,
-       super(HomeDashboardInitial()) {
+  })  : _preferencesService = preferencesService,
+        super(HomeDashboardInitial()) {
     on<LoadHomeDashboardEvent>(_onLoadHomeDashboard);
     on<UpdateUserNameEvent>(_onUpdateUserName);
     on<ReorderDashboardCardsEvent>(_onReorderDashboardCards);
     on<ToggleCardVisibilityEvent>(_onToggleCardVisibility);
+    on<UpdateDashboardCardsEvent>(_onUpdateDashboardCards);
     on<UpdateQuickActionsEvent>(_onUpdateQuickActions);
   }
   
@@ -131,6 +133,43 @@ class HomeDashboardBloc extends Bloc<HomeDashboardEvent, HomeDashboardState> {
         
         // Get current order
         final cardOrder = _preferencesService.getCardOrder();
+        
+        // Create new dashboard cards
+        final dashboardCards = _createDashboardCards(cardOrder, cardVisibility);
+        
+        emit(HomeDashboardLoaded(
+          userName: currentState.userName,
+          dashboardCards: dashboardCards,
+          quickActions: currentState.quickActions,
+        ));
+      } catch (e) {
+        emit(HomeDashboardError(message: e.toString()));
+        emit(currentState); // Revert to previous state
+      }
+    }
+  }
+  
+  /// Handle UpdateDashboardCardsEvent
+  Future<void> _onUpdateDashboardCards(
+    UpdateDashboardCardsEvent event,
+    Emitter<HomeDashboardState> emit,
+  ) async {
+    if (state is HomeDashboardLoaded) {
+      final currentState = state as HomeDashboardLoaded;
+      
+      try {
+        // Create order list and visibility map from updated cards
+        final List<String> cardOrder = 
+            event.updatedCards.map((card) => card.id).toList();
+        final Map<String, bool> cardVisibility = {
+          for (var card in event.updatedCards) card.id: card.isVisible,
+        };
+        
+        // Save updated order
+        await _preferencesService.setCardOrder(cardOrder);
+        
+        // Save updated visibility
+        await _preferencesService.setCardVisibility(cardVisibility);
         
         // Create new dashboard cards
         final dashboardCards = _createDashboardCards(cardOrder, cardVisibility);

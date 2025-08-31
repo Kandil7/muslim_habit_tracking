@@ -1,7 +1,7 @@
 class PrayerItemModel {
   final String prayerImage, arName, enName, prayerTime;
   Duration remainingTime; // Changed from final to allow updates
-  final bool isPrayerPassed;
+  bool isPrayerPassed; // Changed from final to allow updates
 
   PrayerItemModel({
     required this.prayerImage,

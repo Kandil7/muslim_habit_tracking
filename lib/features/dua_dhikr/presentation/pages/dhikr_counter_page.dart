@@ -173,7 +173,7 @@ class _DhikrCounterPageState extends State<DhikrCounterPage>
                 Text(
                   'Target: ${widget.dhikr.recommendedCount} times',
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha:0.8),
                   ),
                 ),
               ],
@@ -272,7 +272,7 @@ class _DhikrCounterPageState extends State<DhikrCounterPage>
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color: AppColors.primary.withValues(alpha:0.3),
                                   blurRadius: 10,
                                   spreadRadius: 2,
                                 ),

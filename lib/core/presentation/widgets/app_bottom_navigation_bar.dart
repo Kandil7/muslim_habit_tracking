@@ -143,7 +143,7 @@ class AppBottomNavigationBar extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
       selectedItemColor: selectedItemColor ?? colorScheme.primary,
       unselectedItemColor:
-          unselectedItemColor ?? colorScheme.onSurface.withOpacity(0.6),
+          unselectedItemColor ?? colorScheme.onSurface.withValues(alpha:0.6),
       selectedLabelStyle: selectedLabelStyle ??
           labelStyle ??
           theme.textTheme.labelSmall?.copyWith(

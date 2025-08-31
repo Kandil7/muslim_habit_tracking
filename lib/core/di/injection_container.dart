@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:muslim_habbit/core/data/quotes_repository.dart';
+import 'package:muslim_habbit/core/utils/services/location_service.dart';
 import 'package:muslim_habbit/core/utils/services/notification_service.dart';
 import 'package:muslim_habbit/core/utils/services/shared_pref_service.dart';
 import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';
@@ -10,20 +12,18 @@ import 'package:quran_library/quran_library.dart' hide QuranRepository;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-import '../data/quotes_repository.dart';
-import '../services/enhanced_notification_service.dart';
-import '../services/logger_service.dart';
-import '../utils/error_handler.dart';
-
-import '../../features/notification/data/repo/notification_repo_impl.dart';
-import '../../features/notification/presentation/manager/notification/notification_cubit.dart';
-import '../../features/prayer_times/data/repo/prayer_repo_impl.dart';
-import '../localization/bloc/language_bloc_exports.dart';
-
 import '../constants/app_constants.dart';
 import '../network/network_info.dart';
 import '../network/network_error_handler.dart';
 import '../services/cache_manager.dart';
+import '../services/enhanced_notification_service.dart';
+import '../services/logger_service.dart';
+import '../utils/error_handler.dart';
+import '../localization/bloc/language_bloc_exports.dart';
+
+import '../../features/notification/data/repo/notification_repo_impl.dart';
+import '../../features/notification/presentation/manager/notification/notification_cubit.dart';
+import '../../features/prayer_times/data/repo/prayer_repo_impl.dart';
 import '../../features/habit_tracking/data/datasources/habit_local_data_source.dart';
 import '../../features/habit_tracking/data/repositories/habit_repository_impl.dart';
 import '../../features/habit_tracking/domain/repositories/habit_repository.dart';
@@ -38,8 +38,8 @@ import '../../features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import '../../features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart';
 import '../../features/dua_dhikr/data/repositories/dua_dhikr_repository_impl.dart';
 import '../../features/dua_dhikr/domain/repositories/dua_dhikr_repository.dart';
-
 import '../../features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
+
 import '../../features/analytics/data/datasources/analytics_data_source.dart';
 import '../../features/analytics/data/repositories/analytics_repository_impl.dart';
 import '../../features/analytics/domain/repositories/analytics_repository.dart';
@@ -52,7 +52,6 @@ import '../../features/analytics/domain/usecases/get_most_consistent_habit.dart'
 import '../../features/analytics/domain/usecases/get_overall_completion_rate.dart';
 import '../../features/analytics/domain/usecases/set_habit_goal.dart';
 import '../../features/analytics/presentation/bloc/analytics_bloc.dart';
-import '../utils/services/location_service.dart';
 
 import '../../features/habit_tracking/data/repositories/habit_reminder_repository_impl.dart';
 import '../../features/habit_tracking/data/services/habit_notification_service.dart';
@@ -83,6 +82,36 @@ import '../../features/quran/domain/usecases/update_bookmark.dart';
 import '../../features/quran/domain/usecases/update_last_read_position.dart';
 import '../../features/quran/presentation/bloc/quran_bloc.dart';
 
+// Memorization tracking imports
+import '../../features/quran/data/datasources/memorization_local_data_source.dart';
+import '../../features/quran/data/repositories/memorization_repository_impl.dart';
+import '../../features/quran/data/services/memorization_migration_service.dart';
+import '../../features/quran/data/services/memorization_notification_service.dart';
+import '../../features/quran/data/services/quran_integration_service.dart';
+import '../../features/quran/domain/repositories/memorization_repository.dart';
+import '../../features/quran/domain/usecases/create_memorization_item.dart';
+import '../../features/quran/domain/usecases/delete_memorization_item.dart';
+import '../../features/quran/domain/usecases/get_daily_review_schedule.dart';
+import '../../features/quran/domain/usecases/get_memorization_items.dart';
+import '../../features/quran/domain/usecases/get_memorization_preferences.dart';
+import '../../features/quran/domain/usecases/get_memorization_statistics.dart';
+import '../../features/quran/domain/usecases/get_detailed_statistics.dart';
+import '../../features/quran/domain/usecases/mark_item_as_reviewed.dart';
+import '../../features/quran/domain/usecases/update_memorization_item.dart';
+import '../../features/quran/domain/usecases/update_memorization_preferences.dart';
+import '../../features/quran/domain/usecases/get_items_by_status.dart';
+import '../../features/quran/domain/usecases/archive_item.dart';
+import '../../features/quran/domain/usecases/unarchive_item.dart';
+import '../../features/quran/domain/usecases/get_overdue_items.dart';
+import '../../features/quran/domain/usecases/reset_item_progress.dart';
+import '../../features/quran/domain/usecases/get_items_needing_review.dart';
+import '../../features/quran/domain/usecases/get_item_review_history.dart';
+import '../../features/quran/domain/usecases/get_items_by_surah.dart';
+import '../../features/quran/domain/usecases/get_items_by_date_range.dart';
+import '../../features/quran/domain/usecases/get_streak_statistics.dart';
+import '../../features/quran/domain/usecases/get_progress_statistics.dart';
+import '../../features/quran/presentation/bloc/memorization/memorization_bloc.dart';
+
 final GetIt sl = GetIt.instance;
 
 /// Initialize all dependencies
@@ -102,6 +131,7 @@ Future<void> init() async {
   await _initLocalizationFeature();
   await _initHadithFeature();
   await _initQuranFeature();
+  await _initMemorizationFeature();
 }
 
 /// Initialize external dependencies
@@ -378,7 +408,6 @@ Future<void> _initQuranFeature() async {
   sl.registerLazySingleton(() => ClearReadingHistory(sl()));
   sl.registerLazySingleton(() => GetLastReadPosition(sl()));
   sl.registerLazySingleton(() => UpdateLastReadPosition(sl()));
-
   // Register QuranLibrary
   sl.registerLazySingleton<QuranLibrary>(() => QuranLibrary());
 
@@ -398,4 +427,93 @@ Future<void> _initQuranFeature() async {
       sharedPrefService: sl(),
     ),
   );
+
+  // Register Memorization BLoC
+  sl.registerFactory(
+    () => MemorizationBloc(
+      getMemorizationItems: sl(),
+      createMemorizationItem: sl(),
+      updateMemorizationItem: sl(),
+      deleteMemorizationItem: sl(),
+      getDailyReviewSchedule: sl(),
+      markItemAsReviewed: sl(),
+      getMemorizationPreferences: sl(),
+      updateMemorizationPreferences: sl(),
+      getMemorizationStatistics: sl(), 
+      getDetailedStatistics: sl(),
+      getItemsByStatus: sl(),
+      archiveItem: sl(),
+      unarchiveItem: sl(),
+      getOverdueItems: sl(),
+      resetItemProgress: sl(),
+      getItemsNeedingReview: sl(),
+      getItemReviewHistory: sl(),
+      getItemsBySurah: sl(),
+      getItemsByDateRange: sl(),
+      getStreakStatistics: sl(),
+      getProgressStatistics: sl(),
+    ),
+  );
+}
+
+/// Initialize memorization feature dependencies
+Future<void> _initMemorizationFeature() async {
+  // Register Hive box
+  await Hive.openBox(AppConstants.memorizationBoxName);
+
+  // Services
+  sl.registerLazySingleton<QuranIntegrationService>(
+    () => QuranIntegrationService(quranLibrary: sl()),
+  );
+
+  sl.registerLazySingleton<MemorizationNotificationService>(
+    () => MemorizationNotificationService(sl()),
+  );
+
+  sl.registerLazySingleton<MemorizationMigrationService>(
+    () => MemorizationMigrationService(
+      localDataSource: sl(),
+      sharedPreferences: sl(),
+    ),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<MemorizationLocalDataSource>(
+    () => MemorizationLocalDataSourceImpl(
+      memorizationBox: Hive.box(AppConstants.memorizationBoxName),
+      sharedPreferences: sl(),
+      uuid: sl(),
+    ),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<MemorizationRepository>(
+    () => MemorizationRepositoryImpl(localDataSource: sl(), networkInfo: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => GetMemorizationItems(sl()));
+  sl.registerLazySingleton(() => CreateMemorizationItem(sl()));
+  sl.registerLazySingleton(() => UpdateMemorizationItem(sl()));
+  sl.registerLazySingleton(() => DeleteMemorizationItem(sl()));
+  sl.registerLazySingleton(() => GetDailyReviewSchedule(sl()));
+  sl.registerLazySingleton(() => MarkItemAsReviewed(sl()));
+  sl.registerLazySingleton(() => GetMemorizationPreferences(sl()));
+  sl.registerLazySingleton(() => UpdateMemorizationPreferences(sl()));
+  sl.registerLazySingleton(() => GetMemorizationStatistics(sl()));
+  sl.registerLazySingleton(() => GetDetailedStatistics(sl()));
+  sl.registerLazySingleton(() => GetItemsByStatus(sl()));
+  sl.registerLazySingleton(() => ArchiveItem(sl()));
+  sl.registerLazySingleton(() => UnarchiveItem(sl()));
+  sl.registerLazySingleton(() => GetOverdueItems(sl()));
+  sl.registerLazySingleton(() => ResetItemProgress(sl()));
+  sl.registerLazySingleton(() => GetItemsNeedingReview(sl()));
+  sl.registerLazySingleton(() => GetItemReviewHistory(sl()));
+  sl.registerLazySingleton(() => GetItemsBySurah(sl()));
+  sl.registerLazySingleton(() => GetItemsByDateRange(sl()));
+  sl.registerLazySingleton(() => GetStreakStatistics(sl()));
+  sl.registerLazySingleton(() => GetProgressStatistics(sl()));
+
+  // Run data migration
+  await sl<MemorizationMigrationService>().migrateData();
 }

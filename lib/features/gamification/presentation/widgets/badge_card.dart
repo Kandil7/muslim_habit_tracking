@@ -22,7 +22,7 @@ class BadgeCard extends StatelessWidget {
           color:
               badge.isEarned
                   ? theme.colorScheme.primary
-                  : theme.colorScheme.outline.withOpacity(0.5),
+                  : theme.colorScheme.outline.withValues(alpha:0.5),
           width: badge.isEarned ? 2 : 1,
         ),
       ),
@@ -44,7 +44,7 @@ class BadgeCard extends StatelessWidget {
                     height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _getLevelColor(badge.level).withOpacity(0.1),
+                      color: _getLevelColor(badge.level).withValues(alpha:0.1),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -68,7 +68,7 @@ class BadgeCard extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha:0.5),
                       ),
                       child: const Icon(
                         Icons.lock,
@@ -85,7 +85,7 @@ class BadgeCard extends StatelessWidget {
                       child: CircularProgressIndicator(
                         value: badge.progress / 100,
                         strokeWidth: 3,
-                        backgroundColor: Colors.grey.withOpacity(0.3),
+                        backgroundColor: Colors.grey.withValues(alpha:0.3),
                         color: _getLevelColor(badge.level),
                       ),
                     ),
@@ -115,7 +115,7 @@ class BadgeCard extends StatelessWidget {
               Text(
                 badge.description,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha:0.7),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 3,
@@ -134,7 +134,7 @@ class BadgeCard extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: _getLevelColor(badge.level).withOpacity(0.1),
+                      color: _getLevelColor(badge.level).withValues(alpha:0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(

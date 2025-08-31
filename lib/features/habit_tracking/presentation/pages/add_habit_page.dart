@@ -426,7 +426,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
                       isSelected
                           ? [
                             BoxShadow(
-                              color: colorData['color'].withOpacity(0.5),
+                              color: colorData['color'].withValues(alpha:0.5),
                               blurRadius: 8,
                               spreadRadius: 2,
                             ),

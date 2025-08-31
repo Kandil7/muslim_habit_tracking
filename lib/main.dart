@@ -26,7 +26,7 @@ import 'features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart';
 import 'features/dua_dhikr/presentation/pages/dhikr_counter_page.dart';
 import 'features/habit_tracking/presentation/bloc/habit_bloc.dart';
 import 'features/habit_tracking/presentation/bloc/habit_event.dart';
-import 'features/habit_tracking/presentation/pages/add_habit_page.dart';
+import 'features/habit_tracking/presentation/pages/enhanced_add_habit_page.dart';
 import 'features/hadith/presentation/bloc/hadith_bloc.dart';
 import 'features/hadith/presentation/bloc/hadith_event.dart';
 import 'features/hadith/presentation/pages/hadith_collection_page.dart';
@@ -188,7 +188,7 @@ class _SunnahTrackAppState extends State<SunnahTrackApp> {
     final routes = {
       '/dhikr-counter':
           (context) => DhikrCounterPage(dhikr: settings.arguments as Dhikr),
-      '/add-habit': (context) => const AddHabitPage(),
+      '/add-habit': (context) => const EnhancedAddHabitPage(),
       '/hadith-collection': (context) => const HadithCollectionPage(),
       '/quran': (context) => const QuranView(),
       '/settings': (context) => const AppSettingsPage(),

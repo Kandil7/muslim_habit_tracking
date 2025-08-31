@@ -1,0 +1,69 @@
+Analyzing sunnh_tracker...                                      
+
+   info • Missing type annotation • lib/core/constants/app_constants.dart:50:10 • strict_top_level_inference
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/presentation/widgets/app_bottom_navigation_bar.dart:146:56 • deprecated_member_use
+   info • 'printTime' is deprecated and shouldn't be used. Use `dateTimeFormat` with `DateTimeFormat.onlyTimeAndSinceStart` or `DateTimeFormat.none` instead • lib/core/services/logger_service.dart:67:9 • deprecated_member_use
+   info • The constant name 'prayer_habit' isn't a lowerCamelCase identifier • lib/core/theme/app_icons.dart:39:25 • constant_identifier_names
+warning • Unnecessary cast • lib/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart:135:11 • unnecessary_cast
+warning • The value of the local variable 'category' isn't used • lib/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart:207:15 • unused_local_variable
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart:3:8 • depend_on_referenced_packages
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/dua_dhikr/presentation/pages/dhikr_counter_page.dart:176:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/dua_dhikr/presentation/pages/dhikr_counter_page.dart:275:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:34:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:78:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:110:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:117:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:179:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:207:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/badge_details_page.dart:228:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/rewards_page.dart:157:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/pages/unlockable_content_details_page.dart:97:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_card.dart:25:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_card.dart:47:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_card.dart:71:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_card.dart:88:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_card.dart:118:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_card.dart:137:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/badge_grid.dart:27:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/points_display.dart:102:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/points_display.dart:110:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/points_display.dart:118:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/points_display.dart:124:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/streak_indicator.dart:42:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/streak_indicator.dart:68:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/streak_indicator.dart:81:68 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/streak_indicator.dart:89:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/unlockable_content_card.dart:33:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/unlockable_content_card.dart:75:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/unlockable_content_card.dart:121:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/unlockable_content_card.dart:151:68 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/unlockable_content_card.dart:167:30 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/gamification/presentation/widgets/unlockable_content_card.dart:169:30 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/customizable_quick_actions.dart:72:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/dhikr_card.dart:76:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/dhikr_card.dart:78:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/habits_summary_card.dart:99:26 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/hadith_card.dart:50:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/islamic_calendar_card.dart:84:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/islamic_calendar_card.dart:87:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/islamic_calendar_card.dart:167:22 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/prayer_times_card.dart:67:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/prayer_times_card.dart:129:29 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/widgets/qibla_direction_card.dart:95:48 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/features/prayer_times/data/repo/prayer_repo_impl.dart:104:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/prayer_times/data/repo/prayer_repo_impl.dart:152:7 • avoid_print
+   info • Missing type annotation • lib/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart:94:28 • strict_top_level_inference
+warning • The declaration '_getPrayerIcon' isn't referenced • lib/features/prayer_times/presentation/views/widgets/prayer_times_item.dart:168:12 • unused_element
+warning • The value of the field '_quranBox' isn't used • lib/features/quran/data/datasources/quran_local_data_source.dart:46:13 • unused_field
+warning • The declaration '_buildAppBar' isn't referenced • lib/features/quran/presentation/views/sura_view.dart:52:10 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/quran/presentation/views/widgets/sura_save_and_go_mark_widget.dart:23:27 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/splash/presentation/pages/splash_page.dart:84:43 • deprecated_member_use
+warning • The include file 'package:flutter_lints/flutter.yaml' in '/Users/mohamed/flutterproject/muslim/sunnh_tracker/package/quran_library/example/analysis_options.yaml' can't be found when analyzing '/Users/mohamed/flutterproject/muslim/sunnh_tracker/package/quran_library/example' • package/quran_library/example/analysis_options.yaml:10:10 • include_file_not_found
+   info • The type of the right operand ('bool') isn't a subtype or a supertype of the left operand ('List<int>') • package/quran_library/lib/presentation/widgets/custom_span.dart:58:20 • unrelated_type_equality_checks
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_fonts_page.dart:53:10 • unused_element_parameter
+   info • The type of the right operand ('bool') isn't a subtype or a supertype of the left operand ('List<int>') • package/quran_library/lib/presentation/widgets/quran_line.dart:51:30 • unrelated_type_equality_checks
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_line_page.dart:50:10 • unused_element_parameter
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_text_scale.dart:26:10 • unused_element_parameter
+warning • The left operand can't be null, so the right operand is never executed • package/quran_library/lib/presentation/widgets/show_tafseer.dart:116:75 • dead_null_aware_expression
+
+65 issues found. (ran in 21.3s)

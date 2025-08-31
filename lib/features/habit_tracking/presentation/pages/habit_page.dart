@@ -280,7 +280,7 @@ class HabitDashboardPage extends StatelessWidget {
                                               ? [
                                                 BoxShadow(
                                                   color: colorData['color']
-                                                      .withOpacity(0.5),
+                                                      .withValues(alpha:0.5),
                                                   blurRadius: 8,
                                                   spreadRadius: 2,
                                                 ),

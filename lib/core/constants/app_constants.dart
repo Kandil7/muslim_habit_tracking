@@ -16,6 +16,7 @@ class AppConstants {
   static const String duaDhikrBoxName = 'duaDhikr';
   static const String hadithBoxName = 'hadith';
   static const String quranBoxName = 'quran';
+  static const String memorizationBoxName = 'memorization';
 
   // Default settings
   static const int defaultNotificationTime = 15; // minutes before prayer

@@ -31,7 +31,7 @@ class BadgeDetailsPage extends StatelessWidget {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _getLevelColor(badge.level).withOpacity(0.1),
+                color: _getLevelColor(badge.level).withValues(alpha:0.1),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -75,7 +75,7 @@ class BadgeDetailsPage extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _getLevelColor(badge.level).withOpacity(0.1),
+                    color: _getLevelColor(badge.level).withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -107,14 +107,14 @@ class BadgeDetailsPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     badge.isEarned
-                        ? theme.colorScheme.primary.withOpacity(0.1)
+                        ? theme.colorScheme.primary.withValues(alpha:0.1)
                         : theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color:
                       badge.isEarned
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.outline.withOpacity(0.5),
+                          : theme.colorScheme.outline.withValues(alpha:0.5),
                 ),
               ),
               child: Row(
@@ -176,7 +176,7 @@ class BadgeDetailsPage extends StatelessWidget {
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.5),
+                  color: theme.colorScheme.outline.withValues(alpha:0.5),
                 ),
               ),
               child: Column(
@@ -204,7 +204,7 @@ class BadgeDetailsPage extends StatelessWidget {
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.5),
+                  color: theme.colorScheme.outline.withValues(alpha:0.5),
                 ),
               ),
               child: Column(
@@ -225,7 +225,7 @@ class BadgeDetailsPage extends StatelessWidget {
                           Icon(
                             Icons.check_circle_outline,
                             size: 16,
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.withValues(alpha:0.7),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
