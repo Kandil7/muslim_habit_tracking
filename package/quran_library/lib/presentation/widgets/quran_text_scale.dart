@@ -19,6 +19,7 @@ class _QuranTextScale extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor, // Initialize this parameter
     this.languageCode,
     this.circularProgressWidget,
     required this.isDark,
@@ -44,7 +45,7 @@ class _QuranTextScale extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
-  final Color? ayahSelectedFontColor;
+  final Color? ayahSelectedFontColor; // This was declared but not initialized in constructor
   final String? languageCode;
   final Widget? circularProgressWidget;
   final bool isDark;

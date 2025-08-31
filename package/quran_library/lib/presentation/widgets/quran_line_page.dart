@@ -39,6 +39,7 @@ class _QuranLinePage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     required this.newSurahs,
     this.languageCode,
