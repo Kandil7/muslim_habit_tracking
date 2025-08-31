@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/analytics/domain/entities/enhanced/overall_stats.dart';
 import 'package:muslim_habbit/features/analytics/presentation/bloc/enhanced/enhanced_analytics_bloc.dart';
 
 /// Enhanced Analytics Dashboard Page

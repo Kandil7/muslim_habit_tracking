@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/settings/domain/entities/enhanced/user_preferences.dart';
 import 'package:muslim_habbit/features/settings/presentation/bloc/enhanced/enhanced_settings_bloc.dart';
 
 /// Enhanced Settings Page

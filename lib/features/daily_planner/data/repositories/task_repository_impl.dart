@@ -55,7 +55,8 @@ class TaskRepositoryImpl implements TaskRepository {
         completedAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      await localDataSource.updateTask(completedTask);
+      final updatedTaskModel = TaskModel.fromEntity(completedTask);
+      await localDataSource.updateTask(updatedTaskModel);
       return completedTask;
     }
     throw Exception('Task not found');
@@ -69,7 +70,8 @@ class TaskRepositoryImpl implements TaskRepository {
         status: TaskStatus.inProgress,
         updatedAt: DateTime.now(),
       );
-      await localDataSource.updateTask(inProgressTask);
+      final updatedTaskModel = TaskModel.fromEntity(inProgressTask);
+      await localDataSource.updateTask(updatedTaskModel);
       return inProgressTask;
     }
     throw Exception('Task not found');
@@ -83,7 +85,8 @@ class TaskRepositoryImpl implements TaskRepository {
         status: TaskStatus.skipped,
         updatedAt: DateTime.now(),
       );
-      await localDataSource.updateTask(skippedTask);
+      final updatedTaskModel = TaskModel.fromEntity(skippedTask);
+      await localDataSource.updateTask(updatedTaskModel);
       return skippedTask;
     }
     throw Exception('Task not found');
