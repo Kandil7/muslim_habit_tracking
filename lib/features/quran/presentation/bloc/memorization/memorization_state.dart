@@ -39,14 +39,14 @@ class MemorizationPreferencesLoaded extends MemorizationState {
 
 /// State when memorization statistics are loaded
 class MemorizationStatisticsLoaded extends MemorizationState {
-  final MemorizationStatistics statistics;
+  final domain.MemorizationStatistics statistics;
 
   MemorizationStatisticsLoaded(this.statistics);
 }
 
 /// State when detailed statistics are loaded
 class DetailedStatisticsLoaded extends MemorizationState {
-  final DetailedMemorizationStatistics detailedStatistics;
+  final domain.DetailedMemorizationStatistics detailedStatistics;
 
   DetailedStatisticsLoaded(this.detailedStatistics);
 }
@@ -55,7 +55,7 @@ class DetailedStatisticsLoaded extends MemorizationState {
 class MemorizationOperationSuccess extends MemorizationState {
   final MemorizationItem? item;
 
-  const MemorizationOperationSuccess([this.item]);
+  MemorizationOperationSuccess([this.item]);
 }
 
 /// State when items by status are loaded
@@ -107,14 +107,14 @@ class ItemsByDateRangeLoaded extends MemorizationState {
 
 /// State when streak statistics are loaded
 class StreakStatisticsLoaded extends MemorizationState {
-  final StreakStatistics streakStatistics;
+  final streak_entity.StreakStatistics streakStatistics;
 
   StreakStatisticsLoaded(this.streakStatistics);
 }
 
 /// State when progress statistics are loaded
 class ProgressStatisticsLoaded extends MemorizationState {
-  final ProgressStatistics progressStatistics;
+  final progress_entity.ProgressStatistics progressStatistics;
 
   ProgressStatisticsLoaded(this.progressStatistics);
 }

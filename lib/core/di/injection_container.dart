@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:muslim_habbit/core/data/quotes_repository.dart';
+import 'package:muslim_habbit/core/utils/services/location_service.dart';
 import 'package:muslim_habbit/core/utils/services/notification_service.dart';
 import 'package:muslim_habbit/core/utils/services/shared_pref_service.dart';
 import 'package:muslim_habbit/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart';

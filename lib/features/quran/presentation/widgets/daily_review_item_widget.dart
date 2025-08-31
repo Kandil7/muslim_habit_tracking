@@ -73,7 +73,7 @@ class DailyReviewItemWidget extends StatelessWidget {
         return ElevatedButton(
           onPressed: () {
             // Mark item as reviewed
-            context.read<MemorizationBloc>().add(MarkItemAsReviewed(item.id));
+            context.read<MemorizationBloc>().add(MarkItemAsReviewedEvent(item.id));
           },
           child: const Text('Review'),
         );
@@ -81,7 +81,7 @@ class DailyReviewItemWidget extends StatelessWidget {
         return ElevatedButton(
           onPressed: () {
             // Mark item as reviewed
-            context.read<MemorizationBloc>().add(MarkItemAsReviewed(item.id));
+            context.read<MemorizationBloc>().add(MarkItemAsReviewedEvent(item.id));
           },
           child: const Text('Review'),
         );

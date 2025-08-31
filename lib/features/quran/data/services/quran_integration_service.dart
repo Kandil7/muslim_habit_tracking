@@ -1,6 +1,6 @@
 import 'package:quran_library/quran_library.dart' hide QuranRepository;
-
-import '../../domain/entities/memorization_item.dart';
+import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
+import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
 
 /// Service to integrate with the existing Quran library
 class QuranIntegrationService {
@@ -10,45 +10,33 @@ class QuranIntegrationService {
       : _quranLibrary = quranLibrary;
 
   /// Get all surahs from the Quran library
-  List<Surah> getAllSurahs() {
-    return _quranLibrary.getAllSurahs();
+  List<SurahNamesModel> getAllSurahs() {
+    return _quranLibrary.quranCtrl.surahsList;
   }
 
   /// Get a surah by its number
-  Surah? getSurahByNumber(int surahNumber) {
+  SurahNamesModel? getSurahByNumber(int surahNumber) {
     try {
-      return _quranLibrary.getSurah(surahNumber);
+      // Surah numbers are 1-based, but the list is 0-based
+      if (surahNumber < 1 || surahNumber > _quranLibrary.quranCtrl.surahsList.length) {
+        return null;
+      }
+      return _quranLibrary.quranCtrl.surahsList[surahNumber - 1];
     } catch (e) {
       return null;
     }
   }
 
-  /// Get the start and end pages for a surah
-  (int, int) getSurahPageRange(int surahNumber) {
-    final surah = getSurahByNumber(surahNumber);
-    if (surah == null) {
-      return (1, 1); // Default to first page if surah not found
-    }
-    
-    // Assuming the Quran library provides page information
-    // This might need to be adjusted based on the actual Quran library API
-    final startPage = surah.startPage ?? 1;
-    final endPage = surah.endPage ?? startPage;
-    
-    return (startPage, endPage);
-  }
-
   /// Create a MemorizationItem from a surah number
   MemorizationItem createMemorizationItemFromSurah(int surahNumber) {
     final surah = getSurahByNumber(surahNumber);
-    final (startPage, endPage) = getSurahPageRange(surahNumber);
     
     return MemorizationItem(
       id: '', // Will be set by the repository
       surahNumber: surahNumber,
-      surahName: surah?.name ?? 'Unknown Surah',
-      startPage: startPage,
-      endPage: endPage,
+      surahName: surah?.englishName ?? 'Unknown Surah',
+      startPage: 1, // Default values since we don't have page info
+      endPage: 1,   // Default values since we don't have page info
       dateAdded: DateTime.now(),
       status: MemorizationStatus.newStatus,
       consecutiveReviewDays: 0,
@@ -58,7 +46,7 @@ class QuranIntegrationService {
   }
 
   /// Get surahs in the specified memorization direction
-  List<Surah> getSurahsInDirection(MemorizationDirection direction) {
+  List<SurahNamesModel> getSurahsInDirection(MemorizationDirection direction) {
     final allSurahs = getAllSurahs();
     
     if (direction == MemorizationDirection.fromNas) {

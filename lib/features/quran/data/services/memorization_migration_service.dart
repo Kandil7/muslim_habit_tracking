@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/memorization_item.dart';
 import '../../domain/entities/memorization_preferences.dart';
 import '../datasources/memorization_local_data_source.dart';
+import '../models/memorization_preferences_model.dart';
 
 /// Service to handle data migration for existing users
 class MemorizationMigrationService {
@@ -43,7 +44,7 @@ class MemorizationMigrationService {
       // Preferences already exist, no need to do anything
     } catch (e) {
       // Preferences don't exist, create default ones
-      final defaultPreferences = const MemorizationPreferencesModel(
+      final defaultPreferences = MemorizationPreferencesModel(
         reviewPeriod: 5,
         memorizationDirection: MemorizationDirection.fromBaqarah,
       );

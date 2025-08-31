@@ -6,13 +6,15 @@ import '../../../../core/network/network_info.dart';
 import '../../domain/entities/memorization_item.dart';
 import '../../domain/entities/memorization_preferences.dart';
 import '../../domain/entities/review_schedule.dart';
-import '../../domain/repositories/memorization_repository.dart';
+import '../../domain/entities/streak_statistics.dart' as streak_entity;
+import '../../domain/entities/progress_statistics.dart' as progress_entity;
+import '../../domain/repositories/memorization_repository.dart' as domain;
 import '../datasources/memorization_local_data_source.dart';
 import '../models/memorization_item_model.dart';
 import '../models/memorization_preferences_model.dart';
 
 /// Implementation of MemorizationRepository
-class MemorizationRepositoryImpl implements MemorizationRepository {
+class MemorizationRepositoryImpl implements domain.MemorizationRepository {
   final MemorizationLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
 
@@ -166,7 +168,7 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
   }
 
   @override
-  Future<Either<Failure, MemorizationStatistics>> getMemorizationStatistics() async {
+  Future<Either<Failure, domain.MemorizationStatistics>> getMemorizationStatistics() async {
     try {
       final statistics = await localDataSource.getMemorizationStatistics();
       return Right(statistics);
@@ -176,10 +178,122 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
   }
 
   @override
-  Future<Either<Failure, DetailedMemorizationStatistics>> getDetailedStatistics() async {
+  Future<Either<Failure, domain.DetailedMemorizationStatistics>> getDetailedStatistics() async {
     try {
       final detailedStats = await localDataSource.getDetailedStatistics();
       return Right(detailedStats);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MemorizationItem>>> getItemsByStatus(MemorizationStatus status) async {
+    try {
+      final items = await localDataSource.getItemsByStatus(status);
+      return Right(items);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MemorizationItem>> archiveItem(String itemId) async {
+    try {
+      final item = await localDataSource.archiveItem(itemId);
+      return Right(item);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MemorizationItem>> unarchiveItem(String itemId) async {
+    try {
+      final item = await localDataSource.unarchiveItem(itemId);
+      return Right(item);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MemorizationItem>>> getOverdueItems() async {
+    try {
+      final items = await localDataSource.getOverdueItems();
+      return Right(items);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MemorizationItem>> resetItemProgress(String itemId) async {
+    try {
+      final item = await localDataSource.resetItemProgress(itemId);
+      return Right(item);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MemorizationItem>>> getItemsNeedingReview() async {
+    try {
+      final items = await localDataSource.getItemsNeedingReview();
+      return Right(items);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<DateTime>>> getItemReviewHistory(String itemId) async {
+    try {
+      final reviewHistory = await localDataSource.getItemReviewHistory(itemId);
+      return Right(reviewHistory);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MemorizationItem>>> getItemsBySurah(int surahNumber) async {
+    try {
+      final items = await localDataSource.getItemsBySurah(surahNumber);
+      return Right(items);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MemorizationItem>>> getItemsByDateRange(DateTime start, DateTime end) async {
+    try {
+      final items = await localDataSource.getItemsByDateRange(start, end);
+      return Right(items);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  @override
+  Future<Either<Failure, streak_entity.StreakStatistics>> getStreakStatistics() async {
+    try {
+      final streakStats = await localDataSource.getStreakStatistics();
+      return Right(streakStats);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    }
+  }
+
+  @override
+  @override
+  Future<Either<Failure, progress_entity.ProgressStatistics>> getProgressStatistics(DateTime start, DateTime end) async {
+    try {
+      final progressStats = await localDataSource.getProgressStatistics(start, end);
+      return Right(progressStats);
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     }

@@ -7,9 +7,12 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/memorization_item.dart';
 import '../../domain/entities/memorization_preferences.dart';
-import '../../domain/repositories/memorization_repository.dart';
+import '../../domain/entities/streak_statistics.dart';
+import '../../domain/entities/progress_statistics.dart';
 import '../models/memorization_item_model.dart';
 import '../models/memorization_preferences_model.dart';
+import '../models/memorization_statistics_model.dart';
+import '../models/detailed_memorization_statistics_model.dart';
 
 /// Interface for local data source for memorization tracking
 abstract class MemorizationLocalDataSource {
@@ -45,6 +48,39 @@ abstract class MemorizationLocalDataSource {
 
   /// Get detailed statistics for charts and graphs
   Future<DetailedMemorizationStatisticsModel> getDetailedStatistics();
+
+  /// Get items by status
+  Future<List<MemorizationItemModel>> getItemsByStatus(MemorizationStatus status);
+
+  /// Archive an item
+  Future<MemorizationItemModel> archiveItem(String itemId);
+
+  /// Unarchive an item
+  Future<MemorizationItemModel> unarchiveItem(String itemId);
+
+  /// Get overdue items
+  Future<List<MemorizationItemModel>> getOverdueItems();
+
+  /// Reset item progress
+  Future<MemorizationItemModel> resetItemProgress(String itemId);
+
+  /// Get items needing review today
+  Future<List<MemorizationItemModel>> getItemsNeedingReview();
+
+  /// Get review history for an item
+  Future<List<DateTime>> getItemReviewHistory(String itemId);
+
+  /// Get items by surah number
+  Future<List<MemorizationItemModel>> getItemsBySurah(int surahNumber);
+
+  /// Get items within a date range
+  Future<List<MemorizationItemModel>> getItemsByDateRange(DateTime start, DateTime end);
+
+  /// Get streak statistics
+  Future<StreakStatistics> getStreakStatistics();
+
+  /// Get progress statistics for a specific period
+  Future<ProgressStatistics> getProgressStatistics(DateTime start, DateTime end);
 }
 
 /// Implementation of MemorizationLocalDataSource using Hive and SharedPreferences
@@ -98,7 +134,7 @@ class MemorizationLocalDataSourceImpl implements MemorizationLocalDataSource {
   Future<MemorizationItemModel> createMemorizationItem(
       MemorizationItemModel item) async {
     try {
-      final newItem = item.copyWith(id: uuid.v4());
+      final newItem = item.copyWith(id: uuid.v4()) as MemorizationItemModel;
       await memorizationBox.put(newItem.id, json.encode(newItem.toJson()));
       return newItem;
     } catch (e) {
@@ -166,7 +202,7 @@ class MemorizationLocalDataSourceImpl implements MemorizationLocalDataSource {
           lastReviewed: today,
           reviewHistory: [...item.reviewHistory, today],
           dateMemorized: dateMemorized,
-        );
+        ) as MemorizationItemModel;
       } else if (item.status == MemorizationStatus.memorized) {
         // For memorized items, just update the last reviewed date
         // Check if this review is overdue and update overdue count if needed
@@ -179,7 +215,7 @@ class MemorizationLocalDataSourceImpl implements MemorizationLocalDataSource {
           lastReviewed: today,
           reviewHistory: [...item.reviewHistory, today],
           overdueCount: newOverdueCount,
-        );
+        ) as MemorizationItemModel;
       } else {
         // For archived items, don't change anything
         return item;
@@ -333,6 +369,11 @@ class MemorizationLocalDataSourceImpl implements MemorizationLocalDataSource {
           ? totalReviewsCount / daysSinceStart 
           : 0.0;
       
+      // Count overdue items
+      final overdueItemsCount = items
+          .where((item) => item.isOverdue)
+          .length;
+      
       return MemorizationStatisticsModel(
         totalItems: totalItems,
         itemsByStatus: itemsByStatus,
@@ -342,6 +383,7 @@ class MemorizationLocalDataSourceImpl implements MemorizationLocalDataSource {
         memorizationPercentage: memorizationPercentage,
         totalReviews: totalReviewsCount,
         averageReviewsPerDay: averageReviewsPerDay,
+        overdueItemsCount: overdueItemsCount,
       );
     } catch (e) {
       throw CacheException(
@@ -458,178 +500,247 @@ class MemorizationLocalDataSourceImpl implements MemorizationLocalDataSource {
           .where((item) => item.status == MemorizationStatus.archived)
           .length;
       
+      // Calculate review consistency
+      final totalReviewDays = allReviewDates.length;
+      final startDate = items.isNotEmpty 
+          ? items.map((item) => item.dateAdded).reduce((a, b) => a.isBefore(b) ? a : b)
+          : DateTime.now();
+      final totalDays = DateTime.now().difference(startDate).inDays + 1;
+      final reviewConsistency = totalDays > 0 ? (totalReviewDays / totalDays) * 100 : 0.0;
+      
+      // Calculate average pages per day
+      final totalPages = items.fold(0, (sum, item) => sum + item.pageCount);
+      final averagePagesPerDay = totalDays > 0 ? totalPages / totalDays : 0.0;
+      
       return DetailedMemorizationStatisticsModel(
         progressOverTime: progressOverTime,
         reviewFrequencyByDay: reviewFrequencyByDay,
         averageStreakLength: averageStreakLength,
         successRate: successRate,
         archivedItemsCount: archivedItemsCount,
+        reviewConsistency: reviewConsistency,
+        averagePagesPerDay: averagePagesPerDay,
       );
     } catch (e) {
       throw CacheException(
           message: 'Failed to get detailed memorization statistics from local storage');
     }
   }
-}
 
-/// Data model for MemorizationStatistics that extends the entity with serialization methods
-class MemorizationStatisticsModel extends MemorizationStatistics {
-  /// Constructor
-  const MemorizationStatisticsModel({
-    required super.totalItems,
-    required super.itemsByStatus,
-    required super.totalPagesMemorized,
-    required super.currentStreak,
-    required super.longestStreak,
-    required super.memorizationPercentage,
-    required super.totalReviews,
-    required super.averageReviewsPerDay,
-  }) : super();
-
-  /// Factory method to create from entity
-  factory MemorizationStatisticsModel.fromEntity(MemorizationStatistics entity) {
-    return MemorizationStatisticsModel(
-      totalItems: entity.totalItems,
-      itemsByStatus: entity.itemsByStatus,
-      totalPagesMemorized: entity.totalPagesMemorized,
-      currentStreak: entity.currentStreak,
-      longestStreak: entity.longestStreak,
-      memorizationPercentage: entity.memorizationPercentage,
-      totalReviews: entity.totalReviews,
-      averageReviewsPerDay: entity.averageReviewsPerDay,
-    );
-  }
-
-  /// Factory method to create from JSON
-  factory MemorizationStatisticsModel.fromJson(Map<String, dynamic> json) {
-    return MemorizationStatisticsModel(
-      totalItems: json['totalItems'] as int,
-      itemsByStatus: (json['itemsByStatus'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(
-          _statusFromString(key),
-          value as int,
-        ),
-      ),
-      totalPagesMemorized: json['totalPagesMemorized'] as int,
-      currentStreak: json['currentStreak'] as int,
-      longestStreak: json['longestStreak'] as int,
-      memorizationPercentage: (json['memorizationPercentage'] as num).toDouble(),
-      totalReviews: json['totalReviews'] as int,
-      averageReviewsPerDay: (json['averageReviewsPerDay'] as num).toDouble(),
-    );
-  }
-
-  /// Convert to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'totalItems': totalItems,
-      'itemsByStatus': itemsByStatus.map(
-        (key, value) => MapEntry(
-          _statusToString(key),
-          value,
-        ),
-      ),
-      'totalPagesMemorized': totalPagesMemorized,
-      'currentStreak': currentStreak,
-      'longestStreak': longestStreak,
-      'memorizationPercentage': memorizationPercentage,
-      'totalReviews': totalReviews,
-      'averageReviewsPerDay': averageReviewsPerDay,
-    };
-  }
-
-  /// Convert status to string
-  String _statusToString(MemorizationStatus status) {
-    switch (status) {
-      case MemorizationStatus.newStatus:
-        return 'new';
-      case MemorizationStatus.inProgress:
-        return 'inProgress';
-      case MemorizationStatus.memorized:
-        return 'memorized';
-      case MemorizationStatus.archived:
-        return 'archived';
+  @override
+  Future<List<MemorizationItemModel>> getItemsByStatus(MemorizationStatus status) async {
+    try {
+      final items = await getMemorizationItems();
+      return items.where((item) => item.status == status).toList();
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get items by status from local storage');
     }
   }
 
-  /// Convert string to status
-  static MemorizationStatus _statusFromString(String status) {
-    switch (status) {
-      case 'new':
-        return MemorizationStatus.newStatus;
-      case 'inProgress':
-        return MemorizationStatus.inProgress;
-      case 'memorized':
-        return MemorizationStatus.memorized;
-      case 'archived':
-        return MemorizationStatus.archived;
-      default:
-        return MemorizationStatus.newStatus;
+  @override
+  Future<MemorizationItemModel> archiveItem(String itemId) async {
+    try {
+      final item = await getMemorizationItemById(itemId);
+      final updatedItem = item.copyWith(
+        status: MemorizationStatus.archived,
+      ) as MemorizationItemModel;
+      await memorizationBox.put(updatedItem.id, json.encode(updatedItem.toJson()));
+      return updatedItem;
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to archive item in local storage');
     }
   }
-}
 
-/// Data model for DetailedMemorizationStatistics that extends the entity with serialization methods
-class DetailedMemorizationStatisticsModel extends DetailedMemorizationStatistics {
-  /// Constructor
-  const DetailedMemorizationStatisticsModel({
-    required super.progressOverTime,
-    required super.reviewFrequencyByDay,
-    required super.averageStreakLength,
-    required super.successRate,
-    required super.archivedItemsCount,
-  }) : super();
-
-  /// Factory method to create from entity
-  factory DetailedMemorizationStatisticsModel.fromEntity(DetailedMemorizationStatistics entity) {
-    return DetailedMemorizationStatisticsModel(
-      progressOverTime: entity.progressOverTime,
-      reviewFrequencyByDay: entity.reviewFrequencyByDay,
-      averageStreakLength: entity.averageStreakLength,
-      successRate: entity.successRate,
-      archivedItemsCount: entity.archivedItemsCount,
-    );
+  @override
+  Future<MemorizationItemModel> unarchiveItem(String itemId) async {
+    try {
+      final item = await getMemorizationItemById(itemId);
+      // When unarchiving, set status to inProgress if it was memorized before,
+      // otherwise set to newStatus
+      final newStatus = item.dateMemorized != null 
+          ? MemorizationStatus.memorized 
+          : MemorizationStatus.newStatus;
+      
+      final updatedItem = item.copyWith(
+        status: newStatus,
+      ) as MemorizationItemModel;
+      await memorizationBox.put(updatedItem.id, json.encode(updatedItem.toJson()));
+      return updatedItem;
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to unarchive item in local storage');
+    }
   }
 
-  /// Factory method to create from JSON
-  factory DetailedMemorizationStatisticsModel.fromJson(Map<String, dynamic> json) {
-    return DetailedMemorizationStatisticsModel(
-      progressOverTime: (json['progressOverTime'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(
-          DateTime.parse(key),
-          value as int,
-        ),
-      ),
-      reviewFrequencyByDay: (json['reviewFrequencyByDay'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(
-          int.parse(key),
-          value as int,
-        ),
-      ),
-      averageStreakLength: (json['averageStreakLength'] as num).toDouble(),
-      successRate: (json['successRate'] as num).toDouble(),
-      archivedItemsCount: json['archivedItemsCount'] as int,
-    );
+  @override
+  Future<List<MemorizationItemModel>> getOverdueItems() async {
+    try {
+      final items = await getMemorizationItems();
+      return items.where((item) => item.isOverdue).toList();
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get overdue items from local storage');
+    }
   }
 
-  /// Convert to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'progressOverTime': progressOverTime.map(
-        (key, value) => MapEntry(
-          key.toIso8601String(),
-          value,
-        ),
-      ),
-      'reviewFrequencyByDay': reviewFrequencyByDay.map(
-        (key, value) => MapEntry(
-          key.toString(),
-          value,
-        ),
-      ),
-      'averageStreakLength': averageStreakLength,
-      'successRate': successRate,
-      'archivedItemsCount': archivedItemsCount,
-    };
+  @override
+  Future<MemorizationItemModel> resetItemProgress(String itemId) async {
+    try {
+      final item = await getMemorizationItemById(itemId);
+      final updatedItem = item.copyWith(
+        status: MemorizationStatus.newStatus,
+        consecutiveReviewDays: 0,
+        lastReviewed: null,
+        reviewHistory: [],
+        overdueCount: 0,
+        dateMemorized: null,
+      ) as MemorizationItemModel;
+      await memorizationBox.put(updatedItem.id, json.encode(updatedItem.toJson()));
+      return updatedItem;
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to reset item progress in local storage');
+    }
+  }
+
+  @override
+  Future<List<MemorizationItemModel>> getItemsNeedingReview() async {
+    try {
+      final items = await getMemorizationItems();
+      final preferences = await getPreferences();
+      
+      // Filter items that need to be reviewed today
+      final today = DateTime.now();
+      final todayItems = <MemorizationItemModel>[];
+      
+      for (final item in items) {
+        // Always include in-progress items (they need daily review)
+        if (item.status == MemorizationStatus.inProgress) {
+          todayItems.add(item);
+        }
+        // For memorized items, check if they're due for review based on the cycle
+        else if (item.status == MemorizationStatus.memorized) {
+          if (item.isDueForReview(preferences.reviewPeriod)) {
+            todayItems.add(item);
+          }
+        }
+      }
+      
+      return todayItems;
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get items needing review from local storage');
+    }
+  }
+
+  @override
+  Future<List<DateTime>> getItemReviewHistory(String itemId) async {
+    try {
+      final item = await getMemorizationItemById(itemId);
+      return item.reviewHistory;
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get item review history from local storage');
+    }
+  }
+
+  @override
+  Future<List<MemorizationItemModel>> getItemsBySurah(int surahNumber) async {
+    try {
+      final items = await getMemorizationItems();
+      return items.where((item) => item.surahNumber == surahNumber).toList();
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get items by surah from local storage');
+    }
+  }
+
+  @override
+  Future<List<MemorizationItemModel>> getItemsByDateRange(DateTime start, DateTime end) async {
+    try {
+      final items = await getMemorizationItems();
+      return items.where((item) {
+        final itemDate = item.dateAdded;
+        return (itemDate.isAfter(start) || itemDate.isAtSameMomentAs(start)) &&
+               (itemDate.isBefore(end) || itemDate.isAtSameMomentAs(end));
+      }).toList();
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get items by date range from local storage');
+    }
+  }
+
+  @override
+  Future<StreakStatistics> getStreakStatistics() async {
+    try {
+      // Get streak information
+      final currentStreak = sharedPreferences.getInt(_currentStreakKey) ?? 0;
+      final longestStreak = sharedPreferences.getInt(_longestStreakKey) ?? 0;
+      
+      // For streak history, we'll create a simple implementation
+      // In a real app, you might want to store this in a separate data structure
+      final streakHistory = <DateTime, int>{};
+      
+      return StreakStatistics(
+        currentStreak: currentStreak,
+        longestStreak: longestStreak,
+        streakHistory: streakHistory,
+      );
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get streak statistics from local storage');
+    }
+  }
+
+  @override
+  Future<ProgressStatistics> getProgressStatistics(DateTime start, DateTime end) async {
+    try {
+      final items = await getMemorizationItems();
+      
+      // Filter items within the date range
+      final itemsInRange = items.where((item) {
+        final itemDate = item.dateAdded;
+        return (itemDate.isAfter(start) || itemDate.isAtSameMomentAs(start)) &&
+               (itemDate.isBefore(end) || itemDate.isAtSameMomentAs(end));
+      }).toList();
+      
+      // Count items started during the period
+      final itemsStarted = itemsInRange.length;
+      
+      // Count items completed (memorized) during the period
+      final itemsCompleted = itemsInRange
+          .where((item) => item.status == MemorizationStatus.memorized && 
+                          item.dateMemorized != null &&
+                          item.dateMemorized!.isAfter(start) &&
+                          item.dateMemorized!.isBefore(end))
+          .length;
+      
+      // Count reviews during the period
+      int reviewsCount = 0;
+      for (final item in items) {
+        reviewsCount += item.reviewHistory
+            .where((date) => (date.isAfter(start) || date.isAtSameMomentAs(start)) &&
+                            (date.isBefore(end) || date.isAtSameMomentAs(end)))
+            .length;
+      }
+      
+      // Calculate average progress per day
+      final daysInRange = end.difference(start).inDays + 1;
+      final averageProgressPerDay = daysInRange > 0 ? itemsCompleted / daysInRange : 0.0;
+      
+      return ProgressStatistics(
+        startDate: start,
+        endDate: end,
+        itemsStarted: itemsStarted,
+        itemsCompleted: itemsCompleted,
+        reviewsCount: reviewsCount,
+        averageProgressPerDay: averageProgressPerDay,
+      );
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to get progress statistics from local storage');
+    }
   }
 }

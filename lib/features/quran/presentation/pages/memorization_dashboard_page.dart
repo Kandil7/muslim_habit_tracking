@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart' hide TimeOfDay;
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/memorization_progress_card.dart';
 import 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_list.dart';
@@ -301,7 +302,7 @@ class _MemorizationSettingsPageState extends State<MemorizationSettingsPage> {
                         final TimeOfDay? picked = await showTimePicker(
                           context: context,
                           initialTime: preferences.notificationTime ??
-                              TimeOfDay(hour: 8, minute: 0),
+                              const TimeOfDay(hour: 8, minute: 0),
                         );
                         if (picked != null) {
                           context.read<MemorizationBloc>().add(

@@ -22,14 +22,24 @@ class MemorizationNotificationService {
       return;
     }
 
+    // Create a DateTime for today at the specified time
+    final now = DateTime.now();
+    final scheduledTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      preferences.notificationTime!.hour,
+      preferences.notificationTime!.minute,
+    );
+
     // Schedule the notification
     await _notificationService.scheduleNotification(
       id: _dailyReviewNotificationId,
       title: 'Quran Memorization Reminder',
       body: 'It\'s time for your daily Quran review!',
-      hour: preferences.notificationTime!.hour,
-      minute: preferences.notificationTime!.minute,
-      repeat: true,
+      scheduledDate: scheduledTime,
+      repeats: true,
+      repeatInterval: RepeatInterval.daily,
     );
   }
 
