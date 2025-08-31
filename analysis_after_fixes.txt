@@ -1,0 +1,88 @@
+Analyzing sunnh_tracker...                                      
+
+   info • 'printTime' is deprecated and shouldn't be used. Use `dateTimeFormat` with `DateTimeFormat.onlyTimeAndSinceStart` or `DateTimeFormat.none` instead • lib/core/services/logger_service.dart:67:9 • deprecated_member_use
+   info • Unnecessary use of 'toList' in a spread • lib/features/analytics/presentation/pages/enhanced/enhanced_analytics_dashboard_page.dart:362:16 • unnecessary_to_list_in_spreads
+warning • Duplicate import • lib/features/daily_planner/presentation/bloc/task_bloc.dart:9:8 • duplicate_import
+warning • The value of the local variable 'task' isn't used • lib/features/daily_planner/presentation/bloc/task_bloc.dart:56:13 • unused_local_variable
+warning • The value of the local variable 'task' isn't used • lib/features/daily_planner/presentation/bloc/task_bloc.dart:71:13 • unused_local_variable
+warning • The value of the local variable 'task' isn't used • lib/features/daily_planner/presentation/bloc/task_bloc.dart:101:13 • unused_local_variable
+  error • A value of type 'Dua' can't be assigned to a variable of type 'DuaModel' • lib/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart:81:21 • invalid_assignment
+  error • A value of type 'Dua' can't be returned from the method 'toggleDuaFavorite' because it has a return type of 'Future<DuaModel>' • lib/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart:88:14 • return_of_invalid_type
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart:3:8 • depend_on_referenced_packages
+   info • Unnecessary use of 'toList' in a spread • lib/features/enhanced_dashboard/presentation/widgets/task_progress_widget.dart:45:16 • unnecessary_to_list_in_spreads
+   info • Unnecessary use of 'toList' in a spread • lib/features/enhanced_dashboard/presentation/widgets/todays_overview_widget.dart:84:85 • unnecessary_to_list_in_spreads
+   info • Missing type annotation • lib/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart:94:28 • strict_top_level_inference
+warning • The declaration '_getPrayerIcon' isn't referenced • lib/features/prayer_times/presentation/views/widgets/prayer_times_item.dart:168:12 • unused_element
+warning • The value of the field '_statisticsKey' isn't used • lib/features/quran/data/datasources/memorization_local_data_source.dart:100:23 • unused_field
+warning • The value of the local variable 'totalReviews' isn't used • lib/features/quran/data/datasources/memorization_local_data_source.dart:339:11 • unused_local_variable
+warning • The value of the local variable 'today' isn't used • lib/features/quran/data/datasources/memorization_local_data_source.dart:615:13 • unused_local_variable
+warning • The value of the field '_quranBox' isn't used • lib/features/quran/data/datasources/quran_local_data_source.dart:46:13 • unused_field
+  error • Classes can only extend other classes • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:5:51 • extends_non_class
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:8:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:9:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:10:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:11:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:12:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:13:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:14:20 • super_formal_parameter_without_associated_named
+  error • Undefined class 'DetailedMemorizationStatistics' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:18:58 • undefined_class
+  error • Undefined name 'progressOverTime' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:56:27 • undefined_identifier
+  error • Undefined name 'reviewFrequencyByDay' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:62:31 • undefined_identifier
+  error • Undefined name 'averageStreakLength' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:68:30 • undefined_identifier
+  error • Undefined name 'successRate' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:69:22 • undefined_identifier
+  error • Undefined name 'archivedItemsCount' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:70:29 • undefined_identifier
+  error • Undefined name 'reviewConsistency' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:71:28 • undefined_identifier
+  error • Undefined name 'averagePagesPerDay' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:72:29 • undefined_identifier
+  error • Classes can only extend other classes • lib/features/quran/data/models/memorization_statistics_model.dart:3:43 • extends_non_class
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:6:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:7:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:8:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:9:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:10:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:11:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:12:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:13:20 • super_formal_parameter_without_associated_named
+  error • No associated named super constructor parameter • lib/features/quran/data/models/memorization_statistics_model.dart:14:20 • super_formal_parameter_without_associated_named
+  error • Undefined class 'MemorizationStatistics' • lib/features/quran/data/models/memorization_statistics_model.dart:18:50 • undefined_class
+  error • Undefined name 'totalItems' • lib/features/quran/data/models/memorization_statistics_model.dart:55:21 • undefined_identifier
+  error • Undefined name 'itemsByStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:56:24 • undefined_identifier
+  error • Undefined name 'totalPagesMemorized' • lib/features/quran/data/models/memorization_statistics_model.dart:62:30 • undefined_identifier
+  error • Undefined name 'currentStreak' • lib/features/quran/data/models/memorization_statistics_model.dart:63:24 • undefined_identifier
+  error • Undefined name 'longestStreak' • lib/features/quran/data/models/memorization_statistics_model.dart:64:24 • undefined_identifier
+  error • Undefined name 'memorizationPercentage' • lib/features/quran/data/models/memorization_statistics_model.dart:65:33 • undefined_identifier
+  error • Undefined name 'totalReviews' • lib/features/quran/data/models/memorization_statistics_model.dart:66:23 • undefined_identifier
+  error • Undefined name 'averageReviewsPerDay' • lib/features/quran/data/models/memorization_statistics_model.dart:67:31 • undefined_identifier
+  error • Undefined name 'overdueItemsCount' • lib/features/quran/data/models/memorization_statistics_model.dart:68:28 • undefined_identifier
+  error • The body might complete normally, causing 'null' to be returned, but the return type, 'String', is a potentially non-nullable type • lib/features/quran/data/models/memorization_statistics_model.dart:73:10 • body_might_complete_normally
+  error • Undefined class 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:73:26 • undefined_class
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:75:12 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:77:12 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:79:12 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:81:12 • undefined_identifier
+  error • Undefined class 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:87:10 • undefined_class
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:90:16 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:92:16 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:94:16 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:96:16 • undefined_identifier
+  error • Undefined name 'MemorizationStatus' • lib/features/quran/data/models/memorization_statistics_model.dart:98:16 • undefined_identifier
+warning • The value of the local variable 'today' isn't used • lib/features/quran/data/repositories/memorization_repository_impl.dart:86:13 • unused_local_variable
+  error • The argument type 'MemorizationStatisticsModel' can't be assigned to the parameter type 'MemorizationStatistics'.  • lib/features/quran/data/repositories/memorization_repository_impl.dart:172:20 • argument_type_not_assignable
+  error • The argument type 'DetailedMemorizationStatisticsModel' can't be assigned to the parameter type 'DetailedMemorizationStatistics'.  • lib/features/quran/data/repositories/memorization_repository_impl.dart:182:20 • argument_type_not_assignable
+warning • The value of the local variable 'preferences' isn't used • lib/features/quran/data/services/memorization_migration_service.dart:41:13 • unused_local_variable
+warning • The declaration '_migrateFromOldFormat' isn't referenced • lib/features/quran/data/services/memorization_migration_service.dart:54:16 • unused_element
+   info • Don't use 'BuildContext's across async gaps • lib/features/quran/presentation/pages/add_memorization_item_page.dart:74:32 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/features/quran/presentation/pages/add_memorization_item_page.dart:90:7 • use_build_context_synchronously
+   info • Use interpolation to compose strings and values • lib/features/quran/presentation/pages/memorization_statistics_page.dart:354:28 • prefer_interpolation_to_compose_strings
+warning • The declaration '_buildAppBar' isn't referenced • lib/features/quran/presentation/views/sura_view.dart:52:10 • unused_element
+warning • Unused import: 'package:muslim_habbit/features/settings/domain/usecases/enhanced/reset_to_default_settings.dart' • lib/features/settings/presentation/bloc/enhanced/enhanced_settings_bloc.dart:4:8 • unused_import
+warning • Unused import: 'package:muslim_habbit/features/settings/domain/usecases/enhanced/update_user_preferences.dart' • lib/features/settings/presentation/bloc/enhanced/enhanced_settings_bloc.dart:5:8 • unused_import
+warning • The include file 'package:flutter_lints/flutter.yaml' in '/Users/mohamed/flutterproject/muslim/sunnh_tracker/package/quran_library/example/analysis_options.yaml' can't be found when analyzing '/Users/mohamed/flutterproject/muslim/sunnh_tracker/package/quran_library/example' • package/quran_library/example/analysis_options.yaml:10:10 • include_file_not_found
+   info • The type of the right operand ('bool') isn't a subtype or a supertype of the left operand ('List<int>') • package/quran_library/lib/presentation/widgets/custom_span.dart:58:20 • unrelated_type_equality_checks
+   info • Constructors in '@immutable' classes should be declared as 'const' • package/quran_library/lib/presentation/widgets/quran_fonts_page.dart:30:3 • prefer_const_constructors_in_immutables
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_fonts_page.dart:47:10 • unused_element_parameter
+   info • The type of the right operand ('bool') isn't a subtype or a supertype of the left operand ('List<int>') • package/quran_library/lib/presentation/widgets/quran_line.dart:51:30 • unrelated_type_equality_checks
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_line_page.dart:42:10 • unused_element_parameter
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_text_scale.dart:22:10 • unused_element_parameter
+warning • The left operand can't be null, so the right operand is never executed • package/quran_library/lib/presentation/widgets/show_tafseer.dart:116:75 • dead_null_aware_expression
+
+84 issues found. (ran in 28.2s)

@@ -63,7 +63,7 @@ class _EnhancedStatsGrid extends StatelessWidget {
           children: [
             Expanded(
               child: _EnhancedStatItem(
-                value: '${stats.currentStreak}',
+                value: stats.currentStreak.toString(),
                 label: 'Current Streak',
                 icon: Icons.local_fire_department,
                 color: Colors.orange,
@@ -73,7 +73,7 @@ class _EnhancedStatsGrid extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _EnhancedStatItem(
-                value: '${stats.longestStreak}',
+                value: stats.longestStreak.toString(),
                 label: 'Longest Streak',
                 icon: Icons.emoji_events,
                 color: Colors.purple,
@@ -87,7 +87,7 @@ class _EnhancedStatsGrid extends StatelessWidget {
           children: [
             Expanded(
               child: _EnhancedStatItem(
-                value: '${stats.totalItems}',
+                value: stats.totalItems.toString(),
                 label: 'Total Items',
                 icon: Icons.book,
                 color: Colors.blue,
@@ -96,7 +96,7 @@ class _EnhancedStatsGrid extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _EnhancedStatItem(
-                value: '${stats.totalReviews}',
+                value: stats.totalReviews.toString(),
                 label: 'Total Reviews',
                 icon: Icons.refresh,
                 color: Colors.green,

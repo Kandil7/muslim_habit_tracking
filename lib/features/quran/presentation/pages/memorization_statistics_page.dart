@@ -351,7 +351,7 @@ class _AdditionalMetricsCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   _MetricItem(
                     label: 'Review Consistency',
-                    value: '${detailedStats.reviewConsistency.toStringAsFixed(1)}%',
+                    value: detailedStats.reviewConsistency.toStringAsFixed(1) + '%',
                     icon: Icons.bar_chart,
                     color: Colors.orange,
                   ),
