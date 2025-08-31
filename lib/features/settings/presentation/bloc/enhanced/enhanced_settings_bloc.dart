@@ -10,17 +10,17 @@ part 'enhanced_settings_state.dart';
 /// BLoC for managing enhanced settings state
 class EnhancedSettingsBloc
     extends Bloc<EnhancedSettingsEvent, EnhancedSettingsState> {
-  final GetUserPreferences getUserPreferencesUseCase;
-  final UpdateUserPreferences updateUserPreferencesUseCase;
-  final ResetToDefaultSettings resetToDefaultSettingsUseCase;
+  final GetUserPreferences _getUserPreferences;
+  final UpdateUserPreferences _updateUserPreferences;
+  final ResetToDefaultSettings _resetToDefaultSettings;
 
   EnhancedSettingsBloc({
     required GetUserPreferences getUserPreferences,
     required UpdateUserPreferences updateUserPreferences,
     required ResetToDefaultSettings resetToDefaultSettings,
-  }) : getUserPreferencesUseCase = getUserPreferences,
-       updateUserPreferencesUseCase = updateUserPreferences,
-       resetToDefaultSettingsUseCase = resetToDefaultSettings,
+  }) : _getUserPreferences = getUserPreferences,
+       _updateUserPreferences = updateUserPreferences,
+       _resetToDefaultSettings = resetToDefaultSettings,
        super(EnhancedSettingsInitial()) {
     on<LoadUserPreferences>(_onLoadUserPreferences);
     on<UpdateUserPreferences>(_onUpdateUserPreferences);
@@ -36,7 +36,7 @@ class EnhancedSettingsBloc
   ) async {
     emit(EnhancedSettingsLoading());
     try {
-      final preferencesEither = await (getUserPreferencesUseCase as dynamic)();
+      final preferencesEither = await (_getUserPreferences as dynamic)();
 
       await preferencesEither.fold(
         (failure) async {
@@ -59,7 +59,7 @@ class EnhancedSettingsBloc
   ) async {
     emit(EnhancedSettingsLoading());
     try {
-      final preferencesEither = await (updateUserPreferencesUseCase as dynamic)(updateEvent.preferences);
+      final preferencesEither = await (_updateUserPreferences as dynamic)(updateEvent.preferences);
 
       await preferencesEither.fold(
         (failure) async {
@@ -82,7 +82,7 @@ class EnhancedSettingsBloc
   ) async {
     emit(EnhancedSettingsLoading());
     try {
-      final resetEither = await (resetToDefaultSettingsUseCase as dynamic)();
+      final resetEither = await (_resetToDefaultSettings as dynamic)();
 
       await resetEither.fold(
         (failure) async {
@@ -92,7 +92,7 @@ class EnhancedSettingsBloc
         (success) async {
           if (success) {
             // Reload preferences after reset
-            final preferencesEither = await (getUserPreferencesUseCase as dynamic)();
+            final preferencesEither = await (_getUserPreferences as dynamic)();
             await preferencesEither.fold(
               (failure) async {
                 emit(EnhancedSettingsResetError(
