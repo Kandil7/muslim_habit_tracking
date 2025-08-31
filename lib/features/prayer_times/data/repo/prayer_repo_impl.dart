@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '/core/di/injection_container.dart' as di;
+import '/core/services/logger_service.dart';
 import '/core/utils/assets.dart';
 import '/core/utils/helper.dart';
 import '/core/utils/services/shared_pref_service.dart';
@@ -101,7 +102,7 @@ class PrayerRepoImpl extends PrayerRepo {
       _sharedPrefService.setString(
           key: _cacheDateKey, value: DateTime.now().toIso8601String());
     } catch (e) {
-      print('Error caching prayer times: $e');
+      LoggerService().e('Error caching prayer times: $e');
     }
   }
 
@@ -149,7 +150,7 @@ class PrayerRepoImpl extends PrayerRepo {
         'prayerList': prayerList,
       };
     } catch (e) {
-      print('Error retrieving cached prayer times: $e');
+      LoggerService().e('Error retrieving cached prayer times: $e');
       return null;
     }
   }

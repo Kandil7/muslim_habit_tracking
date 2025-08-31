@@ -1,5 +1,5 @@
 
-import '../../domain/repositories/memorization_repository.dart';
+
 
 /// Data model for DetailedMemorizationStatistics that extends the entity with serialization methods
 class DetailedMemorizationStatisticsModel extends DetailedMemorizationStatistics {

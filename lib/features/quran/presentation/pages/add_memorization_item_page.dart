@@ -39,6 +39,9 @@ class _AddMemorizationItemPageState extends State<AddMemorizationItemPage> {
 
   /// Load surahs and sort them based on user preferences
   Future<void> _loadSurahs() async {
+    // Capture context before async operations
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    
     setState(() {
       _isLoading = true;
     });
@@ -86,8 +89,8 @@ class _AddMemorizationItemPageState extends State<AddMemorizationItemPage> {
       // Load preferences if not already loaded
       context.read<MemorizationBloc>().add(LoadMemorizationPreferences());
     } catch (e) {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
+      // Handle error using captured context
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error loading surahs: $e')),
       );
     }

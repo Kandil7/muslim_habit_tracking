@@ -1,5 +1,3 @@
-
-
 import '../../domain/entities/memorization_item.dart';
 
 /// Data model for MemorizationItem that extends the entity with serialization methods

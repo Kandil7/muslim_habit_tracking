@@ -1,7 +1,4 @@
 
-import '../../domain/entities/memorization_item.dart';
-import '../../domain/repositories/memorization_repository.dart';
-
 /// Data model for MemorizationStatistics that extends the entity with serialization methods
 class MemorizationStatisticsModel extends MemorizationStatistics {
   /// Constructor

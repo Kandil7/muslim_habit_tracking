@@ -77,7 +77,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       if (index == -1) throw CacheException(message: 'Dua not found');
 
       final updatedDua =
-          duas[index].copyWith(isFavorite: !duas[index].isFavorite) as DuaModel;
+          duas[index].copyWith(isFavorite: !duas[index].isFavorite);
       duas[index] = updatedDua;
 
       await duaDhikrBox.put(
@@ -203,7 +203,6 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       int globalIndex = 0;
 
       for (final categoryData in jsonData) {
-        final category = categoryData['category'] as String? ?? 'Uncategorized';
         final array = categoryData['array'] as List<dynamic>? ?? [];
 
         for (final item in array) {

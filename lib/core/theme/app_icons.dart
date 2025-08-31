@@ -36,7 +36,7 @@ class AppIcons {
   static const IconData more = IconlyBold.more_circle;
   
   // Habit types
-  static const IconData prayer_habit = IconlyBold.time_circle;
+  static const IconData prayerHabit = IconlyBold.time_circle;
   static const IconData quran = Icons.book;
   static const IconData fasting = IconlyBold.time_square;
   static const IconData dhikr = IconlyBold.voice;
