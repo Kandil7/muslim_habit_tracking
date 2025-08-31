@@ -27,7 +27,7 @@ class _QuranFontsPage extends StatelessWidget {
   final String? fontsName;
   final List<int> ayahBookmarked;
 
-   _QuranFontsPage({
+  _QuranFontsPage({
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,
@@ -44,6 +44,7 @@ class _QuranFontsPage extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
