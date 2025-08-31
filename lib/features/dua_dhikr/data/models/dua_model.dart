@@ -50,4 +50,27 @@ class DuaModel extends Dua {
       isFavorite: isFavorite,
     );
   }
+
+  @override
+  DuaModel copyWith({
+    String? id,
+    String? title,
+    String? arabicText,
+    String? transliteration,
+    String? translation,
+    String? reference,
+    String? category,
+    bool? isFavorite,
+  }) {
+    return DuaModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      arabicText: arabicText ?? this.arabicText,
+      transliteration: transliteration ?? this.transliteration,
+      translation: translation ?? this.translation,
+      reference: reference ?? this.reference,
+      category: category ?? this.category,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 }
