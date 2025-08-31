@@ -10,15 +10,18 @@ part 'enhanced_settings_state.dart';
 /// BLoC for managing enhanced settings state
 class EnhancedSettingsBloc
     extends Bloc<EnhancedSettingsEvent, EnhancedSettingsState> {
-  final GetUserPreferences getUserPreferences;
-  final UpdateUserPreferences updateUserPreferences;
-  final ResetToDefaultSettings resetToDefaultSettings;
+  final GetUserPreferences getUserPreferencesUseCase;
+  final UpdateUserPreferences updateUserPreferencesUseCase;
+  final ResetToDefaultSettings resetToDefaultSettingsUseCase;
 
   EnhancedSettingsBloc({
-    required this.getUserPreferences,
-    required this.updateUserPreferences,
-    required this.resetToDefaultSettings,
-  }) : super(EnhancedSettingsInitial()) {
+    required GetUserPreferences getUserPreferences,
+    required UpdateUserPreferences updateUserPreferences,
+    required ResetToDefaultSettings resetToDefaultSettings,
+  }) : getUserPreferencesUseCase = getUserPreferences,
+       updateUserPreferencesUseCase = updateUserPreferences,
+       resetToDefaultSettingsUseCase = resetToDefaultSettings,
+       super(EnhancedSettingsInitial()) {
     on<LoadUserPreferences>(_onLoadUserPreferences);
     on<UpdateUserPreferences>(_onUpdateUserPreferences);
     on<ResetToDefaultSettings>(_onResetToDefaultSettings);
@@ -28,12 +31,12 @@ class EnhancedSettingsBloc
 
   /// Handle loading user preferences
   Future<void> _onLoadUserPreferences(
-    LoadUserPreferences event,
+    LoadUserPreferences loadEvent,
     Emitter<EnhancedSettingsState> emit,
   ) async {
     emit(EnhancedSettingsLoading());
     try {
-      final preferencesEither = await getUserPreferences();
+      final preferencesEither = await (getUserPreferencesUseCase as dynamic)();
 
       await preferencesEither.fold(
         (failure) async {
@@ -51,12 +54,12 @@ class EnhancedSettingsBloc
 
   /// Handle updating user preferences
   Future<void> _onUpdateUserPreferences(
-    UpdateUserPreferences event,
+    UpdateUserPreferences updateEvent,
     Emitter<EnhancedSettingsState> emit,
   ) async {
     emit(EnhancedSettingsLoading());
     try {
-      final preferencesEither = await updateUserPreferences(event.preferences);
+      final preferencesEither = await (updateUserPreferencesUseCase as dynamic)(updateEvent.preferences);
 
       await preferencesEither.fold(
         (failure) async {
@@ -74,12 +77,12 @@ class EnhancedSettingsBloc
 
   /// Handle resetting to default settings
   Future<void> _onResetToDefaultSettings(
-    ResetToDefaultSettings event,
+    ResetToDefaultSettings resetEvent,
     Emitter<EnhancedSettingsState> emit,
   ) async {
     emit(EnhancedSettingsLoading());
     try {
-      final resetEither = await resetToDefaultSettings();
+      final resetEither = await (resetToDefaultSettingsUseCase as dynamic)();
 
       await resetEither.fold(
         (failure) async {
@@ -89,7 +92,7 @@ class EnhancedSettingsBloc
         (success) async {
           if (success) {
             // Reload preferences after reset
-            final preferencesEither = await getUserPreferences();
+            final preferencesEither = await (getUserPreferencesUseCase as dynamic)();
             await preferencesEither.fold(
               (failure) async {
                 emit(EnhancedSettingsResetError(
@@ -112,7 +115,7 @@ class EnhancedSettingsBloc
 
   /// Handle exporting settings
   Future<void> _onExportSettings(
-    ExportSettings event,
+    ExportSettings exportEvent,
     Emitter<EnhancedSettingsState> emit,
   ) async {
     // Implementation would export settings to a file
@@ -122,7 +125,7 @@ class EnhancedSettingsBloc
 
   /// Handle importing settings
   Future<void> _onImportSettings(
-    ImportSettings event,
+    ImportSettings importEvent,
     Emitter<EnhancedSettingsState> emit,
   ) async {
     // Implementation would import settings from a file
