@@ -12,24 +12,52 @@ import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.d
     as _i7;
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart'
     as _i15;
+import 'package:muslim_habbit/features/quran/domain/entities/progress_statistics.dart'
+    as _i31;
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart'
     as _i12;
+import 'package:muslim_habbit/features/quran/domain/entities/streak_statistics.dart'
+    as _i29;
 import 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart'
     as _i2;
+import 'package:muslim_habbit/features/quran/domain/usecases/archive_item.dart'
+    as _i20;
 import 'package:muslim_habbit/features/quran/domain/usecases/create_memorization_item.dart'
     as _i8;
 import 'package:muslim_habbit/features/quran/domain/usecases/delete_memorization_item.dart'
     as _i10;
 import 'package:muslim_habbit/features/quran/domain/usecases/get_daily_review_schedule.dart'
     as _i11;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_detailed_statistics.dart'
+    as _i18;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_item_review_history.dart'
+    as _i25;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_by_date_range.dart'
+    as _i27;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_by_status.dart'
+    as _i19;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_by_surah.dart'
+    as _i26;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_needing_review.dart'
+    as _i24;
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_items.dart'
     as _i4;
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_preferences.dart'
     as _i14;
 import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_statistics.dart'
     as _i17;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_overdue_items.dart'
+    as _i22;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_progress_statistics.dart'
+    as _i30;
+import 'package:muslim_habbit/features/quran/domain/usecases/get_streak_statistics.dart'
+    as _i28;
 import 'package:muslim_habbit/features/quran/domain/usecases/mark_item_as_reviewed.dart'
     as _i13;
+import 'package:muslim_habbit/features/quran/domain/usecases/reset_item_progress.dart'
+    as _i23;
+import 'package:muslim_habbit/features/quran/domain/usecases/unarchive_item.dart'
+    as _i21;
 import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_item.dart'
     as _i9;
 import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_preferences.dart'
@@ -404,4 +432,466 @@ class MockGetMemorizationStatistics extends _i1.Mock
           ),
         )),
       ) as _i5.Future<_i3.Either<_i6.Failure, _i2.MemorizationStatistics>>);
+}
+
+/// A class which mocks [GetDetailedStatistics].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetDetailedStatistics extends _i1.Mock
+    implements _i18.GetDetailedStatistics {
+  MockGetDetailedStatistics() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, _i2.DetailedMemorizationStatistics>>
+      call() => (super.noSuchMethod(
+            Invocation.method(
+              #call,
+              [],
+            ),
+            returnValue: _i5.Future<
+                    _i3.Either<_i6.Failure,
+                        _i2.DetailedMemorizationStatistics>>.value(
+                _FakeEither_1<_i6.Failure, _i2.DetailedMemorizationStatistics>(
+              this,
+              Invocation.method(
+                #call,
+                [],
+              ),
+            )),
+          ) as _i5.Future<
+              _i3.Either<_i6.Failure, _i2.DetailedMemorizationStatistics>>);
+}
+
+/// A class which mocks [GetItemsByStatus].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetItemsByStatus extends _i1.Mock implements _i19.GetItemsByStatus {
+  MockGetItemsByStatus() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>> call(
+          _i7.MemorizationStatus? status) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [status],
+        ),
+        returnValue: _i5
+            .Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>.value(
+            _FakeEither_1<_i6.Failure, List<_i7.MemorizationItem>>(
+          this,
+          Invocation.method(
+            #call,
+            [status],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>);
+}
+
+/// A class which mocks [ArchiveItem].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockArchiveItem extends _i1.Mock implements _i20.ArchiveItem {
+  MockArchiveItem() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>> call(
+          String? itemId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [itemId],
+        ),
+        returnValue:
+            _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>>.value(
+                _FakeEither_1<_i6.Failure, _i7.MemorizationItem>(
+          this,
+          Invocation.method(
+            #call,
+            [itemId],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>>);
+}
+
+/// A class which mocks [UnarchiveItem].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUnarchiveItem extends _i1.Mock implements _i21.UnarchiveItem {
+  MockUnarchiveItem() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>> call(
+          String? itemId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [itemId],
+        ),
+        returnValue:
+            _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>>.value(
+                _FakeEither_1<_i6.Failure, _i7.MemorizationItem>(
+          this,
+          Invocation.method(
+            #call,
+            [itemId],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>>);
+}
+
+/// A class which mocks [GetOverdueItems].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetOverdueItems extends _i1.Mock implements _i22.GetOverdueItems {
+  MockGetOverdueItems() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>> call() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [],
+        ),
+        returnValue: _i5
+            .Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>.value(
+            _FakeEither_1<_i6.Failure, List<_i7.MemorizationItem>>(
+          this,
+          Invocation.method(
+            #call,
+            [],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>);
+}
+
+/// A class which mocks [ResetItemProgress].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockResetItemProgress extends _i1.Mock implements _i23.ResetItemProgress {
+  MockResetItemProgress() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>> call(
+          String? itemId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [itemId],
+        ),
+        returnValue:
+            _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>>.value(
+                _FakeEither_1<_i6.Failure, _i7.MemorizationItem>(
+          this,
+          Invocation.method(
+            #call,
+            [itemId],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i7.MemorizationItem>>);
+}
+
+/// A class which mocks [GetItemsNeedingReview].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetItemsNeedingReview extends _i1.Mock
+    implements _i24.GetItemsNeedingReview {
+  MockGetItemsNeedingReview() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>> call() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [],
+        ),
+        returnValue: _i5
+            .Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>.value(
+            _FakeEither_1<_i6.Failure, List<_i7.MemorizationItem>>(
+          this,
+          Invocation.method(
+            #call,
+            [],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>);
+}
+
+/// A class which mocks [GetItemReviewHistory].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetItemReviewHistory extends _i1.Mock
+    implements _i25.GetItemReviewHistory {
+  MockGetItemReviewHistory() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, List<DateTime>>> call(String? itemId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [itemId],
+        ),
+        returnValue: _i5.Future<_i3.Either<_i6.Failure, List<DateTime>>>.value(
+            _FakeEither_1<_i6.Failure, List<DateTime>>(
+          this,
+          Invocation.method(
+            #call,
+            [itemId],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, List<DateTime>>>);
+}
+
+/// A class which mocks [GetItemsBySurah].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetItemsBySurah extends _i1.Mock implements _i26.GetItemsBySurah {
+  MockGetItemsBySurah() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>> call(
+          int? surahNumber) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [surahNumber],
+        ),
+        returnValue: _i5
+            .Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>.value(
+            _FakeEither_1<_i6.Failure, List<_i7.MemorizationItem>>(
+          this,
+          Invocation.method(
+            #call,
+            [surahNumber],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>);
+}
+
+/// A class which mocks [GetItemsByDateRange].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetItemsByDateRange extends _i1.Mock
+    implements _i27.GetItemsByDateRange {
+  MockGetItemsByDateRange() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>> call(
+    DateTime? start,
+    DateTime? end,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [
+            start,
+            end,
+          ],
+        ),
+        returnValue: _i5
+            .Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>.value(
+            _FakeEither_1<_i6.Failure, List<_i7.MemorizationItem>>(
+          this,
+          Invocation.method(
+            #call,
+            [
+              start,
+              end,
+            ],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, List<_i7.MemorizationItem>>>);
+}
+
+/// A class which mocks [GetStreakStatistics].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetStreakStatistics extends _i1.Mock
+    implements _i28.GetStreakStatistics {
+  MockGetStreakStatistics() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, _i29.StreakStatistics>> call() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [],
+        ),
+        returnValue:
+            _i5.Future<_i3.Either<_i6.Failure, _i29.StreakStatistics>>.value(
+                _FakeEither_1<_i6.Failure, _i29.StreakStatistics>(
+          this,
+          Invocation.method(
+            #call,
+            [],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i29.StreakStatistics>>);
+}
+
+/// A class which mocks [GetProgressStatistics].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetProgressStatistics extends _i1.Mock
+    implements _i30.GetProgressStatistics {
+  MockGetProgressStatistics() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.MemorizationRepository get repository => (super.noSuchMethod(
+        Invocation.getter(#repository),
+        returnValue: _FakeMemorizationRepository_0(
+          this,
+          Invocation.getter(#repository),
+        ),
+      ) as _i2.MemorizationRepository);
+
+  @override
+  _i5.Future<_i3.Either<_i6.Failure, _i31.ProgressStatistics>> call(
+    DateTime? start,
+    DateTime? end,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [
+            start,
+            end,
+          ],
+        ),
+        returnValue:
+            _i5.Future<_i3.Either<_i6.Failure, _i31.ProgressStatistics>>.value(
+                _FakeEither_1<_i6.Failure, _i31.ProgressStatistics>(
+          this,
+          Invocation.method(
+            #call,
+            [
+              start,
+              end,
+            ],
+          ),
+        )),
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i31.ProgressStatistics>>);
 }

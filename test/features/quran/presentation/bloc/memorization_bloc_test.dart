@@ -124,7 +124,7 @@ void main() {
       act: (bloc) => bloc.add(LoadMemorizationItems()),
       expect: () => [
         MemorizationLoading(),
-        const MemorizationError('CacheFailure(message: Failed)'),
+        MemorizationError('CacheFailure(message: Failed)'),
       ],
       verify: (_) {
         verify(mockGetMemorizationItems()).called(1);

@@ -91,6 +91,18 @@ void main() {
       mockGetMemorizationPreferences = MockGetMemorizationPreferences();
       mockUpdateMemorizationPreferences = MockUpdateMemorizationPreferences();
       mockGetMemorizationStatistics = MockGetMemorizationStatistics();
+      mockGetDetailedStatistics = MockGetDetailedStatistics();
+      mockGetItemsByStatus = MockGetItemsByStatus();
+      mockArchiveItem = MockArchiveItem();
+      mockUnarchiveItem = MockUnarchiveItem();
+      mockGetOverdueItems = MockGetOverdueItems();
+      mockResetItemProgress = MockResetItemProgress();
+      mockGetItemsNeedingReview = MockGetItemsNeedingReview();
+      mockGetItemReviewHistory = MockGetItemReviewHistory();
+      mockGetItemsBySurah = MockGetItemsBySurah();
+      mockGetItemsByDateRange = MockGetItemsByDateRange();
+      mockGetStreakStatistics = MockGetStreakStatistics();
+      mockGetProgressStatistics = MockGetProgressStatistics();
 
       memorizationBloc = MemorizationBloc(
         getMemorizationItems: mockGetMemorizationItems,
@@ -102,6 +114,18 @@ void main() {
         getMemorizationPreferences: mockGetMemorizationPreferences,
         updateMemorizationPreferences: mockUpdateMemorizationPreferences,
         getMemorizationStatistics: mockGetMemorizationStatistics,
+        getDetailedStatistics: mockGetDetailedStatistics,
+        getItemsByStatus: mockGetItemsByStatus,
+        archiveItem: mockArchiveItem,
+        unarchiveItem: mockUnarchiveItem,
+        getOverdueItems: mockGetOverdueItems,
+        resetItemProgress: mockResetItemProgress,
+        getItemsNeedingReview: mockGetItemsNeedingReview,
+        getItemReviewHistory: mockGetItemReviewHistory,
+        getItemsBySurah: mockGetItemsBySurah,
+        getItemsByDateRange: mockGetItemsByDateRange,
+        getStreakStatistics: mockGetStreakStatistics,
+        getProgressStatistics: mockGetProgressStatistics,
       );
     });
 
