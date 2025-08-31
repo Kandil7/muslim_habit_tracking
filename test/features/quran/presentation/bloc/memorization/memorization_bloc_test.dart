@@ -15,6 +15,18 @@ import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_st
 import 'package:muslim_habbit/features/quran/domain/usecases/mark_item_as_reviewed.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/usecases/update_memorization_preferences.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_detailed_statistics.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_by_status.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/archive_item.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/unarchive_item.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_overdue_items.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/reset_item_progress.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_needing_review.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_item_review_history.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_by_surah.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_items_by_date_range.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_streak_statistics.dart';
+import 'package:muslim_habbit/features/quran/domain/usecases/get_progress_statistics.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
 
 // Generate mocks
@@ -28,6 +40,18 @@ import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memo
   GetMemorizationPreferences,
   UpdateMemorizationPreferences,
   GetMemorizationStatistics,
+  GetDetailedStatistics,
+  GetItemsByStatus,
+  ArchiveItem,
+  UnarchiveItem,
+  GetOverdueItems,
+  ResetItemProgress,
+  GetItemsNeedingReview,
+  GetItemReviewHistory,
+  GetItemsBySurah,
+  GetItemsByDateRange,
+  GetStreakStatistics,
+  GetProgressStatistics,
 ])
 import 'memorization_bloc_test.mocks.dart';
 

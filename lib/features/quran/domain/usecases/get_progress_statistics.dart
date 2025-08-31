@@ -12,6 +12,6 @@ class GetProgressStatistics {
 
   /// Get progress statistics for a specific period
   Future<Either<Failure, ProgressStatistics>> call(DateTime start, DateTime end) async {
-    return await repository.getProgressStatistics(start, end);
+    return repository.getProgressStatistics(start, end);
   }
 }
