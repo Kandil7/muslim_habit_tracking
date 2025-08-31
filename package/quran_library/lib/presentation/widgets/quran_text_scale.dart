@@ -23,7 +23,6 @@ class _QuranTextScale extends StatelessWidget {
     this.circularProgressWidget,
     required this.isDark,
     required this.ayahBookmarked,
-    this.ayahSelectedFontColor,
   });
 
   final quranCtrl = QuranCtrl.instance;

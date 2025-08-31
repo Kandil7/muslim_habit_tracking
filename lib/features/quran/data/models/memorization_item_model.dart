@@ -1,6 +1,4 @@
-import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
 
 import '../../domain/entities/memorization_item.dart';
 

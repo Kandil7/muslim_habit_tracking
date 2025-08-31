@@ -1,5 +1,6 @@
 part of 'task_bloc.dart';
 
+
 /// Base event class for task management
 abstract class TaskEvent {}
 

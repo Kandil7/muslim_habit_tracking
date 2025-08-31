@@ -21,7 +21,7 @@ class _EnhancedDashboardPageState extends State<EnhancedDashboardPage> {
   void initState() {
     super.initState();
     // Load initial dashboard data
-    context.read<EnhancedDashboardBloc>().add(const LoadDashboardDataEvent());
+    context.read<EnhancedDashboardBloc>().add( LoadDashboardDataEvent());
   }
 
   @override
@@ -46,7 +46,7 @@ class _EnhancedDashboardPageState extends State<EnhancedDashboardPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          context.read<EnhancedDashboardBloc>().add(const LoadDashboardDataEvent());
+          context.read<EnhancedDashboardBloc>().add( LoadDashboardDataEvent());
         },
         child: BlocBuilder<EnhancedDashboardBloc, EnhancedDashboardState>(
           builder: (context, state) {
@@ -64,7 +64,7 @@ class _EnhancedDashboardPageState extends State<EnhancedDashboardPage> {
                     ElevatedButton(
                       onPressed: () {
                         context.read<EnhancedDashboardBloc>().add(
-                              const LoadDashboardDataEvent(),
+                               LoadDashboardDataEvent(),
                             );
                       },
                       child: Text(context.tr.translate('common.retry')),

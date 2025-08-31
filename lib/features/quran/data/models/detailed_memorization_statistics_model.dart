@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 
 import '../../domain/repositories/memorization_repository.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muslim_habbit/features/enhanced_dashboard/presentation/bloc/enhanced_dashboard_state.dart';
+import 'package:muslim_habbit/features/enhanced_dashboard/presentation/bloc/enhanced_dashboard_bloc.dart';
 
 /// Widget showing motivational snippets with Islamic content
 class MotivationalSnippetWidget extends StatefulWidget {

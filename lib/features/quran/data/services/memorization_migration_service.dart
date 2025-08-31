@@ -1,8 +1,6 @@
-import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../domain/entities/memorization_item.dart';
 import '../../domain/entities/memorization_preferences.dart';
 import '../datasources/memorization_local_data_source.dart';
 import '../models/memorization_preferences_model.dart';

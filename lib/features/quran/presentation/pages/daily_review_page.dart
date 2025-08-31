@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
-import 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_item_widget.dart';
 
 /// Page for daily review of memorization items
 class DailyReviewPage extends StatefulWidget {

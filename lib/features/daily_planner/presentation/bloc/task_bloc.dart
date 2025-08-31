@@ -5,9 +5,10 @@ import 'package:muslim_habbit/features/daily_planner/domain/usecases/delete_task
 import 'package:muslim_habbit/features/daily_planner/domain/usecases/get_todays_tasks.dart';
 import 'package:muslim_habbit/features/daily_planner/domain/usecases/mark_task_completed.dart';
 import 'package:muslim_habbit/features/daily_planner/domain/usecases/update_task.dart';
-import 'package:muslim_habbit/features/daily_planner/presentation/bloc/task_event.dart';
-import 'package:muslim_habbit/features/daily_planner/presentation/bloc/task_state.dart';
 
+import 'package:muslim_habbit/features/daily_planner/domain/entities/task.dart';
+part 'task_event.dart';
+part 'task_state.dart';
 /// BLoC for managing task state
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final GetTodaysTasks getTodaysTasks;

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:muslim_habbit/features/daily_planner/data/models/task_model.dart';
+import 'package:muslim_habbit/features/daily_planner/domain/entities/task.dart';
 
 /// Local data source for task management using Hive
 class TaskLocalDataSource {

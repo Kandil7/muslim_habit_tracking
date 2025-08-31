@@ -48,7 +48,7 @@ class AppConstants {
   ];
 
   // asset surah names
-  static assetSurahNames(int num) {
+  static String assetSurahNames(int num) {
     return 'packages/quran_library/assets/svg/surah_name/00$num.svg';
   }
 }

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/memorization_preferences.dart' as prefs;
 import '../../domain/repositories/memorization_notification_repository.dart';

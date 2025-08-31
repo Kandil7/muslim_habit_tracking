@@ -26,7 +26,6 @@ import 'package:muslim_habbit/features/quran/domain/usecases/get_streak_statisti
 import 'package:muslim_habbit/features/quran/domain/usecases/get_progress_statistics.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
-import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
 import 'package:muslim_habbit/core/error/failures.dart';
 

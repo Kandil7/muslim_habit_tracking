@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muslim_habbit/features/enhanced_dashboard/presentation/bloc/enhanced_dashboard_state.dart';
+import 'package:muslim_habbit/features/enhanced_dashboard/presentation/bloc/enhanced_dashboard_bloc.dart';
 
 /// Widget showing upcoming reminders with smart prioritization
 class UpcomingRemindersWidget extends StatelessWidget {
@@ -38,7 +38,7 @@ class UpcomingRemindersWidget extends StatelessWidget {
                 ),
               )
             else
-              ...reminders.map((reminder) => _ReminderItem(reminder: reminder)).toList(),
+              ...reminders.map((reminder) => _ReminderItem(reminder: reminder)),
           ],
         ),
       ),

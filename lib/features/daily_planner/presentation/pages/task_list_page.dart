@@ -79,22 +79,22 @@ class _TaskList extends StatelessWidget {
           children: [
             if (morningTasks.isNotEmpty) ...[
               const _TimeBlockHeader(title: 'Morning'),
-              ...morningTasks.map((task) => _TaskItem(task: task)).toList(),
+              ...morningTasks.map((task) => _TaskItem(task: task)),
               const SizedBox(height: 20),
             ],
             if (workTasks.isNotEmpty) ...[
               const _TimeBlockHeader(title: 'Work Hours'),
-              ...workTasks.map((task) => _TaskItem(task: task)).toList(),
+              ...workTasks.map((task) => _TaskItem(task: task)),
               const SizedBox(height: 20),
             ],
             if (eveningTasks.isNotEmpty) ...[
               const _TimeBlockHeader(title: 'Evening'),
-              ...eveningTasks.map((task) => _TaskItem(task: task)).toList(),
+              ...eveningTasks.map((task) => _TaskItem(task: task)),
               const SizedBox(height: 20),
             ],
             if (nightTasks.isNotEmpty) ...[
               const _TimeBlockHeader(title: 'Night'),
-              ...nightTasks.map((task) => _TaskItem(task: task)).toList(),
+              ...nightTasks.map((task) => _TaskItem(task: task)),
             ],
           ],
         ),

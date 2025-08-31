@@ -132,8 +132,7 @@ class DuaDhikrLocalDataSourceImpl implements DuaDhikrLocalDataSource {
       if (index == -1) throw CacheException(message: 'Dhikr not found');
 
       final updatedDhikr =
-          dhikrs[index].copyWith(isFavorite: !dhikrs[index].isFavorite)
-              as DhikrModel;
+          dhikrs[index].copyWith(isFavorite: !dhikrs[index].isFavorite);
       dhikrs[index] = updatedDhikr;
 
       await duaDhikrBox.put(
