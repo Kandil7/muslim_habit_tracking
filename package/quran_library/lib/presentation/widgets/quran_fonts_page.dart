@@ -27,7 +27,7 @@ class _QuranFontsPage extends StatelessWidget {
   final String? fontsName;
   final List<int> ayahBookmarked;
 
-  const _QuranFontsPage({
+  _QuranFontsPage({
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,

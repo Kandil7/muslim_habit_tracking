@@ -39,6 +39,7 @@ class _QuranLinePage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     required this.newSurahs,
     this.languageCode,
@@ -47,7 +48,6 @@ class _QuranLinePage extends StatelessWidget {
     this.topTitleChild,
     required this.isDark,
     required this.ayahBookmarked,
-    this.ayahSelectedFontColor,
   });
 
   final quranCtrl = QuranCtrl.instance;

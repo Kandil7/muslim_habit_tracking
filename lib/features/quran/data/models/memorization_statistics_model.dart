@@ -1,7 +1,6 @@
-import 'package:equatable/equatable.dart';
 
-import '../../domain/entities/memorization_item.dart';
-import '../../domain/repositories/memorization_repository.dart';
+import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
+import 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart';
 
 /// Data model for MemorizationStatistics that extends the entity with serialization methods
 class MemorizationStatisticsModel extends MemorizationStatistics {

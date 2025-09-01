@@ -10,7 +10,6 @@ import 'package:muslim_habbit/features/quran/data/models/memorization_preference
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart';
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart';
-import 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart';
 import 'package:muslim_habbit/core/error/exceptions.dart';
 import 'package:muslim_habbit/core/error/failures.dart';
 

@@ -12,12 +12,8 @@ import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.d
     as _i7;
 import 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart'
     as _i15;
-import 'package:muslim_habbit/features/quran/domain/entities/progress_statistics.dart'
-    as _i31;
 import 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart'
     as _i12;
-import 'package:muslim_habbit/features/quran/domain/entities/streak_statistics.dart'
-    as _i29;
 import 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart'
     as _i2;
 import 'package:muslim_habbit/features/quran/domain/usecases/archive_item.dart'
@@ -49,7 +45,7 @@ import 'package:muslim_habbit/features/quran/domain/usecases/get_memorization_st
 import 'package:muslim_habbit/features/quran/domain/usecases/get_overdue_items.dart'
     as _i22;
 import 'package:muslim_habbit/features/quran/domain/usecases/get_progress_statistics.dart'
-    as _i30;
+    as _i29;
 import 'package:muslim_habbit/features/quran/domain/usecases/get_streak_statistics.dart'
     as _i28;
 import 'package:muslim_habbit/features/quran/domain/usecases/mark_item_as_reviewed.dart'
@@ -832,29 +828,29 @@ class MockGetStreakStatistics extends _i1.Mock
       ) as _i2.MemorizationRepository);
 
   @override
-  _i5.Future<_i3.Either<_i6.Failure, _i29.StreakStatistics>> call() =>
+  _i5.Future<_i3.Either<_i6.Failure, _i2.StreakStatistics>> call() =>
       (super.noSuchMethod(
         Invocation.method(
           #call,
           [],
         ),
         returnValue:
-            _i5.Future<_i3.Either<_i6.Failure, _i29.StreakStatistics>>.value(
-                _FakeEither_1<_i6.Failure, _i29.StreakStatistics>(
+            _i5.Future<_i3.Either<_i6.Failure, _i2.StreakStatistics>>.value(
+                _FakeEither_1<_i6.Failure, _i2.StreakStatistics>(
           this,
           Invocation.method(
             #call,
             [],
           ),
         )),
-      ) as _i5.Future<_i3.Either<_i6.Failure, _i29.StreakStatistics>>);
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i2.StreakStatistics>>);
 }
 
 /// A class which mocks [GetProgressStatistics].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetProgressStatistics extends _i1.Mock
-    implements _i30.GetProgressStatistics {
+    implements _i29.GetProgressStatistics {
   MockGetProgressStatistics() {
     _i1.throwOnMissingStub(this);
   }
@@ -869,7 +865,7 @@ class MockGetProgressStatistics extends _i1.Mock
       ) as _i2.MemorizationRepository);
 
   @override
-  _i5.Future<_i3.Either<_i6.Failure, _i31.ProgressStatistics>> call(
+  _i5.Future<_i3.Either<_i6.Failure, _i2.ProgressStatistics>> call(
     DateTime? start,
     DateTime? end,
   ) =>
@@ -882,8 +878,8 @@ class MockGetProgressStatistics extends _i1.Mock
           ],
         ),
         returnValue:
-            _i5.Future<_i3.Either<_i6.Failure, _i31.ProgressStatistics>>.value(
-                _FakeEither_1<_i6.Failure, _i31.ProgressStatistics>(
+            _i5.Future<_i3.Either<_i6.Failure, _i2.ProgressStatistics>>.value(
+                _FakeEither_1<_i6.Failure, _i2.ProgressStatistics>(
           this,
           Invocation.method(
             #call,
@@ -893,5 +889,5 @@ class MockGetProgressStatistics extends _i1.Mock
             ],
           ),
         )),
-      ) as _i5.Future<_i3.Either<_i6.Failure, _i31.ProgressStatistics>>);
+      ) as _i5.Future<_i3.Either<_i6.Failure, _i2.ProgressStatistics>>);
 }

@@ -1,0 +1,52 @@
+Analyzing sunnh_tracker...                                      
+
+   info • Missing type annotation • lib/core/constants/app_constants.dart:51:10 • strict_top_level_inference
+   info • 'printTime' is deprecated and shouldn't be used. Use `dateTimeFormat` with `DateTimeFormat.onlyTimeAndSinceStart` or `DateTimeFormat.none` instead • lib/core/services/logger_service.dart:67:9 • deprecated_member_use
+   info • The constant name 'prayer_habit' isn't a lowerCamelCase identifier • lib/core/theme/app_icons.dart:39:25 • constant_identifier_names
+warning • Unnecessary cast • lib/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart:135:11 • unnecessary_cast
+warning • The value of the local variable 'category' isn't used • lib/features/dua_dhikr/data/datasources/dua_dhikr_local_data_source.dart:207:15 • unused_local_variable
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/features/dua_dhikr/presentation/bloc/dua_dhikr_bloc.dart:3:8 • depend_on_referenced_packages
+   info • Don't invoke 'print' in production code • lib/features/prayer_times/data/repo/prayer_repo_impl.dart:104:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/prayer_times/data/repo/prayer_repo_impl.dart:152:7 • avoid_print
+   info • Missing type annotation • lib/features/prayer_times/presentation/manager/prayer/prayer_cubit.dart:94:28 • strict_top_level_inference
+warning • The declaration '_getPrayerIcon' isn't referenced • lib/features/prayer_times/presentation/views/widgets/prayer_times_item.dart:168:12 • unused_element
+warning • The value of the field '_statisticsKey' isn't used • lib/features/quran/data/datasources/memorization_local_data_source.dart:100:23 • unused_field
+warning • The value of the local variable 'totalReviews' isn't used • lib/features/quran/data/datasources/memorization_local_data_source.dart:339:11 • unused_local_variable
+warning • The value of the local variable 'today' isn't used • lib/features/quran/data/datasources/memorization_local_data_source.dart:615:13 • unused_local_variable
+warning • The value of the field '_quranBox' isn't used • lib/features/quran/data/datasources/quran_local_data_source.dart:46:13 • unused_field
+warning • Unused import: 'package:equatable/equatable.dart' • lib/features/quran/data/models/detailed_memorization_statistics_model.dart:1:8 • unused_import
+warning • Unused import: 'dart:convert' • lib/features/quran/data/models/memorization_item_model.dart:1:8 • unused_import
+warning • Unused import: 'package:equatable/equatable.dart' • lib/features/quran/data/models/memorization_item_model.dart:3:8 • unused_import
+warning • Unused import: 'package:equatable/equatable.dart' • lib/features/quran/data/models/memorization_statistics_model.dart:1:8 • unused_import
+warning • Unused import: '../../../../core/error/exceptions.dart' • lib/features/quran/data/repositories/memorization_notification_repository_impl.dart:4:8 • unused_import
+warning • Unused import: '../../domain/entities/streak_statistics.dart' • lib/features/quran/data/repositories/memorization_repository_impl.dart:9:8 • unused_import
+warning • Unused import: '../../domain/entities/progress_statistics.dart' • lib/features/quran/data/repositories/memorization_repository_impl.dart:10:8 • unused_import
+warning • The value of the local variable 'today' isn't used • lib/features/quran/data/repositories/memorization_repository_impl.dart:88:13 • unused_local_variable
+warning • Unused import: 'dart:convert' • lib/features/quran/data/services/memorization_migration_service.dart:1:8 • unused_import
+warning • Unused import: '../../domain/entities/memorization_item.dart' • lib/features/quran/data/services/memorization_migration_service.dart:5:8 • unused_import
+warning • The value of the local variable 'preferences' isn't used • lib/features/quran/data/services/memorization_migration_service.dart:43:13 • unused_local_variable
+warning • The declaration '_migrateFromOldFormat' isn't referenced • lib/features/quran/data/services/memorization_migration_service.dart:56:16 • unused_element
+warning • Unused import: 'package:flutter/material.dart' • lib/features/quran/domain/entities/memorization_preferences.dart:2:8 • unused_import
+warning • Unused import: 'package:flutter/material.dart' • lib/features/quran/domain/entities/review_schedule.dart:2:8 • unused_import
+warning • Unused import: '../entities/memorization_item.dart' • lib/features/quran/domain/usecases/get_detailed_statistics.dart:4:8 • unused_import
+warning • Unused import: 'package:equatable/equatable.dart' • lib/features/quran/presentation/bloc/memorization/memorization_bloc.dart:2:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps • lib/features/quran/presentation/pages/add_memorization_item_page.dart:71:32 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/features/quran/presentation/pages/add_memorization_item_page.dart:87:7 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/features/quran/presentation/pages/add_memorization_item_page.dart:90:28 • use_build_context_synchronously
+warning • Unused import: 'package:muslim_habbit/features/quran/presentation/widgets/daily_review_item_widget.dart' • lib/features/quran/presentation/pages/daily_review_page.dart:7:8 • unused_import
+   info • Unnecessary use of string interpolation • lib/features/quran/presentation/pages/memorization_statistics_page.dart:361:28 • unnecessary_string_interpolations
+warning • The declaration '_buildAppBar' isn't referenced • lib/features/quran/presentation/views/sura_view.dart:52:10 • unused_element
+   info • Unnecessary use of string interpolation • lib/features/quran/presentation/widgets/stats_summary_card.dart:113:24 • unnecessary_string_interpolations
+warning • The include file 'package:flutter_lints/flutter.yaml' in '/Users/mohamed/flutterproject/muslim/sunnh_tracker/package/quran_library/example/analysis_options.yaml' can't be found when analyzing '/Users/mohamed/flutterproject/muslim/sunnh_tracker/package/quran_library/example' • package/quran_library/example/analysis_options.yaml:10:10 • include_file_not_found
+   info • The type of the right operand ('bool') isn't a subtype or a supertype of the left operand ('List<int>') • package/quran_library/lib/presentation/widgets/custom_span.dart:58:20 • unrelated_type_equality_checks
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_fonts_page.dart:47:10 • unused_element_parameter
+   info • The type of the right operand ('bool') isn't a subtype or a supertype of the left operand ('List<int>') • package/quran_library/lib/presentation/widgets/quran_line.dart:51:30 • unrelated_type_equality_checks
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_line_page.dart:50:10 • unused_element_parameter
+warning • A value for optional parameter 'ayahSelectedFontColor' isn't ever given • package/quran_library/lib/presentation/widgets/quran_text_scale.dart:26:10 • unused_element_parameter
+warning • The left operand can't be null, so the right operand is never executed • package/quran_library/lib/presentation/widgets/show_tafseer.dart:116:75 • dead_null_aware_expression
+warning • Unused import: 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart' • test/features/quran/data/repositories/memorization_repository_impl_test.dart:13:8 • unused_import
+warning • Unused import: 'package:muslim_habbit/features/quran/domain/entities/review_schedule.dart' • test/features/quran/presentation/bloc/memorization_bloc_enhanced_test.dart:28:8 • unused_import
+warning • Unused import: 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart' • test/features/quran/presentation/bloc/memorization_bloc_enhanced_test.dart:29:8 • unused_import
+warning • Unused import: 'package:muslim_habbit/features/quran/domain/entities/memorization_preferences.dart' • test/features/quran/presentation/bloc/memorization_bloc_test.dart:29:8 • unused_import
+
+48 issues found. (ran in 12.0s)

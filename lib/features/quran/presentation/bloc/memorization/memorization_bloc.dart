@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/memorization_item.dart';
 import '../../../domain/entities/memorization_preferences.dart';

@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:muslim_habbit/features/quran/domain/repositories/memorization_repository.dart';
 import 'package:muslim_habbit/features/quran/presentation/bloc/memorization/memorization_bloc.dart';
-import 'package:muslim_habbit/features/quran/domain/entities/memorization_item.dart';
+import 'package:muslim_habbit/features/quran/presentation/widgets/memorization_progress_card.dart';
+import 'package:muslim_habbit/features/quran/presentation/widgets/stats_summary_card.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-/// Page to display detailed memorization statistics
+/// Statistics page for detailed Quran memorization analytics
 class MemorizationStatisticsPage extends StatefulWidget {
   const MemorizationStatisticsPage({super.key});
 
   @override
-  State<MemorizationStatisticsPage> createState() => _MemorizationStatisticsPageState();
+  State<MemorizationStatisticsPage> createState() =>
+      _MemorizationStatisticsPageState();
 }
 
-class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage> {
+class _MemorizationStatisticsPageState
+    extends State<MemorizationStatisticsPage> {
   @override
   void initState() {
     super.initState();
-    // Load initial data
     context.read<MemorizationBloc>().add(LoadMemorizationStatistics());
     context.read<MemorizationBloc>().add(LoadDetailedStatistics());
-    context.read<MemorizationBloc>().add(LoadMemorizationItems());
   }
 
   @override
@@ -29,407 +29,406 @@ class _MemorizationStatisticsPageState extends State<MemorizationStatisticsPage>
       appBar: AppBar(
         title: const Text('Memorization Statistics'),
       ),
-      body: BlocBuilder<MemorizationBloc, MemorizationState>(
-        builder: (context, state) {
-          if (state is MemorizationLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is MemorizationError) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else {
-            return _buildStatisticsContent(state);
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<MemorizationBloc>().add(LoadMemorizationStatistics());
+          context.read<MemorizationBloc>().add(LoadDetailedStatistics());
         },
-      ),
-    );
-  }
-
-  Widget _buildStatisticsContent(MemorizationState state) {
-    MemorizationStatistics? stats;
-    DetailedMemorizationStatistics? detailedStats;
-    List<MemorizationItem>? items;
-
-    // Extract data from different states
-    if (state is MemorizationStatisticsLoaded) {
-      stats = state.statistics;
-    } else if (state is DetailedStatisticsLoaded) {
-      detailedStats = state.detailedStatistics;
-    } else if (state is MemorizationItemsLoaded) {
-      items = state.items;
-    }
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Overall statistics cards
-            if (stats != null) ...[
-              _buildOverallStatsGrid(stats),
-              const SizedBox(height: 24),
-            ],
-            
-            // Status distribution chart
-            const Text(
-              'Status Distribution',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Progress summary card
+                const MemorizationProgressCard(),
+                const SizedBox(height: 16),
+                
+                // Stats summary card
+                const StatsSummaryCard(),
+                const SizedBox(height: 16),
+                
+                // Progress over time chart
+                const _ProgressOverTimeChart(),
+                const SizedBox(height: 16),
+                
+                // Review frequency chart
+                const _ReviewFrequencyChart(),
+                const SizedBox(height: 16),
+                
+                // Additional metrics
+                const _AdditionalMetricsCard(),
+              ],
             ),
-            const SizedBox(height: 16),
-            if (stats != null)
-              _buildStatusDistributionChart(stats.itemsByStatus),
-            const SizedBox(height: 32),
-            
-            // Progress over time chart
-            const Text(
-              'Progress Over Time',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            if (detailedStats != null)
-              _buildProgressChart(detailedStats.progressOverTime),
-            const SizedBox(height: 32),
-            
-            // Review frequency chart
-            const Text(
-              'Review Frequency by Day',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            if (detailedStats != null)
-              _buildReviewFrequencyChart(detailedStats.reviewFrequencyByDay),
-            const SizedBox(height: 32),
-            
-            // Additional statistics
-            if (detailedStats != null) ...[
-              const Text(
-                'Additional Metrics',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildStatCard('Average Streak Length', 
-                  '${detailedStats.averageStreakLength.toStringAsFixed(2)} days'),
-              const SizedBox(height: 16),
-              _buildStatCard('Success Rate', 
-                  '${detailedStats.successRate.toStringAsFixed(1)}%'),
-              const SizedBox(height: 16),
-              _buildStatCard('Archived Items', 
-                  detailedStats.archivedItemsCount.toString()),
-              const SizedBox(height: 16),
-              _buildStatCard('Review Consistency', 
-                  '${detailedStats.reviewConsistency.toStringAsFixed(1)}%'),
-              const SizedBox(height: 16),
-              _buildStatCard('Avg. Pages/Day', 
-                  detailedStats.averagePagesPerDay.toStringAsFixed(2)),
-            ],
-            
-            const SizedBox(height: 32),
-            
-            // Items list by status
-            if (items != null) ...[
-              const Text(
-                'Your Memorization Items',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildItemsByStatusList(items),
-            ],
-          ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildOverallStatsGrid(MemorizationStatistics stats) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard('Total Items', stats.totalItems.toString()),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard('Memorized', 
-                  '${stats.itemsByStatus[MemorizationStatus.memorized] ?? 0} '
-                  '(${stats.memorizationPercentage.toStringAsFixed(1)}%)'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard('Current Streak', '${stats.currentStreak} days'),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard('Longest Streak', '${stats.longestStreak} days'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard('Total Reviews', stats.totalReviews.toString()),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard('Avg. Reviews/Day', 
-                  stats.averageReviewsPerDay.toStringAsFixed(2)),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+/// Chart showing progress over time
+class _ProgressOverTimeChart extends StatelessWidget {
+  const _ProgressOverTimeChart();
 
-  Widget _buildStatCard(String title, String value) {
+  @override
+  Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusDistributionChart(Map<MemorizationStatus, int> statusData) {
-    final List<PieChartSectionData> sections = [];
-    final total = statusData.values.fold(0, (sum, item) => sum + item);
-    
-    if (total == 0) {
-      return const Center(child: Text('No data available'));
-    }
-    
-    // Colors for each status
-    final statusColors = {
-      MemorizationStatus.newStatus: Colors.blue,
-      MemorizationStatus.inProgress: Colors.orange,
-      MemorizationStatus.memorized: Colors.green,
-      MemorizationStatus.archived: Colors.grey,
-    };
-    
-    // Labels for each status
-    final statusLabels = {
-      MemorizationStatus.newStatus: 'New',
-      MemorizationStatus.inProgress: 'In Progress',
-      MemorizationStatus.memorized: 'Memorized',
-      MemorizationStatus.archived: 'Archived',
-    };
-    
-    int index = 0;
-    for (final entry in statusData.entries) {
-      if (entry.value > 0) {
-        final percentage = (entry.value / total) * 100;
-        sections.add(
-          PieChartSectionData(
-            color: statusColors[entry.key],
-            value: percentage,
-            title: '${percentage.toStringAsFixed(1)}%',
-            radius: 50,
-            titleStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        );
-        index++;
-      }
-    }
-    
-    return SizedBox(
-      height: 200,
-      child: PieChart(
-        PieChartData(
-          sections: sections,
-          centerSpaceRadius: 40,
-          sectionsSpace: 2,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProgressChart(Map<DateTime, int> progressData) {
-    if (progressData.isEmpty) {
-      return const Center(child: Text('No progress data available'));
-    }
-
-    // Convert map to list of flutterspots
-    final spots = <FlSpot>[];
-    final sortedDates = progressData.keys.toList()..sort();
-    
-    for (int i = 0; i < sortedDates.length; i++) {
-      final date = sortedDates[i];
-      final value = progressData[date]!;
-      spots.add(FlSpot(i.toDouble(), value.toDouble()));
-    }
-
-    return SizedBox(
-      height: 200,
-      child: LineChart(
-        LineChartData(
-          gridData: const FlGridData(show: true),
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  if (value.toInt() < sortedDates.length) {
-                    final date = sortedDates[value.toInt()];
-                    return Text(
-                      '${date.month}/${date.day}',
-                      style: const TextStyle(fontSize: 10),
-                    );
-                  }
-                  return const Text('');
-                },
-              ),
-            ),
-            leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: true),
-            ),
-          ),
-          borderData: FlBorderData(show: true),
-          minX: 0,
-          maxX: (spots.length - 1).toDouble(),
-          minY: 0,
-          maxY: spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b),
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots,
-              isCurved: true,
-              color: Colors.blue,
-              barWidth: 3,
-              belowBarData: BarAreaData(show: true, color: Colors.blue.withValues(alpha:0.3)),
-              dotData: const FlDotData(show: true),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReviewFrequencyChart(Map<int, int> frequencyData) {
-    if (frequencyData.isEmpty) {
-      return const Center(child: Text('No review frequency data available'));
-    }
-
-    // Convert to list of bar chart groups
-    final barGroups = <BarChartGroupData>[];
-    
-    for (int i = 1; i <= 7; i++) {
-      final value = frequencyData[i] ?? 0;
-      barGroups.add(
-        BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(
-              toY: value.toDouble(),
-              color: Colors.green,
-              width: 20,
-            ),
-          ],
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 200,
-      child: BarChart(
-        BarChartData(
-          barGroups: barGroups,
-          gridData: const FlGridData(show: true),
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                  final index = value.toInt() - 1;
-                  if (index >= 0 && index < days.length) {
-                    return Text(days[index], style: const TextStyle(fontSize: 10));
-                  }
-                  return const Text('');
-                },
-              ),
-            ),
-            leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: true),
-            ),
-          ),
-          borderData: FlBorderData(show: true),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildItemsByStatusList(List<MemorizationItem> items) {
-    // Group items by status
-    final itemsByStatus = <MemorizationStatus, List<MemorizationItem>>{};
-    for (final status in MemorizationStatus.values) {
-      itemsByStatus[status] = items.where((item) => item.status == status).toList();
-    }
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final entry in itemsByStatus.entries) ...[
-          if (entry.value.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              _getStatusLabel(entry.key),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: entry.value.length,
-              itemBuilder: (context, index) {
-                final item = entry.value[index];
-                return Card(
-                  child: ListTile(
-                    title: Text(item.surahName),
-                    subtitle: Text('Pages ${item.startPage}-${item.endPage}'),
-                    trailing: Text(
-                      entry.key == MemorizationStatus.inProgress 
-                          ? '${item.consecutiveReviewDays}/5 days' 
-                          : '',
+        padding: const EdgeInsets.all(20.0),
+        child: BlocBuilder<MemorizationBloc, MemorizationState>(
+          builder: (context, state) {
+            if (state is DetailedStatisticsLoaded) {
+              final detailedStats = state.detailedStatistics;
+              
+              // Convert map to list of points
+              final dataPoints = detailedStats.progressOverTime.entries
+                  .map((entry) => FlSpot(
+                        entry.key.millisecondsSinceEpoch.toDouble(),
+                        entry.value.toDouble(),
+                      ))
+                  .toList();
+              
+              if (dataPoints.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No progress data available',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
                     ),
                   ),
                 );
-              },
-            ),
-          ],
-        ],
-      ],
+              }
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Progress Over Time',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 200,
+                    child: LineChart(
+                      LineChartData(
+                        gridData: const FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final date = DateTime.fromMillisecondsSinceEpoch(
+                                    value.toInt());
+                                return Text(
+                                  '${date.day}/${date.month}',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          leftTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        minX: dataPoints.first.x,
+                        maxX: dataPoints.last.x,
+                        minY: 0,
+                        maxY: dataPoints.map((e) => e.y).reduce((a, b) => a > b ? a : b) + 5,
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: dataPoints,
+                            isCurved: true,
+                            color: Colors.blue,
+                            barWidth: 3,
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: Colors.blue.withValues(alpha: 0.3),
+                            ),
+                            dotData: const FlDotData(show: false),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else if (state is MemorizationLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is MemorizationError) {
+              return Center(child: Text('Error: ${state.message}'));
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      ),
     );
   }
+}
 
-  String _getStatusLabel(MemorizationStatus status) {
-    switch (status) {
-      case MemorizationStatus.newStatus:
-        return 'New Items';
-      case MemorizationStatus.inProgress:
-        return 'In Progress';
-      case MemorizationStatus.memorized:
-        return 'Memorized';
-      case MemorizationStatus.archived:
-        return 'Archived';
-    }
+/// Chart showing review frequency by day of week
+class _ReviewFrequencyChart extends StatelessWidget {
+  const _ReviewFrequencyChart();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: BlocBuilder<MemorizationBloc, MemorizationState>(
+          builder: (context, state) {
+            if (state is DetailedStatisticsLoaded) {
+              final detailedStats = state.detailedStatistics;
+              
+              // Convert map to list of bar chart groups
+              final barGroups = detailedStats.reviewFrequencyByDay.entries
+                  .map((entry) => BarChartGroupData(
+                        x: entry.key,
+                        barRods: [
+                          BarChartRodData(
+                            toY: entry.value.toDouble(),
+                            color: Colors.green,
+                            width: 20,
+                            borderRadius: BorderRadius.zero,
+                          ),
+                        ],
+                      ))
+                  .toList();
+              
+              if (barGroups.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No review frequency data available',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              }
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Review Frequency by Day',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 200,
+                    child: BarChart(
+                      BarChartData(
+                        gridData: const FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final days = [
+                                  'Mon',
+                                  'Tue',
+                                  'Wed',
+                                  'Thu',
+                                  'Fri',
+                                  'Sat',
+                                  'Sun'
+                                ];
+                                final index = value.toInt();
+                                return Text(
+                                  index < days.length ? days[index] : '',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          leftTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        barGroups: barGroups,
+                        maxY: barGroups
+                                .map((g) => g.barRods.first.toY)
+                                .reduce((a, b) => a > b ? a : b) +
+                            5,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else if (state is MemorizationLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is MemorizationError) {
+              return Center(child: Text('Error: ${state.message}'));
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Card showing additional metrics
+class _AdditionalMetricsCard extends StatelessWidget {
+  const _AdditionalMetricsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: BlocBuilder<MemorizationBloc, MemorizationState>(
+          builder: (context, state) {
+            if (state is DetailedStatisticsLoaded) {
+              final detailedStats = state.detailedStatistics;
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Additional Metrics',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _MetricItem(
+                    label: 'Average Streak Length',
+                    value: '${detailedStats.averageStreakLength.toStringAsFixed(1)} days',
+                    icon: Icons.timeline,
+                    color: Colors.purple,
+                  ),
+                  const SizedBox(height: 12),
+                  _MetricItem(
+                    label: 'Success Rate',
+                    value: '${detailedStats.successRate.toStringAsFixed(1)}%',
+                    icon: Icons.check_circle,
+                    color: Colors.green,
+                  ),
+                  const SizedBox(height: 12),
+                  _MetricItem(
+                    label: 'Review Consistency',
+                    value: detailedStats.reviewConsistency.toStringAsFixed(1) + '%',
+                    icon: Icons.bar_chart,
+                    color: Colors.orange,
+                  ),
+                  const SizedBox(height: 12),
+                  _MetricItem(
+                    label: 'Average Pages/Day',
+                    value: detailedStats.averagePagesPerDay.toStringAsFixed(1),
+                    icon: Icons.description,
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(height: 12),
+                  _MetricItem(
+                    label: 'Archived Items',
+                    value: detailedStats.archivedItemsCount.toString(),
+                    icon: Icons.archive,
+                    color: Colors.grey,
+                  ),
+                ],
+              );
+            } else if (state is MemorizationLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is MemorizationError) {
+              return Center(child: Text('Error: ${state.message}'));
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget for displaying a single metric
+class _MetricItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  const _MetricItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
+    );
   }
 }

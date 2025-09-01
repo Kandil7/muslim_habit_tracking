@@ -6,8 +6,6 @@ import '../../../../core/network/network_info.dart';
 import '../../domain/entities/memorization_item.dart';
 import '../../domain/entities/memorization_preferences.dart';
 import '../../domain/entities/review_schedule.dart';
-import '../../domain/entities/streak_statistics.dart' as streak_entity;
-import '../../domain/entities/progress_statistics.dart' as progress_entity;
 import '../../domain/repositories/memorization_repository.dart' as domain;
 import '../datasources/memorization_local_data_source.dart';
 import '../models/memorization_item_model.dart';
